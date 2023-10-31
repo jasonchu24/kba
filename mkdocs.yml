@@ -1,0 +1,66 @@
+site_name: 杰森的KBA
+site_url: https://jasonchu24.github.io/kba
+repo_url: https://github.com/jasonchu24/kba
+repo_name: jasonchu24/kba
+site_url: ""
+
+nav:
+
+theme:
+  name: material
+  language: zh
+
+  palette:
+
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - content.code.copy
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.tracking
+    - navigation.top
+    - navigation.path
+    - toc.follow
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+
+plugins:
+  - search:
+  - blog:
+      blog_dir: blog
+      post_url_date_format: yyyy/MM/dd
+      post_url_format: "{date}/{slug}"
+      post_readtime: true
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+
+extra:
+  generator: false
+
+copyright: Copyright &copy; 2022-2023 杰森
