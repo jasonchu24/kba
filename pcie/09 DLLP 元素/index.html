@@ -1,0 +1,1895 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../08%20%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%BA%8F/">
+      
+      
+        <link rel="next" href="../12%20%E7%89%A9%E7%90%86%E5%B1%82%E9%80%BB%E8%BE%91%28gen3%29/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.7">
+    
+    
+      
+        <title>Chpater 9 DLLP Element// DLLP 元素 - 杰森的KBA</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4b4a2bd9.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chpater-9-dllp-element-dllp" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="杰森的KBA" class="md-header__button md-logo" aria-label="杰森的KBA" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            杰森的KBA
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chpater 9 DLLP Element// DLLP 元素
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_3" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9h-1.9M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69m-9.15 3.96h2.3L12 9l-1.15 3.65Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_3">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jasonchu24/kba" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jasonchu24/kba
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Welcome to MkDocs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+    
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../hardware/async_sram.en/" class="md-tabs__link">
+          
+  
+    
+  
+  Hardware
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../01%20%E8%83%8C%E6%99%AF/" class="md-tabs__link">
+          
+  
+    
+  
+  Pcie
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../software/atomic_instructions/" class="md-tabs__link">
+          
+  
+    
+  
+  Software
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="杰森的KBA" class="md-nav__button md-logo" aria-label="杰森的KBA" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    杰森的KBA
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jasonchu24/kba" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jasonchu24/kba
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome to MkDocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../blog/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    归档
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            归档
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2023/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2023
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    分类
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            分类
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/blog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Hardware
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Hardware
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/async_sram.en/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Asynchronous SRAM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/async_sram.zh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    异步 SRAM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/bus_protocol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    总线协议
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/cache_coherence_protocol/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    缓存一致性协议
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/cmos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CMOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/display_interface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    显示接口
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/error_detection_correction_code/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    检错纠错码
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/high_speed_serial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    高速串行通信
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/i2c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    I2C
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/logic_levels.en/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logic level standards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/logic_levels.zh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    逻辑电平标准
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/on_chip_networks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    片上网络
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/ooo_cpu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    乱序执行 CPU
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/oscillator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    振荡器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/pcie/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PCIe
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/sdram.en/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SDRAM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/sdram.zh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SDRAM
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardware/spi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SPI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Pcie
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Pcie
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01%20%E8%83%8C%E6%99%AF/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    01 背景
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02%20PCIe%20%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E6%A6%82%E8%BF%B0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    02 PCIe 体系结构概述
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03%20PCIe%20%E9%85%8D%E7%BD%AE%E6%A6%82%E8%BF%B0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    03 PCIe 配置概述
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04%20%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E4%B8%8E%E4%BA%8B%E5%8A%A1%E8%B7%AF%E7%94%B1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    04 地址空间与事务路由
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05%20TLP%20%E5%85%83%E7%B4%A0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    第二部分    Part Two：Transaction Layer 事务层
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06%20%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    06 流量控制
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07%20QoS%20%E6%9C%8D%E5%8A%A1%E8%B4%A8%E9%87%8F/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    07 QoS 服务质量
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08%20%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%BA%8F/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    08 事务排序
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Chpater 9 DLLP Element// DLLP 元素
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Chpater 9 DLLP Element// DLLP 元素
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    关于前一章
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    关于本章
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    关于下一章
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#91-general" class="md-nav__link">
+    9.1 概述（General）
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#92-dllp-dllps-are-local-traffic" class="md-nav__link">
+    9.2 DLLP 是本地流量（DLLPs Are Local Traffic）
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#93-dllp-receiver-handling-of-dllps" class="md-nav__link">
+    9.3 DLLP 接收与处理（Receiver handling of DLLPs）
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#94-dllpsending-dllps" class="md-nav__link">
+    9.4 发送 DLLP（Sending DLLPs）
+  </a>
+  
+    <nav class="md-nav" aria-label="9.4 发送 DLLP（Sending DLLPs）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#941-general" class="md-nav__link">
+    9.4.1 概述（General）
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#942-dllp-8-dllp-packet-size-is-fixed-at-8-bytes" class="md-nav__link">
+    9.4.2 DLLP 包大小固定为 8 字节（DLLP Packet Size is Fixed at 8 Bytes）
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#95-dllp-dllp-packet-types" class="md-nav__link">
+    9.5 DLLP 包类型（DLLP Packet Types）
+  </a>
+  
+    <nav class="md-nav" aria-label="9.5 DLLP 包类型（DLLP Packet Types）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#951-acknak-dllp-format" class="md-nav__link">
+    9.5.1 Ack/Nak DLLP Format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#952-power-management-dllp-format" class="md-nav__link">
+    9.5.2 Power Management DLLP Format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#953-flow-control-dllp-format" class="md-nav__link">
+    9.5.3 Flow Control DLLP Format
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#954-vendor-specific-dllp-format" class="md-nav__link">
+    9.5.4 Vendor-Specific DLLP Format
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12%20%E7%89%A9%E7%90%86%E5%B1%82%E9%80%BB%E8%BE%91%28gen3%29/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chpater 12 Physical Layer - Logical(Gen3)//物理层逻辑（Gen3）
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chpater 14 Link Initialization & Training//链路初始化与训练
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../all/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    All
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Software
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Software
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software/atomic_instructions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    原子指令
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software/cg/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    计算机图形学
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software/cpio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpio 文件格式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software/dijkstra/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dijkstra 算法
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software/gcc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GCC Internals
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software/tar/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tar 文件格式
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software/transformer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Transformer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="chpater-9-dllp-element-dllp">Chpater 9 DLLP Element// DLLP 元素</h1>
+<h3 id="_1">关于前一章</h3>
+<p>上一章节讨论了PCIe拓扑结构中事务对排序的要求。这些规则是继承自 PCI 的，它们许多都受到“生产者/消费者（Producer/Consumer）”程序设计模型的推动，因此在上一章描述了这个模型的机制原理。原始的规则中还考虑了那些必须要避免的死锁情况。</p>
+<h3 id="_2">关于本章</h3>
+<p>本章将会描述 Data Link Layer Packet（DLLP，数据链路层包）。我们将会描述其用途、格式以及DLLP数据包类型的定义，也将会对其相关字段的细节进行描述介绍。DLLP可以被用来支持 Ack/Nak 协议、电源管理、流控机制，还可用来实现一些厂商自定义的用途。</p>
+<h3 id="_3">关于下一章</h3>
+<p>下一章将描述数据链路层的关键特性之一：基于硬件的链路间 TLP 自动可靠传输机制。Ack DLLP 用于确认一次正常 TLP 的接收，而 Nak DLLP 则表示一次 TLP 传输错误。我们将讨论没有侦测到 TLP 和 DLLP 错误时的正常传输行为的规则，也会讨论 TLP 或者 DLLP 错误发生时的错误恢复机制。</p>
+<h3 id="91-general">9.1 概述（General）</h3>
+<p>数据链路层可以被认为是更低逻辑层次上的链路协议管理者。数据链路层的主要职责是确保 TLP 在设备之间的完整传输，并且也参与到 TLP 流量控制、链路初始化、功耗管理以及为其上层的事务层和下层的物理层之间传递信息等功能。数据链路层通过与其他设备之间交换 DLLP（Data Link Layer Packet），数据链路层包，来完成上述功能。DLLP 会在各个设备的数据链路层之间传输通信，图 9-1 展示了 DLLP 在设备间的传输路径。</p>
+<p><img alt="image-20220503172711135" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503172711135.png" /></p>
+<p>图 9-1 数据链路层发送 DLLP 示意图</p>
+<h3 id="92-dllp-dllps-are-local-traffic">9.2 DLLP 是本地流量（DLLPs Are Local Traffic）</h3>
+<p>DLLP 的数据包格式非常简单，算上组帧字节，整个 DLLP 的长度固定为 8 字节。与 TLP 不同，DLLP 不携带任何目的地址或者路由信息，因为他们只用于本地相邻设备之间的直接通信，无需进行路由。同时，DLLP 对于上层的事务层也是不可见的，因为他们不会参与设备事务层间的信息交换。</p>
+<h3 id="93-dllp-receiver-handling-of-dllps">9.3 DLLP 接收与处理（Receiver handling of DLLPs）</h3>
+<p>当接收方收到 DLLP 之后，会根据以下规则进行处理：</p>
+<ol>
+<li>DLLP 会在收到后被立即处理，无需受到 TLP 的流量控制机制的管理</li>
+<li>DLLP 会受到物理层和数据链路层的两次错误检测。链路层会重新计算包的 CRC 校验结果，并将其和包自身携带的 16 比特 CRC 结果进行比较。校验失败的 DLLP 会被丢弃。那么问题来了：链路如何从 DLLP 校验错误中恢复？答案是后续的 DLLP 仍然会周期性地到达，接下来接收的同类 DLLP 会更新缺失的信息。</li>
+<li>DLLP 与 TLP 不同，没有接收确认 Ack 机制，取而代之的是协议定义的超时机制。超时机制负责从 DLLP 接收错误中恢复。</li>
+<li>校验通过的 DLLP 将根据其类型，传输给相应的内部逻辑，完成如下功能</li>
+<li>通知 TLP  Ack/Nak 状态的更新</li>
+<li>通知流量控制机制中的可用缓存大小信息的更新</li>
+<li>电源管理设置</li>
+<li>厂商自定义信息管理</li>
+</ol>
+<h3 id="94-dllpsending-dllps">9.4 发送 DLLP（Sending DLLPs）</h3>
+<h4 id="941-general">9.4.1 概述（General）</h4>
+<p>发送方在数据链路层生成 DLLP 包，然后将其传输给物理层。如果是 Gen1/Gen2 模式，使用 8b/10b 编码，那么会在 DLLP 的开头和结尾都加上组帧符号。在 Gen3 模式中，2字节的 SDP 令牌会被添加到 DLLP 前部，但是不会在结尾处添加 END 符号。图 9-2 描述了一个 Gen1/Gen2 模式的 DLLP 发送过程，可以看到在 DLLP 的内容前后加上了组帧符号。 </p>
+<p><img alt="image-20220503182506839" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503182506839.png" /></p>
+<p>图 9-2 原生数据链路层数据包格式</p>
+<h4 id="942-dllp-8-dllp-packet-size-is-fixed-at-8-bytes">9.4.2 DLLP 包大小固定为 8 字节（DLLP Packet Size is Fixed at 8 Bytes）</h4>
+<p>DLLP 包固定为 8 字节大小，无论是在 8b/10b 或者128b/130b 编码方式下，其包括以下组成部分：</p>
+<ol>
+<li>1DW（4byte）的 DLLP 核心字段，包括 1 字节的 DLLP 类型与另外 3 字节属性字段。属性字段含义随 DLLP 类型而变化</li>
+<li>2 字节 CRC 字段，基于 DLLP 核心字段内容计算。重要的一点是，此处的 CRC 和 TLP 的 LCRC 字段不同。DLLP CRC 仅有 16 比特，并且其计算方式也与 32 比特的 LCRC 不同。2 字节 CRC 字段附于 4 字节核心字段之后，共计 6 字节内容会被传递给物理层。</li>
+<li>使用 8b/10b 编码时，一个 SDP （Start of DLLP）和 END (End Good) 控制符号会被添加到包的开头与结尾。自然地，这些字节会在发送前编码为 10-bit 符号。</li>
+<li>Gen3 使用 128b/130b 编码时, 2 字节 SDP 令牌会被添加到 DLLP 包之前构成 8 字节的数据包，此时不会添加 END 符号或者令牌。</li>
+</ol>
+<p><strong>注意</strong>，DLLP 永远不会携带数据载荷，信息全部位于 4 字节核心字段内。</p>
+<h3 id="95-dllp-dllp-packet-types">9.5 DLLP 包类型（DLLP Packet Types）</h3>
+<p>DLLP 包共有 4 种类型，分别用于 Ack/Nak、电源管理、流控以及厂商自定义功能。其中部分类型还有一些变体。表 9-1 总结了这些 DLLP 类型及其变体的编码方式。</p>
+<p>表 9-1 DLLP 类型</p>
+<p><img alt="image-20220503200702554" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503200702554.png" /></p>
+<p><img alt="image-20220503200713771" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503200713771.png" /></p>
+<h4 id="951-acknak-dllp-format">9.5.1 Ack/Nak DLLP Format</h4>
+<p>用于通知对端设备，确认接收（Ack）或者接收错误（Nak）的 DLLP 报文格式如图 9-3 所示。 Ack/Nak DLLP 字段用于表示对于 TLP 报文的 Ack 或者 Nak。关于 Ack/Nak 协议的更多细节，可以参照 Chapter 10, ʺAck/Nak Protocolʺ ，此处不再展开描述相关的字段含义。</p>
+<p>表 9-2 Ack/Nak DLLP 字段</p>
+<p><img alt="image-20220503202526922" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503202526922.png" /></p>
+<h4 id="952-power-management-dllp-format">9.5.2 Power Management DLLP Format</h4>
+<p>图 9-4 是电源管理相关的 DLLP 包格式信息，表 9-3 是它的字段描述信息。关于 电源管理的更多细节，可以参照 Chapter 16, ʺPower Managementʺ ，此处不再展开描述相关的字段含义。</p>
+<p><img alt="image-20220503202738475" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503202738475.png" /></p>
+<p>图 9-4 电源管理相关的 DLLP 包格式信息，表 9-3 字段描述信息</p>
+<h4 id="953-flow-control-dllp-format">9.5.3 Flow Control DLLP Format</h4>
+<p>和其他许多串行传输协议类似， PCIe 通过基于 credit 的流量控制机制提高了传输的效率。相关的话题在 Chapter 6, ʺFlow Controlʺ 中进行了讨论。DLLP 在流量控制机制中用于通信双方 credit 信息的交换。有多种不同的 DLLP 包用于流量控制机制的 credit 信息初始化，以及另一类用于传输过程中 credit 更新的 DLLP，当接收方缓存恢复时，将用这类 DLLP 通知对端 credit 信息的更新。共有两种流控初始化 DLLP，分别为 InitFC1 和 InitFC2，以及一种流控更新 DLLP，称为 UpdateFC。</p>
+<p>图 9-5 是流控相关的 DLLP 包格式信息，表 9-4 是它的字段描述信息。</p>
+<p><img alt="image-20220503202756680" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503202756680-16515808868911.png" /></p>
+<p><img alt="image-20220503202809717" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503202809717.png" /></p>
+<p><img alt="image-20220503202818960" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503202818960.png" /></p>
+<p>图 9-5 流控相关的 DLLP 包格式信息，表 9-4 字段描述信息。</p>
+<h4 id="954-vendor-specific-dllp-format">9.5.4 Vendor-Specific DLLP Format</h4>
+<p>最后一类 DLLP 用于厂商定制化用途。因此，协议只定义了此类 DLLP 的类型字段值（0011 0000b），剩下的属性字段的含义留给厂商自行定义。</p>
+<p><img alt="image-20220503202827947" src="../img/9%20DLLP%20%E5%85%83%E7%B4%A0/image-20220503202827947.png" /></p>
+<p>图 9-5 厂商自定义 DLLP 包格式信息</p>
+<hr />
+<p>原文： Mindshare</p>
+<p>译者： LJGibbs</p>
+<p>校对: </p>
+<p>欢迎参与 《Mindshare PCI Express Technology 3.0 一书的中文翻译计划》</p>
+<p>https://gitee.com/ljgibbs/chinese-translation-of-pci-express-technology</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../08%20%E4%BA%8B%E5%8A%A1%E6%8E%92%E5%BA%8F/" class="md-footer__link md-footer__link--prev" aria-label="上一页: 08 事务排序">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                08 事务排序
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../12%20%E7%89%A9%E7%90%86%E5%B1%82%E9%80%BB%E8%BE%91%28gen3%29/" class="md-footer__link md-footer__link--next" aria-label="下一页: Chpater 12 Physical Layer - Logical(Gen3)//物理层逻辑（Gen3）">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Chpater 12 Physical Layer - Logical(Gen3)//物理层逻辑（Gen3）
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022-2023 杰森
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "content.code.copy", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.tracking", "navigation.top", "navigation.path", "toc.follow", "toc.integrate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.aecac24b.min.js"></script>
+      
+    
+  </body>
+</html>
