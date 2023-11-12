@@ -9,6 +9,8 @@ nav:
 theme:
   name: material
   language: zh
+  font:
+    code: Roboto Mono
 
   palette:
 
