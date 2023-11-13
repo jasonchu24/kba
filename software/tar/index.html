@@ -1651,41 +1651,41 @@
   
 
 
-<h1 id="tar">tar 文件格式</h1>
+<h1 id="tar">tar 文件格式<a class="headerlink" href="#tar" title="Permanent link">&para;</a></h1>
 <p>推荐阅读：<a href="https://man.archlinux.org/man/tar.5.en">tar.5</a>。</p>
-<h2 id="ustar">ustar</h2>
+<h2 id="ustar">ustar<a class="headerlink" href="#ustar" title="Permanent link">&para;</a></h2>
 <p>tar 的文件格式比较简单，就是一系列的 File Entry，最后是两个 512 字节的全 0，表示结束。每个 File Entry 由头部和数据组成，头部的格式是：</p>
-<pre><code class="language-c">/* Source: https://www.gnu.org/software/tar/manual/html_node/Standard.html */
-/* tar Header Block, from POSIX 1003.1-1990.  */
+<div class="highlight"><pre><span></span><code><span class="cm">/* Source: https://www.gnu.org/software/tar/manual/html_node/Standard.html */</span>
+<span class="cm">/* tar Header Block, from POSIX 1003.1-1990.  */</span>
 
-/* POSIX header.  */
+<span class="cm">/* POSIX header.  */</span>
 
-struct posix_header
-{                              /* byte offset */
-  char name[100];               /*   0 */
-  char mode[8];                 /* 100 */
-  char uid[8];                  /* 108 */
-  char gid[8];                  /* 116 */
-  char size[12];                /* 124 */
-  char mtime[12];               /* 136 */
-  char chksum[8];               /* 148 */
-  char typeflag;                /* 156 */
-  char linkname[100];           /* 157 */
-  char magic[6];                /* 257 */
-  char version[2];              /* 263 */
-  char uname[32];               /* 265 */
-  char gname[32];               /* 297 */
-  char devmajor[8];             /* 329 */
-  char devminor[8];             /* 337 */
-  char prefix[155];             /* 345 */
-                                /* 500 */
-};
-</code></pre>
+<span class="k">struct</span><span class="w"> </span><span class="nc">posix_header</span>
+<span class="p">{</span><span class="w">                              </span><span class="cm">/* byte offset */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">name</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span><span class="w">               </span><span class="cm">/*   0 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">mode</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w">                 </span><span class="cm">/* 100 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">uid</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w">                  </span><span class="cm">/* 108 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">gid</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w">                  </span><span class="cm">/* 116 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">size</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span><span class="w">                </span><span class="cm">/* 124 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">mtime</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span><span class="w">               </span><span class="cm">/* 136 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">chksum</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w">               </span><span class="cm">/* 148 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">typeflag</span><span class="p">;</span><span class="w">                </span><span class="cm">/* 156 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">linkname</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span><span class="w">           </span><span class="cm">/* 157 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">magic</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span><span class="w">                </span><span class="cm">/* 257 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">version</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w">              </span><span class="cm">/* 263 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">uname</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">               </span><span class="cm">/* 265 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">gname</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w">               </span><span class="cm">/* 297 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">devmajor</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w">             </span><span class="cm">/* 329 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">devminor</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w">             </span><span class="cm">/* 337 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">prefix</span><span class="p">[</span><span class="mi">155</span><span class="p">];</span><span class="w">             </span><span class="cm">/* 345 */</span>
+<span class="w">                                </span><span class="cm">/* 500 */</span>
+<span class="p">};</span>
+</code></pre></div>
 <p>这个版本叫做 ustar 格式（Unix Standard TAR），在 POSIX.1-1988 标准中定义。所以 <code>magic</code> 字段的内容就是 <code>ustar</code>。</p>
 <p>可以看到，就是一系列的 char 数组，里面的很多数字字段，例如 <code>mode</code>，<code>uid</code> 和 <code>gid</code> 等，都是用 ASCII 码写的。由于头部需要对齐到 512 字节，所以实际上后面还有 12 字节的 padding。</p>
 <p>头部的 512 字节结束后，紧接着就是文件的内容，内容的大小在头部的 <code>size</code> 字段已经保存，把字符串当成 8 进制数转换，就可以得到文件长度。文件也要对齐到 512 字节，所以文件后面还有若干个 0 作为 padding。</p>
 <p>总结一下，tar 文件的格式就是：<code>(头部，数据)*结尾</code>。每一个部分都对齐到 512 字节。</p>
-<h2 id="pax">pax</h2>
+<h2 id="pax">pax<a class="headerlink" href="#pax" title="Permanent link">&para;</a></h2>
 <p>如果仔细观察，会发现上面的 <code>posix_header</code> 里面，<code>name</code> 字段只有 100 个字节，<code>prefix</code> 字段也只有 155 个字节，意味着如果文件路径特别长，那就放不下，只能截断了。为了解决这个问题，POSIX.1-2001 标准给 tar 引入了 PAX 扩展。</p>
 <p>具体来说，PAX 扩展以特殊的文件形式存在。例如要记录一个名字很长的文件 <code>'X'*101</code>，实际上 tar 中记录了两个文件：</p>
 <ol>
@@ -1693,50 +1693,50 @@ struct posix_header
 <li><code>'X'*100</code>：文件名被截断，其他不变</li>
 </ol>
 <p>这个 PaxHeader 在解压的时候，不会生成实际的文件。它的内容是一些键值对，例如：</p>
-<pre><code>123 path=XXXXXXXXXXXXXXXXX...
-</code></pre>
+<div class="highlight"><pre><span></span><code>123 path=XXXXXXXXXXXXXXXXX...
+</code></pre></div>
 <p>格式是：<code>length key=value\n</code>，然后可以有多个这样的键值对。这样就可以解决 <code>posix_header</code> 里名字长度限制的问题：只要在 PaxHeader 文件里，保存一个 key 为 path，value 为实际名字的信息。那么 tar 在看到 PaxHeader 的时候，记录下来，再遇到下一个文件的时候，就知道要用 PaxHeader 中的 path，而不是保存在 <code>posix_header</code> 中的 <code>name[100]</code>。</p>
 <p>类似地，PaxHeader 还可以存很多其他 <code>posix_header</code> 中没有的信息，例如 <code>atime</code>、<code>ctime</code> 和 <code>uid</code> 等等。完整列表可以参考 <a href="https://www.ibm.com/docs/en/zos/2.4.0?topic=descriptions-pax-interchange-portable-archives#r4paxsh__pxchk">Extended header keywords</a>。</p>
 <p>完整的 pax 扩展文档，可以参考 <a href="https://www.ibm.com/docs/en/zos/2.3.0?topic=SSLTBW_2.3.0%2Fcom.ibm.zos.v2r3.bpxa500%2Fbpxa50064.html">pax interchange format</a>。</p>
-<h2 id="_1">常用命令</h2>
+<h2 id="_1">常用命令<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <p>压缩：<code>tar cvzf archive.tar.gz &lt;sources&gt;</code></p>
 <p>解压：<code>tar xvf archive.tar.gz</code></p>
 <p>列出压缩包内容：<code>tar tvf archive.tar.gz</code></p>
-<h2 id="tar_1">其他 tar 格式</h2>
+<h2 id="tar_1">其他 tar 格式<a class="headerlink" href="#tar_1" title="Permanent link">&para;</a></h2>
 <p>除了上面的 ustar 和 pax 格式，还有更早期的 v7 tar 格式，取名 v7 是因为最早出现在 1979 年 Version 7 Unix 中。</p>
 <p>此外，GNU tar 也曾经自定义了 tar 格式，magic 从上面的 <code>ustar</code> 变成了 <code>ustar</code>（注意多了两个空格）：</p>
-<pre><code class="language-c">/* Source: https://www.gnu.org/software/tar/manual/html_node/Standard.html */
-/* The old GNU format header conflicts with POSIX format in such a way that
-   POSIX archives may fool old GNU tar's, and POSIX tar's might well be
-   fooled by old GNU tar archives.  An old GNU format header uses the space
-   used by the prefix field in a POSIX header, and cumulates information
-   normally found in a GNU extra header.  With an old GNU tar header, we
-   never see any POSIX header nor GNU extra header.  Supplementary sparse
-   headers are allowed, however.  */
+<div class="highlight"><pre><span></span><code><span class="cm">/* Source: https://www.gnu.org/software/tar/manual/html_node/Standard.html */</span>
+<span class="cm">/* The old GNU format header conflicts with POSIX format in such a way that</span>
+<span class="cm">   POSIX archives may fool old GNU tar&#39;s, and POSIX tar&#39;s might well be</span>
+<span class="cm">   fooled by old GNU tar archives.  An old GNU format header uses the space</span>
+<span class="cm">   used by the prefix field in a POSIX header, and cumulates information</span>
+<span class="cm">   normally found in a GNU extra header.  With an old GNU tar header, we</span>
+<span class="cm">   never see any POSIX header nor GNU extra header.  Supplementary sparse</span>
+<span class="cm">   headers are allowed, however.  */</span>
 
-struct oldgnu_header
-{                              /* byte offset */
-  char unused_pad1[345];        /*   0 */
-  char atime[12];               /* 345 Incr. archive: atime of the file */
-  char ctime[12];               /* 357 Incr. archive: ctime of the file */
-  char offset[12];              /* 369 Multivolume archive: the offset of
-                                   the start of this volume */
-  char longnames[4];            /* 381 Not used */
-  char unused_pad2;             /* 385 */
-  struct sparse sp[SPARSES_IN_OLDGNU_HEADER];
-                                /* 386 */
-  char isextended;              /* 482 Sparse file: Extension sparse header
-                                   follows */
-  char realsize[12];            /* 483 Sparse file: Real size*/
-                                /* 495 */
-};
+<span class="k">struct</span><span class="w"> </span><span class="nc">oldgnu_header</span>
+<span class="p">{</span><span class="w">                              </span><span class="cm">/* byte offset */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">unused_pad1</span><span class="p">[</span><span class="mi">345</span><span class="p">];</span><span class="w">        </span><span class="cm">/*   0 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">atime</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span><span class="w">               </span><span class="cm">/* 345 Incr. archive: atime of the file */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">ctime</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span><span class="w">               </span><span class="cm">/* 357 Incr. archive: ctime of the file */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">offset</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span><span class="w">              </span><span class="cm">/* 369 Multivolume archive: the offset of</span>
+<span class="cm">                                   the start of this volume */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">longnames</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span><span class="w">            </span><span class="cm">/* 381 Not used */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">unused_pad2</span><span class="p">;</span><span class="w">             </span><span class="cm">/* 385 */</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">sparse</span><span class="w"> </span><span class="n">sp</span><span class="p">[</span><span class="n">SPARSES_IN_OLDGNU_HEADER</span><span class="p">];</span>
+<span class="w">                                </span><span class="cm">/* 386 */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">isextended</span><span class="p">;</span><span class="w">              </span><span class="cm">/* 482 Sparse file: Extension sparse header</span>
+<span class="cm">                                   follows */</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">realsize</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span><span class="w">            </span><span class="cm">/* 483 Sparse file: Real size*/</span>
+<span class="w">                                </span><span class="cm">/* 495 */</span>
+<span class="p">};</span>
 
-/* OLDGNU_MAGIC uses both magic and version fields, which are contiguous.
-   Found in an archive, it indicates an old GNU header format, which will be
-   hopefully become obsolescent.  With OLDGNU_MAGIC, uname and gname are
-   valid, though the header is not truly POSIX conforming.  */
-#define OLDGNU_MAGIC &quot;ustar  &quot;  /* 7 chars and a null */
-</code></pre>
+<span class="cm">/* OLDGNU_MAGIC uses both magic and version fields, which are contiguous.</span>
+<span class="cm">   Found in an archive, it indicates an old GNU header format, which will be</span>
+<span class="cm">   hopefully become obsolescent.  With OLDGNU_MAGIC, uname and gname are</span>
+<span class="cm">   valid, though the header is not truly POSIX conforming.  */</span>
+<span class="cp">#define OLDGNU_MAGIC &quot;ustar  &quot;  </span><span class="cm">/* 7 chars and a null */</span>
+</code></pre></div>
 <p>以及 schily tar，简称 star。虽然历史上出现了不兼容的 tar 格式，目前基本统一到了 pax 格式上。</p>
 
 

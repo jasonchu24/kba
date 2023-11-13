@@ -1678,54 +1678,53 @@
   
 
 
-<h1 id="gcc-internals">GCC Internals</h1>
+<h1 id="gcc-internals">GCC Internals<a class="headerlink" href="#gcc-internals" title="Permanent link">&para;</a></h1>
 <p>本文是对 <a href="https://gcc.gnu.org/onlinedocs/gccint.pdf">GNU Compiler Collection Internals</a> 文档的整理和总结。文章引用了部分 GCC 源码。</p>
-<h2 id="rtl">RTL</h2>
-<h3 id="rtl_1">查看 RTL</h3>
+<h2 id="rtl">RTL<a class="headerlink" href="#rtl" title="Permanent link">&para;</a></h2>
+<h3 id="rtl_1">查看 RTL<a class="headerlink" href="#rtl_1" title="Permanent link">&para;</a></h3>
 <p>GCC 的 RTL 是采用 Lisp 语言描述的低层次的中间语言，是转换为机器指令前的最后一个表示。在生成汇编的时候，添加参数 <code>-dP</code> 就可以看到最后的 RTL 和汇编的对应关系：</p>
-<pre><code class="language-asm">#(insn 13 8 14 (set (reg/i:DI 10 a0)
-#        (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])
-#                (reg:SI 11 a1 [78])))) &quot;kb.c&quot;:3:1 21 {*mulsi3_extended}
-#     (expr_list:REG_DEAD (reg:SI 11 a1 [78])
-#        (nil)))
-        mulw    a0,a0,a1        # 13    [c=20 l=4]  *mulsi3_extended
-#(jump_insn 21 20 22 (simple_return) &quot;kb.c&quot;:3:1 246 {simple_return}
-#     (nil)
-# -&gt; simple_return)
-        ret             # 21    [c=0 l=4]  simple_return
-
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1">#(insn 13 8 14 (set (reg/i:DI 10 a0)</span>
+<span class="c1">#        (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])</span>
+<span class="c1">#                (reg:SI 11 a1 [78])))) &quot;kb.c&quot;:3:1 21 {*mulsi3_extended}</span>
+<span class="c1">#     (expr_list:REG_DEAD (reg:SI 11 a1 [78])</span>
+<span class="c1">#        (nil)))</span>
+<span class="w">        </span><span class="nf">mulw</span><span class="w">    </span><span class="no">a0</span><span class="p">,</span><span class="no">a0</span><span class="p">,</span><span class="no">a1</span><span class="w">        </span><span class="c1"># 13    [c=20 l=4]  *mulsi3_extended</span>
+<span class="c1">#(jump_insn 21 20 22 (simple_return) &quot;kb.c&quot;:3:1 246 {simple_return}</span>
+<span class="c1">#     (nil)</span>
+<span class="c1"># -&gt; simple_return)</span>
+<span class="w">        </span><span class="nf">ret</span><span class="w">             </span><span class="c1"># 21    [c=0 l=4]  simple_return</span>
+</code></pre></div>
 <p>如果想要 dump 出每个 RTL pass 后的结果，可以添加参数：<code>-fdump-rtl-all</code>，可以看到形如下面的 RTL 代码：</p>
-<pre><code class="language-lisp">;; Function mul (mul, funcdef_no=0, decl_uid=1488, cgraph_uid=1, symbol_order=0)
+<div class="highlight"><pre><span></span><code><span class="c1">;; Function mul (mul, funcdef_no=0, decl_uid=1488, cgraph_uid=1, symbol_order=0)</span>
 
-(note 1 0 5 NOTE_INSN_DELETED)
-(note 5 1 19 [bb 2] NOTE_INSN_BASIC_BLOCK)
-(note 19 5 2 NOTE_INSN_PROLOGUE_END)
-(note 2 19 3 NOTE_INSN_DELETED)
-(note 3 2 4 NOTE_INSN_DELETED)
-(note 4 3 7 NOTE_INSN_FUNCTION_BEG)
-(note 7 4 8 NOTE_INSN_DELETED)
-(note 8 7 13 NOTE_INSN_DELETED)
-(insn 13 8 14 (set (reg/i:DI 10 a0)
-        (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])
-                (reg:SI 11 a1 [78])))) &quot;kb.c&quot;:3:1 21 {*mulsi3_extended}
-     (expr_list:REG_DEAD (reg:SI 11 a1 [78])
-        (nil)))
-(insn 14 13 20 (use (reg/i:DI 10 a0)) &quot;kb.c&quot;:3:1 -1
-     (nil))
-(note 20 14 21 NOTE_INSN_EPILOGUE_BEG)
-(jump_insn 21 20 22 (simple_return) &quot;kb.c&quot;:3:1 246 {simple_return}
-     (nil)
- -&gt; simple_return)
-(barrier 22 21 18)
-(note 18 22 0 NOTE_INSN_DELETED)
-</code></pre>
-<h3 id="rtl_2">阅读 RTL</h3>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="nv">NOTE_INSN_DELETED</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">19</span><span class="w"> </span><span class="nv">[bb</span><span class="w"> </span><span class="nv">2]</span><span class="w"> </span><span class="nv">NOTE_INSN_BASIC_BLOCK</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">19</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nv">NOTE_INSN_PROLOGUE_END</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">19</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="nv">NOTE_INSN_DELETED</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="nv">NOTE_INSN_DELETED</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="nv">NOTE_INSN_FUNCTION_BEG</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="nv">NOTE_INSN_DELETED</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="nv">NOTE_INSN_DELETED</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">insn</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="mi">14</span><span class="w"> </span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="nv">reg/i:DI</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="nv">a0</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">sign_extend:DI</span><span class="w"> </span><span class="p">(</span><span class="nv">mult:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="nv">a0</span><span class="w"> </span><span class="nv">[77]</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="nv">a1</span><span class="w"> </span><span class="nv">[78]</span><span class="p">))))</span><span class="w"> </span><span class="s">&quot;kb.c&quot;</span><span class="ss">:3:1</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="nv">{*mulsi3_extended}</span>
+<span class="w">     </span><span class="p">(</span><span class="nv">expr_list:REG_DEAD</span><span class="w"> </span><span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="nv">a1</span><span class="w"> </span><span class="nv">[78]</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="no">nil</span><span class="p">)))</span>
+<span class="p">(</span><span class="nv">insn</span><span class="w"> </span><span class="mi">14</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="p">(</span><span class="nv">use</span><span class="w"> </span><span class="p">(</span><span class="nv">reg/i:DI</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="nv">a0</span><span class="p">))</span><span class="w"> </span><span class="s">&quot;kb.c&quot;</span><span class="ss">:3:1</span><span class="w"> </span><span class="mi">-1</span>
+<span class="w">     </span><span class="p">(</span><span class="no">nil</span><span class="p">))</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="mi">14</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="nv">NOTE_INSN_EPILOGUE_BEG</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">jump_insn</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="p">(</span><span class="nv">simple_return</span><span class="p">)</span><span class="w"> </span><span class="s">&quot;kb.c&quot;</span><span class="ss">:3:1</span><span class="w"> </span><span class="mi">246</span><span class="w"> </span><span class="nv">{simple_return}</span>
+<span class="w">     </span><span class="p">(</span><span class="no">nil</span><span class="p">)</span>
+<span class="w"> </span><span class="nv">-&gt;</span><span class="w"> </span><span class="nv">simple_return</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">barrier</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="mi">18</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">note</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nv">NOTE_INSN_DELETED</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="rtl_2">阅读 RTL<a class="headerlink" href="#rtl_2" title="Permanent link">&para;</a></h3>
 <p>可以看到 RTL 是一系列的 S-exp，每个 S-exp 的前三个整数参数分别是 id，prev 和 next，表示一个双向链表。核心是要看 (insn) 的第四个参数，例如：</p>
-<pre><code class="language-lisp">(set (reg/i:DI 10 a0)
-        (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])
-                (reg:SI 11 a1 [78]))))
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="nv">reg/i:DI</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="nv">a0</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">sign_extend:DI</span><span class="w"> </span><span class="p">(</span><span class="nv">mult:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="nv">a0</span><span class="w"> </span><span class="nv">[77]</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="nv">a1</span><span class="w"> </span><span class="nv">[78]</span><span class="p">))))</span>
+</code></pre></div>
 <p>表示这个指令的作用是，把 int32 类型的 a0 寄存器的值乘以 int32 类型的 a1 寄存器的值，结果符号扩展到 int64，写入到 a0 寄存器中。其中表示类型的是 DI/SI，下面是一个简单的名字和位数的对应关系：</p>
 <ul>
 <li>整数：B(Bit)I=1, Q(Quarter)I=8, H(Half)I=16, S(Single)I=32, D(Double)I=64, T(Tetra)I=128</li>
@@ -1736,242 +1735,242 @@
 </ul>
 <p>稍微和习惯不同的是 Q 表示 Quarter 而不是 Quad。</p>
 <p>寄存器的表示方式是 <code>(reg:m n)</code>：</p>
-<pre><code class="language-lisp">(reg/i:DI 10 a0)
-(reg:SI 10 a0 [77])
-(reg:SI 11 a1 [78])
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">reg/i:DI</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="nv">a0</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="nv">a0</span><span class="w"> </span><span class="nv">[77]</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="nv">a1</span><span class="w"> </span><span class="nv">[78]</span><span class="p">)</span>
+</code></pre></div>
 <p>这里的 DI/SI 就是类型，10/11 是寄存器编号，后面的 a0/a1 是寄存器 10/11 在 RISC-V 架构里的 ABI 名称。<code>/i</code> 表示这个寄存器会保存函数的返回值（<code>REG_FUNCTION_VALUE_P(x)</code>）。</p>
-<h3 id="_1">指令模板</h3>
+<h3 id="_1">指令模板<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
 <p>同一行最后还有一个 <code>{*mulsi3_extended}</code>，这表示的是这一个 insn 对应了哪一个规则，这可以在 <a href="https://github.com/gcc-mirror/gcc/blob/63663e4e69527b308687c63bacb0cc038b386593/gcc/config/riscv/riscv.md#L1048-L1056">riscv.md</a> 中找到：</p>
-<pre><code class="language-lisp">(define_insn &quot;mulsi3_extended&quot;
-  [(set (match_operand:DI              0 &quot;register_operand&quot; &quot;=r&quot;)
-    (sign_extend:DI
-        (mult:SI (match_operand:SI 1 &quot;register_operand&quot; &quot; r&quot;)
-             (match_operand:SI 2 &quot;register_operand&quot; &quot; r&quot;))))]
-  &quot;(TARGET_ZMMUL || TARGET_MUL) &amp;&amp; TARGET_64BIT&quot;
-  &quot;mulw\t%0,%1,%2&quot;
-  [(set_attr &quot;type&quot; &quot;imul&quot;)
-   (set_attr &quot;mode&quot; &quot;SI&quot;)])
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">define_insn</span><span class="w"> </span><span class="s">&quot;mulsi3_extended&quot;</span>
+<span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="nv">match_operand:DI</span><span class="w">              </span><span class="mi">0</span><span class="w"> </span><span class="s">&quot;register_operand&quot;</span><span class="w"> </span><span class="s">&quot;=r&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">sign_extend:DI</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">mult:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">match_operand:SI</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="s">&quot;register_operand&quot;</span><span class="w"> </span><span class="s">&quot; r&quot;</span><span class="p">)</span>
+<span class="w">             </span><span class="p">(</span><span class="nv">match_operand:SI</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="s">&quot;register_operand&quot;</span><span class="w"> </span><span class="s">&quot; r&quot;</span><span class="p">))))</span><span class="nv">]</span>
+<span class="w">  </span><span class="s">&quot;(TARGET_ZMMUL || TARGET_MUL) &amp;&amp; TARGET_64BIT&quot;</span>
+<span class="w">  </span><span class="s">&quot;mulw\t%0,%1,%2&quot;</span>
+<span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nv">set_attr</span><span class="w"> </span><span class="s">&quot;type&quot;</span><span class="w"> </span><span class="s">&quot;imul&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="nv">set_attr</span><span class="w"> </span><span class="s">&quot;mode&quot;</span><span class="w"> </span><span class="s">&quot;SI&quot;</span><span class="p">)</span><span class="nv">]</span><span class="p">)</span>
+</code></pre></div>
 <p>这表示一个模式匹配的规则，构成了从 RTL 到指令的映射关系。模式匹配的部分是：</p>
-<pre><code>  [(set (match_operand:DI              0 &quot;register_operand&quot; &quot;=r&quot;)
+<div class="highlight"><pre><span></span><code>  [(set (match_operand:DI              0 &quot;register_operand&quot; &quot;=r&quot;)
     (sign_extend:DI
         (mult:SI (match_operand:SI 1 &quot;register_operand&quot; &quot; r&quot;)
              (match_operand:SI 2 &quot;register_operand&quot; &quot; r&quot;))))]
-</code></pre>
+</code></pre></div>
 <p>意思是可以匹配两个操作数，这两个操作数应当是寄存器操作数（<code>register_operand</code>，<code>r</code> 表示通用寄存器），类型是 int32（<code>:SI</code>），操作数乘法后符号扩展到 int64（<code>:DI</code>），最后写入一个寄存器的目的操作数（<code>register_operand</code>，类型是 int64 <code>:DI</code>，保存在通用寄存器 <code>r</code>，<code>=</code> 表示写入，旧数据丢弃）。满足这些要求，就匹配上了 <code>mulsi3_extended</code>。</p>
 <p>下一行：</p>
-<pre><code class="language-lisp">  &quot;(TARGET_ZMMUL || TARGET_MUL) &amp;&amp; TARGET_64BIT&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="s">&quot;(TARGET_ZMMUL || TARGET_MUL) &amp;&amp; TARGET_64BIT&quot;</span>
+</code></pre></div>
 <p>指的是额外的条件，用 C 代码编写。比如这里要用到 mulw 指令，但是如果当前的 target 不支持这个指令，那就不要生成 mulw 指令，所以这里就要制定限制条件：实现了乘法，并且是 64 位。</p>
 <p>再下一行就是输出的指令：</p>
-<pre><code class="language-lisp">  &quot;mulw\t%0,%1,%2&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="s">&quot;mulw\t%0,%1,%2&quot;</span>
+</code></pre></div>
 <p>这里的 <code>%0</code> <code>%1</code> <code>%2</code> 就会替换为前面匹配得到的操作数，注意前面 <code>match_operand</code> 后的整数，这就是对应的编号。可以看到这里和 GCC 内联汇编的语法特别相似，包括前面 <code>match_operand</code> 的最后一个参数：<code>=r</code> 和 <code>r</code>，其实和内联汇编里对操作数的 specifier 也是非常像的。</p>
-<pre><code class="language-lisp">  [(set_attr &quot;type&quot; &quot;imul&quot;)
-   (set_attr &quot;mode&quot; &quot;SI&quot;)])
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nv">set_attr</span><span class="w"> </span><span class="s">&quot;type&quot;</span><span class="w"> </span><span class="s">&quot;imul&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="nv">set_attr</span><span class="w"> </span><span class="s">&quot;mode&quot;</span><span class="w"> </span><span class="s">&quot;SI&quot;</span><span class="p">)</span><span class="nv">]</span><span class="p">)</span>
+</code></pre></div>
 <p>最后是一些额外的属性，这个是用来给运算标记类型的，例如要针对处理器流水线进行优化，那就需要知道每个指令会被分到哪个流水线里面。</p>
 <p>完整的格式如下：</p>
-<pre><code class="language-lisp">(define_insn
-  [insn-pattern]
-  &quot;condition&quot;
-  &quot;output-template&quot;
-  [insn-attribute])
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">define_insn</span>
+<span class="w">  </span><span class="nv">[insn-pattern]</span>
+<span class="w">  </span><span class="s">&quot;condition&quot;</span>
+<span class="w">  </span><span class="s">&quot;output-template&quot;</span>
+<span class="w">  </span><span class="nv">[insn-attribute]</span><span class="p">)</span>
+</code></pre></div>
 <p>忽略了可选的命名。</p>
-<h3 id="_2">例子回顾</h3>
+<h3 id="_2">例子回顾<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
 <p>回顾一下开头的例子：</p>
-<pre><code class="language-asm">#(insn 13 8 14 (set (reg/i:DI 10 a0)
-#        (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])
-#                (reg:SI 11 a1 [78])))) &quot;kb.c&quot;:3:1 21 {*mulsi3_extended}
-#     (expr_list:REG_DEAD (reg:SI 11 a1 [78])
-#        (nil)))
-        mulw    a0,a0,a1        # 13    [c=20 l=4]  *mulsi3_extended
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1">#(insn 13 8 14 (set (reg/i:DI 10 a0)</span>
+<span class="c1">#        (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])</span>
+<span class="c1">#                (reg:SI 11 a1 [78])))) &quot;kb.c&quot;:3:1 21 {*mulsi3_extended}</span>
+<span class="c1">#     (expr_list:REG_DEAD (reg:SI 11 a1 [78])</span>
+<span class="c1">#        (nil)))</span>
+<span class="w">        </span><span class="nf">mulw</span><span class="w">    </span><span class="no">a0</span><span class="p">,</span><span class="no">a0</span><span class="p">,</span><span class="no">a1</span><span class="w">        </span><span class="c1"># 13    [c=20 l=4]  *mulsi3_extended</span>
+</code></pre></div>
 <p>这一个 insn 与 mulsi3_extended 相匹配，操作数 0 匹配到了 <code>(reg/i:DI 10 a0)</code>，操作数 1 匹配到了 <code>(reg:SI 10 a0 [77])</code>，操作数 2 匹配到了 <code>(reg:SI 11 a1 [78])</code>，所以最后生成指令的时候，把对应的寄存器名字填进去，就得到了 <code>mulw a0,a0,a1</code>。</p>
 <p>有时候，比较复杂的指令会在 C 代码中生成，例如 <code>simple_return</code>：</p>
-<pre><code class="language-lisp">(define_insn &quot;simple_return&quot;
-  [(simple_return)]
-  &quot;&quot;
-{
-  return riscv_output_return ();
-}
-  [(set_attr &quot;type&quot; &quot;jump&quot;)
-   (set_attr &quot;mode&quot; &quot;none&quot;)])
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">define_insn</span><span class="w"> </span><span class="s">&quot;simple_return&quot;</span>
+<span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nv">simple_return</span><span class="p">)</span><span class="nv">]</span>
+<span class="w">  </span><span class="s">&quot;&quot;</span>
+<span class="nv">{</span>
+<span class="w">  </span><span class="nb">return</span><span class="w"> </span><span class="nv">riscv_output_return</span><span class="w"> </span><span class="p">()</span><span class="c1">;</span>
+<span class="nv">}</span>
+<span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nv">set_attr</span><span class="w"> </span><span class="s">&quot;type&quot;</span><span class="w"> </span><span class="s">&quot;jump&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="nv">set_attr</span><span class="w"> </span><span class="s">&quot;mode&quot;</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="p">)</span><span class="nv">]</span><span class="p">)</span>
+</code></pre></div>
 <p>那么匹配以后，会调用 <code>riscv_output_return</code> 函数：</p>
-<pre><code class="language-c">const char *
-riscv_output_return ()
-{
-  if (cfun-&gt;machine-&gt;naked_p)
-    return &quot;&quot;;
+<div class="highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">riscv_output_return</span><span class="w"> </span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cfun</span><span class="o">-&gt;</span><span class="n">machine</span><span class="o">-&gt;</span><span class="n">naked_p</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
 
-  return &quot;ret&quot;;
-}
-</code></pre>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;ret&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>实现也很简单，除了 naked 函数以外，都是一条 ret 指令。</p>
-<h3 id="_3">原理探究</h3>
+<h3 id="_3">原理探究<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>具体地，在 <code>riscv.md</code> 中写模式匹配的时候：</p>
-<pre><code class="language-lisp">  [(set (match_operand:DI              0 &quot;register_operand&quot; &quot;=r&quot;)
-    (sign_extend:DI
-        (mult:SI (match_operand:SI 1 &quot;register_operand&quot; &quot; r&quot;)
-             (match_operand:SI 2 &quot;register_operand&quot; &quot; r&quot;))))]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="nv">match_operand:DI</span><span class="w">              </span><span class="mi">0</span><span class="w"> </span><span class="s">&quot;register_operand&quot;</span><span class="w"> </span><span class="s">&quot;=r&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">sign_extend:DI</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">mult:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">match_operand:SI</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="s">&quot;register_operand&quot;</span><span class="w"> </span><span class="s">&quot; r&quot;</span><span class="p">)</span>
+<span class="w">             </span><span class="p">(</span><span class="nv">match_operand:SI</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="s">&quot;register_operand&quot;</span><span class="w"> </span><span class="s">&quot; r&quot;</span><span class="p">))))</span><span class="nv">]</span>
+</code></pre></div>
 <p>会在 <code>gcc/insn-recog.cc</code> 生成如下的代码：</p>
-<pre><code class="language-c">// x1 = (set (reg/i:DI 10 a0)
-//           (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])
-//                   (reg:SI 11 a1 [78]))))
-static int
-recog_7 (rtx x1 ATTRIBUTE_UNUSED,
-    rtx_insn *insn ATTRIBUTE_UNUSED,
-    int *pnum_clobbers ATTRIBUTE_UNUSED)
-{
-  rtx * const operands ATTRIBUTE_UNUSED = &amp;recog_data.operand[0];
-  rtx x2, x3, x4, x5, x6;
-  int res ATTRIBUTE_UNUSED;
-  // x2 = (reg/i:DI 10 a0)
-  x2 = XEXP (x1, 0);
-  // operands[0] = (reg/i:DI 10 a0)
-  operands[0] = x2;
-  // x3 = (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])
-  //                      (reg:SI 11 a1 [78])))
-  x3 = XEXP (x1, 1);
-  // x4 = (mult:SI (reg:SI 10 a0 [77])
-  //               (reg:SI 11 a1 [78]))
-  x4 = XEXP (x3, 0);
-  switch (GET_CODE (x4))
-    {
-    case MULT:
-      if (pattern14 (x3, E_SImode) != 0
-          || !
-#line 869 &quot;/home/jiegec/ct-ng/.build/riscv64-unknown-linux-gnu/src/gcc/gcc/config/riscv/riscv.md&quot;
-(TARGET_MUL &amp;&amp; TARGET_64BIT))
-        return -1;
-      return 21; /* *mulsi3_extended */
-    }
-}
-</code></pre>
-<pre><code class="language-c">// x1 = (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])
-//                      (reg:SI 11 a1 [78])))
-static int
-pattern14 (rtx x1, machine_mode i1)
-{
-  rtx * const operands ATTRIBUTE_UNUSED = &amp;recog_data.operand[0];
-  rtx x2, x3, x4;
-  int res ATTRIBUTE_UNUSED;
-  // x2 = (mult:SI (reg:SI 10 a0 [77])
-  //               (reg:SI 11 a1 [78]))
-  // operands[0] = (reg/i:DI 10 a0)
-  x2 = XEXP (x1, 0);
-  if (GET_MODE (x2) != E_SImode
-      || !register_operand (operands[0], E_DImode)
-      || GET_MODE (x1) != E_DImode)
-    return -1;
-  // x3 = (reg:SI 10 a0 [77])
-  x3 = XEXP (x2, 0);
-  // operands[1] = (reg:SI 10 a0 [77])
-  operands[1] = x3;
-  if (!register_operand (operands[1], E_SImode))
-    return -1;
-  // x4 = (reg:SI 11 a1 [78])
-  x4 = XEXP (x2, 1);
-  // operands[2] = (reg:SI 11 a1 [78])
-  operands[2] = x4;
-  if (!register_operand (operands[2], i1))
-    return -1;
-  return 0;
-}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1">// x1 = (set (reg/i:DI 10 a0)</span>
+<span class="c1">//           (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])</span>
+<span class="c1">//                   (reg:SI 11 a1 [78]))))</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span>
+<span class="nf">recog_7</span><span class="w"> </span><span class="p">(</span><span class="n">rtx</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="n">ATTRIBUTE_UNUSED</span><span class="p">,</span>
+<span class="w">    </span><span class="n">rtx_insn</span><span class="w"> </span><span class="o">*</span><span class="n">insn</span><span class="w"> </span><span class="n">ATTRIBUTE_UNUSED</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">pnum_clobbers</span><span class="w"> </span><span class="n">ATTRIBUTE_UNUSED</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">rtx</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">operands</span><span class="w"> </span><span class="n">ATTRIBUTE_UNUSED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">recog_data</span><span class="p">.</span><span class="n">operand</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">  </span><span class="n">rtx</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">x3</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">,</span><span class="w"> </span><span class="n">x5</span><span class="p">,</span><span class="w"> </span><span class="n">x6</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="n">ATTRIBUTE_UNUSED</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// x2 = (reg/i:DI 10 a0)</span>
+<span class="w">  </span><span class="n">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XEXP</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// operands[0] = (reg/i:DI 10 a0)</span>
+<span class="w">  </span><span class="n">operands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x2</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// x3 = (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])</span>
+<span class="w">  </span><span class="c1">//                      (reg:SI 11 a1 [78])))</span>
+<span class="w">  </span><span class="n">x3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XEXP</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// x4 = (mult:SI (reg:SI 10 a0 [77])</span>
+<span class="w">  </span><span class="c1">//               (reg:SI 11 a1 [78]))</span>
+<span class="w">  </span><span class="n">x4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XEXP</span><span class="w"> </span><span class="p">(</span><span class="n">x3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">GET_CODE</span><span class="w"> </span><span class="p">(</span><span class="n">x4</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MULT</span><span class="p">:</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pattern14</span><span class="w"> </span><span class="p">(</span><span class="n">x3</span><span class="p">,</span><span class="w"> </span><span class="n">E_SImode</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">          </span><span class="o">||</span><span class="w"> </span><span class="o">!</span>
+<span class="cp">#line 869 &quot;/home/jiegec/ct-ng/.build/riscv64-unknown-linux-gnu/src/gcc/gcc/config/riscv/riscv.md&quot;</span>
+<span class="p">(</span><span class="n">TARGET_MUL</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">TARGET_64BIT</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="mi">21</span><span class="p">;</span><span class="w"> </span><span class="cm">/* *mulsi3_extended */</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">// x1 = (sign_extend:DI (mult:SI (reg:SI 10 a0 [77])</span>
+<span class="c1">//                      (reg:SI 11 a1 [78])))</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span>
+<span class="nf">pattern14</span><span class="w"> </span><span class="p">(</span><span class="n">rtx</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">machine_mode</span><span class="w"> </span><span class="n">i1</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">rtx</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">operands</span><span class="w"> </span><span class="n">ATTRIBUTE_UNUSED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">recog_data</span><span class="p">.</span><span class="n">operand</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">  </span><span class="n">rtx</span><span class="w"> </span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="n">x3</span><span class="p">,</span><span class="w"> </span><span class="n">x4</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="n">ATTRIBUTE_UNUSED</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// x2 = (mult:SI (reg:SI 10 a0 [77])</span>
+<span class="w">  </span><span class="c1">//               (reg:SI 11 a1 [78]))</span>
+<span class="w">  </span><span class="c1">// operands[0] = (reg/i:DI 10 a0)</span>
+<span class="w">  </span><span class="n">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XEXP</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GET_MODE</span><span class="w"> </span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">E_SImode</span>
+<span class="w">      </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">register_operand</span><span class="w"> </span><span class="p">(</span><span class="n">operands</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">E_DImode</span><span class="p">)</span>
+<span class="w">      </span><span class="o">||</span><span class="w"> </span><span class="n">GET_MODE</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">E_DImode</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// x3 = (reg:SI 10 a0 [77])</span>
+<span class="w">  </span><span class="n">x3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XEXP</span><span class="w"> </span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// operands[1] = (reg:SI 10 a0 [77])</span>
+<span class="w">  </span><span class="n">operands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x3</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">register_operand</span><span class="w"> </span><span class="p">(</span><span class="n">operands</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">E_SImode</span><span class="p">))</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// x4 = (reg:SI 11 a1 [78])</span>
+<span class="w">  </span><span class="n">x4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XEXP</span><span class="w"> </span><span class="p">(</span><span class="n">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// operands[2] = (reg:SI 11 a1 [78])</span>
+<span class="w">  </span><span class="n">operands</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x4</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">register_operand</span><span class="w"> </span><span class="p">(</span><span class="n">operands</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">i1</span><span class="p">))</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>代码中用注释标注了每一步匹配的内容，可见代码在匹配的同时，也把操作数保存了下来。</p>
-<h3 id="_4">指令拆分</h3>
+<h3 id="_4">指令拆分<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <p>有些时候，RTL 层次上的指令可能对应多条实际的机器指令。例如在 32 位 target 上，拷贝一个 64 位整数，这意味着需要把一个 DI 类型的 move，拆成两个 SI 类型的 move，分别处理高位和低位。下面来看一个 rv32 的例子：</p>
-<pre><code class="language-lisp">;; 64-bit modes for which we provide move patterns.
-(define_mode_iterator MOVE64 [DI DF])
+<div class="highlight"><pre><span></span><code><span class="c1">;; 64-bit modes for which we provide move patterns.</span>
+<span class="p">(</span><span class="nv">define_mode_iterator</span><span class="w"> </span><span class="nv">MOVE64</span><span class="w"> </span><span class="nv">[DI</span><span class="w"> </span><span class="nv">DF]</span><span class="p">)</span>
 
-(define_split
-  [(set (match_operand:MOVE64 0 &quot;nonimmediate_operand&quot;)
-    (match_operand:MOVE64 1 &quot;move_operand&quot;))]
-  &quot;reload_completed
-   &amp;&amp; riscv_split_64bit_move_p (operands[0], operands[1])&quot;
-  [(const_int 0)]
-{
-  riscv_split_doubleword_move (operands[0], operands[1]);
-  DONE;
-})
-</code></pre>
+<span class="p">(</span><span class="nv">define_split</span>
+<span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="nv">match_operand:MOVE64</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="s">&quot;nonimmediate_operand&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">match_operand:MOVE64</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="s">&quot;move_operand&quot;</span><span class="p">))</span><span class="nv">]</span>
+<span class="w">  </span><span class="s">&quot;reload_completed</span>
+<span class="s">   &amp;&amp; riscv_split_64bit_move_p (operands[0], operands[1])&quot;</span>
+<span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nv">const_int</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="nv">]</span>
+<span class="nv">{</span>
+<span class="w">  </span><span class="nv">riscv_split_doubleword_move</span><span class="w"> </span><span class="p">(</span><span class="nv">operands[0],</span><span class="w"> </span><span class="nv">operands[1]</span><span class="p">)</span><span class="c1">;</span>
+<span class="w">  </span><span class="nv">DONE</span><span class="c1">;</span>
+<span class="nv">}</span><span class="p">)</span>
+</code></pre></div>
 <p>可以看到，它会尝试匹配从一个 64 位整数（DI）或浮点数（DF）到另一个 64 位整数（DI）或浮点数（DF）的 set，也就是 move 操作。匹配上以后，判断条件：</p>
-<pre><code class="language-c">  &quot;reload_completed
-   &amp;&amp; riscv_split_64bit_move_p (operands[0], operands[1])&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="s">&quot;reload_completed</span>
+<span class="w">   </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">riscv_split_64bit_move_p</span><span class="w"> </span><span class="p">(</span><span class="n">operands</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">operands</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="s">&quot;</span>
+</code></pre></div>
 <p>是否成立。这里 <code>reload_completed == true</code> 表示已经完成寄存器分配。</p>
 <p>如果成立，就认为可以拆分 64 位的 move 为两个 32 位的 move，就生成下列 RTL：</p>
-<pre><code class="language-lisp">  [(const_int 0)]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nv">[</span><span class="p">(</span><span class="nv">const_int</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="nv">]</span>
+</code></pre></div>
 <p>但是实际上不会生成这个，而是调用后面的代码来生成新的 RTL 代码：</p>
-<pre><code class="language-c">{
-  riscv_split_doubleword_move (operands[0], operands[1]);
-  DONE;
-})
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="n">riscv_split_doubleword_move</span><span class="w"> </span><span class="p">(</span><span class="n">operands</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">operands</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="w">  </span><span class="n">DONE</span><span class="p">;</span>
+<span class="p">})</span>
+</code></pre></div>
 <p>完整的 <code>define_split</code> 定义如下：</p>
-<pre><code class="language-lisp">(define-split
-  [insn-pattern]
-  &quot;condition&quot;
-  [new-insn-pattern-1
-   new-insn-pattern-2
-   ...]
-  &quot;preparation-statements&quot;)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">define-split</span>
+<span class="w">  </span><span class="nv">[insn-pattern]</span>
+<span class="w">  </span><span class="s">&quot;condition&quot;</span>
+<span class="w">  </span><span class="nv">[new-insn-pattern-1</span>
+<span class="w">   </span><span class="nv">new-insn-pattern-2</span>
+<span class="w">   </span><span class="o">...</span><span class="nv">]</span>
+<span class="w">  </span><span class="s">&quot;preparation-statements&quot;</span><span class="p">)</span>
+</code></pre></div>
 <p>忽略了可选的命名。</p>
 <p>下面来看一个具体的例子，这一段是在 split 之前的 RTL 代码：</p>
-<pre><code class="language-lisp">(insn 6 3 13 (set (reg:DI 14 a4 [orig:72 _2 ] [72])
-        (mem/c:DI (plus:SI (reg/f:SI 8 s0)
-                (const_int -24 [0xffffffffffffffe8])) [1 a+0 S8 A64])) &quot;kb.c&quot;:1:38 134 {*movdi_32bit}
-     (nil))
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">insn</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="nv">reg:DI</span><span class="w"> </span><span class="mi">14</span><span class="w"> </span><span class="nv">a4</span><span class="w"> </span><span class="nv">[orig:72</span><span class="w"> </span><span class="nv">_2</span><span class="w"> </span><span class="nv">]</span><span class="w"> </span><span class="nv">[72]</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">mem/c:DI</span><span class="w"> </span><span class="p">(</span><span class="nv">plus:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">reg/f:SI</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="nv">s0</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="nv">const_int</span><span class="w"> </span><span class="mi">-24</span><span class="w"> </span><span class="nv">[0xffffffffffffffe8]</span><span class="p">))</span><span class="w"> </span><span class="nv">[1</span><span class="w"> </span><span class="nv">a+0</span><span class="w"> </span><span class="nv">S8</span><span class="w"> </span><span class="nv">A64]</span><span class="p">))</span><span class="w"> </span><span class="s">&quot;kb.c&quot;</span><span class="ss">:1:38</span><span class="w"> </span><span class="mi">134</span><span class="w"> </span><span class="nv">{*movdi_32bit}</span>
+<span class="w">     </span><span class="p">(</span><span class="no">nil</span><span class="p">))</span>
+</code></pre></div>
 <p>它做的事情是，从内存地址 <code>$s0-24</code> 读取读取 8 个字节，写入到 a4 寄存器当中，由于 RV32 寄存器宽度只有 32 位，所以需要拆成两个读取：</p>
-<pre><code class="language-lisp">Splitting with gen_split_14 (riscv.md:1510)
-deleting insn with uid = 6.
-deleting insn with uid = 6.
+<div class="highlight"><pre><span></span><code><span class="nv">Splitting</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">gen_split_14</span><span class="w"> </span><span class="p">(</span><span class="nv">riscv.md:1510</span><span class="p">)</span>
+<span class="nv">deleting</span><span class="w"> </span><span class="nv">insn</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">uid</span><span class="w"> </span><span class="nb">=</span><span class="w"> </span><span class="mi">6.</span>
+<span class="nv">deleting</span><span class="w"> </span><span class="nv">insn</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">uid</span><span class="w"> </span><span class="nb">=</span><span class="w"> </span><span class="mi">6.</span>
 
-(insn 30 3 31 (set (reg:SI 14 a4 [orig:72 _2 ] [72])
-        (mem/c:SI (plus:SI (reg/f:SI 8 s0)
-                (const_int -24 [0xffffffffffffffe8])) [1 a+0 S4 A64])) &quot;kb.c&quot;:1:38 136 {*movsi_internal}
-     (nil))
-(insn 31 30 32 (set (reg:SI 15 a5 [ _2+4 ])
-        (mem/c:SI (plus:SI (reg/f:SI 8 s0)
-                (const_int -20 [0xffffffffffffffec])) [1 a+4 S4 A32])) &quot;kb.c&quot;:1:38 136 {*movsi_internal}
-     (nil))
-</code></pre>
+<span class="p">(</span><span class="nv">insn</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">31</span><span class="w"> </span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">14</span><span class="w"> </span><span class="nv">a4</span><span class="w"> </span><span class="nv">[orig:72</span><span class="w"> </span><span class="nv">_2</span><span class="w"> </span><span class="nv">]</span><span class="w"> </span><span class="nv">[72]</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">mem/c:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">plus:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">reg/f:SI</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="nv">s0</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="nv">const_int</span><span class="w"> </span><span class="mi">-24</span><span class="w"> </span><span class="nv">[0xffffffffffffffe8]</span><span class="p">))</span><span class="w"> </span><span class="nv">[1</span><span class="w"> </span><span class="nv">a+0</span><span class="w"> </span><span class="nv">S4</span><span class="w"> </span><span class="nv">A64]</span><span class="p">))</span><span class="w"> </span><span class="s">&quot;kb.c&quot;</span><span class="ss">:1:38</span><span class="w"> </span><span class="mi">136</span><span class="w"> </span><span class="nv">{*movsi_internal}</span>
+<span class="w">     </span><span class="p">(</span><span class="no">nil</span><span class="p">))</span>
+<span class="p">(</span><span class="nv">insn</span><span class="w"> </span><span class="mi">31</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="nv">reg:SI</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="nv">a5</span><span class="w"> </span><span class="nv">[</span><span class="w"> </span><span class="nv">_2+4</span><span class="w"> </span><span class="nv">]</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">mem/c:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">plus:SI</span><span class="w"> </span><span class="p">(</span><span class="nv">reg/f:SI</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="nv">s0</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="nv">const_int</span><span class="w"> </span><span class="mi">-20</span><span class="w"> </span><span class="nv">[0xffffffffffffffec]</span><span class="p">))</span><span class="w"> </span><span class="nv">[1</span><span class="w"> </span><span class="nv">a+4</span><span class="w"> </span><span class="nv">S4</span><span class="w"> </span><span class="nv">A32]</span><span class="p">))</span><span class="w"> </span><span class="s">&quot;kb.c&quot;</span><span class="ss">:1:38</span><span class="w"> </span><span class="mi">136</span><span class="w"> </span><span class="nv">{*movsi_internal}</span>
+<span class="w">     </span><span class="p">(</span><span class="no">nil</span><span class="p">))</span>
+</code></pre></div>
 <p>可以看到，64 位的目的寄存器被拆成了两个 32 位寄存器，分别是 a4 和 a5；内存读取指令也拆分成了两个 SI 类型的读取，栈上的偏移也做了相应的调整。</p>
 <p>有时候还可以见到 <code>define_insn_and_split</code>：</p>
-<pre><code class="language-lisp">(define_insn_and_split
-  [insn-pattern]
-  &quot;condition&quot;
-  &quot;output-template&quot;
-  &quot;split-condition&quot;
-  [new-insn-pattern-1
-   new-insn-pattern-2
-   ...]
-  &quot;preparation-statements&quot;
-  [insn-attribute])
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">define_insn_and_split</span>
+<span class="w">  </span><span class="nv">[insn-pattern]</span>
+<span class="w">  </span><span class="s">&quot;condition&quot;</span>
+<span class="w">  </span><span class="s">&quot;output-template&quot;</span>
+<span class="w">  </span><span class="s">&quot;split-condition&quot;</span>
+<span class="w">  </span><span class="nv">[new-insn-pattern-1</span>
+<span class="w">   </span><span class="nv">new-insn-pattern-2</span>
+<span class="w">   </span><span class="o">...</span><span class="nv">]</span>
+<span class="w">  </span><span class="s">&quot;preparation-statements&quot;</span>
+<span class="w">  </span><span class="nv">[insn-attribute]</span><span class="p">)</span>
+</code></pre></div>
 <p>这实际上就是一个 <code>define_insn</code> 加一个 <code>define_split</code>，二者的 <code>insn-pattern</code> 一致：</p>
-<pre><code class="language-lisp">(define_insn
-  [insn-pattern]
-  &quot;condition&quot;
-  &quot;output-template&quot;
-  [insn-attribute])
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nv">define_insn</span>
+<span class="w">  </span><span class="nv">[insn-pattern]</span>
+<span class="w">  </span><span class="s">&quot;condition&quot;</span>
+<span class="w">  </span><span class="s">&quot;output-template&quot;</span>
+<span class="w">  </span><span class="nv">[insn-attribute]</span><span class="p">)</span>
 
-(define_split
-  [insn-pattern]
-  &quot;split-condition&quot;
-  [new-insn-pattern-1
-   new-insn-pattern-2
-   ...]
-  &quot;preparation-statements&quot;)
-</code></pre>
+<span class="p">(</span><span class="nv">define_split</span>
+<span class="w">  </span><span class="nv">[insn-pattern]</span>
+<span class="w">  </span><span class="s">&quot;split-condition&quot;</span>
+<span class="w">  </span><span class="nv">[new-insn-pattern-1</span>
+<span class="w">   </span><span class="nv">new-insn-pattern-2</span>
+<span class="w">   </span><span class="o">...</span><span class="nv">]</span>
+<span class="w">  </span><span class="s">&quot;preparation-statements&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 
 

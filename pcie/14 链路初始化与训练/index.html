@@ -2549,14 +2549,14 @@
   
 
 
-<h1 id="chpater-14-link-initialization-training">Chpater 14 Link Initialization &amp; Training//链路初始化与训练</h1>
-<h3 id="_1">关于前一章</h3>
+<h1 id="chpater-14-link-initialization-training">Chpater 14 Link Initialization &amp; Training//链路初始化与训练<a class="headerlink" href="#chpater-14-link-initialization-training" title="Permanent link">&para;</a></h1>
+<h3 id="_1">关于前一章<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
 <p>上一章描述了物理层与链路之间的电气接口，包括差分发送端与接收端的一些特性的细节。同时也讨论了信号均衡的需求以及均衡的方法。上一章的讨论包括了 Gen1, Gen2 和 Gen3 速率下的差分发送与接收端的特性。</p>
-<h3 id="_2">关于本章</h3>
+<h3 id="_2">关于本章<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
 <p>本章讨论物理层链路训练与状态状态机（LTSSM, Link Traning and Status State Machine）的行为，包括从上电或者复位开始，到链路进入正常工作状态（L0），报文流量开始的整个初始化过程。此外，本章还将讨论链路电源状态 L0s,L1,L2,L3 以及这些状态之间的转换。本章也会讨论链路恢复状态（Recovery）中，重新完成位锁定（Bit Lock）、符号锁定（Symbol Lock）或者块锁定（Block Lock）的过程。最后，还讨论了用于链路带宽管理的链路速率以及位宽转换。</p>
-<h3 id="_3">关于下一章</h3>
+<h3 id="_3">关于下一章<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>下一章将讨论 PCIe 端口或者链路中存在的错误类型，如何检测、报告这些错误，以及这些错误的处理选项。因为 PCIe 设计中后向兼容了 PCI 的错误报告机制，所以将首先介绍 PCI 的错误处理机制作为背景知识。然后我们将关注于PCIe 对于可纠正、非致命以及致命错误的处理机制。</p>
-<h3 id="141">14.1 总览</h3>
+<h3 id="141">14.1 总览<a class="headerlink" href="#141" title="Permanent link">&para;</a></h3>
 <p>链路初始化和训练是由物理层控制的，基于硬件 (而非软件) 的过程。该过程配置和初始化设备的链路和端口，使链路上能够进行正常的数据报文通信。</p>
 <p><img alt="图 14-1 LTSSM 所处的位置" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20211221215807738.png" /></p>
 <p>图 14-1 LTSSM 在 PCIe 架构中所处的位置</p>
@@ -2564,7 +2564,7 @@
 <p>在链路初始化和训练过程中包括了几项步骤。让我们思考下它们都有哪些作用，并提前引入一些术语。</p>
 <ul>
 <li>
-<p><strong>位锁定，Bit Lock</strong>：当链路训练开始时，接收端的时钟尚未与接收信号的发送时钟同步，无法可靠地采样输入信号的数据比特。在链路训练期间，接收端的<strong>时钟和数据恢复</strong>（CDR，Clock and Data Recovery）逻辑通过使用数据比特流作为时钟的参考信号，来重建发送端的时钟。一旦从数据流中恢复了时钟，就可以说接收端已经完成了位锁定，然后能够正确地采样输入数据比特。有关位锁定机制的更多信息，可以参阅第 395 页的 “实现位锁定”。</p>
+<p><strong>位锁定，Bit Lock</strong>：当链路训练开始时，接收端的时钟尚未与接收信号的发送时钟同步，无法可靠地采样输入信号的数据比特。在链路训练期间，接收端的**时钟和数据恢复**（CDR，Clock and Data Recovery）逻辑通过使用数据比特流作为时钟的参考信号，来重建发送端的时钟。一旦从数据流中恢复了时钟，就可以说接收端已经完成了位锁定，然后能够正确地采样输入数据比特。有关位锁定机制的更多信息，可以参阅第 395 页的 “实现位锁定”。</p>
 </li>
 <li>
 <p><strong>符号锁定，Symbol Lock</strong>：对于8b/10b编码 (Gen1/Gen2) 而言，训练的下一步是进行符号锁定。同位锁定类似，虽然接收端目前可以识别单个比特，但是不知道由 10 个比特组成的符号的边界在哪里。当发送端和接收端交换训练有序集 TS1 和 TS2 时，接收端在比特流中搜索可识别的数据图样（pattern）。通过查找 COM 符号的位置可以较为简单地实现这一点。COM 符号独特的编码使得它很容易识别，识别 COM 字符后，接收方不但定位到了两个符号之间的边界，而且也能定位到两个有序集之间的边界（译注：因为有序集 TS1/TS2 以 COM 字符作为开端）。有关这方面的更多信息，参见第 396 页的 “实现符号锁定”。</p>
@@ -2596,13 +2596,13 @@
 <p><strong>多 lane 间信号去偏移，Lane‐to‐Lane De‐skew:</strong> 各个通道之间的传输线长度差异或者其他因素，会导致多通道链路中原本同时传输的多个并行比特，到达接收方的时间有所差异，这被称之为信号偏斜（signal skew）现象。接收方需要通过延迟较早到达的通道，以对齐所有通道上的信号的到达时间，补偿通道之间信号传输快慢差异。在协议规定的可允许的信号偏移范围内，（对于 2.5Gbps 速率来说，最大信号偏斜是 20ns)，接收方需要能够自动对偏移进行补偿。多通道间信号偏移补偿机制能够帮上 PCB 设计者一个大忙，因为他们不再需要设置复杂精细的约束，走出非常精确的等长信号传输线，有时候这是很难的。信号偏移补偿机制和极性翻转以及通道翻转机制一起，可以很大程度上简化高可靠的高速 PCIe PCB 设计。</p>
 </li>
 </ul>
-<h3 id="142">14.2 链路训练中的有序集</h3>
-<h4 id="1421">14.2.1 概要</h4>
+<h3 id="142">14.2 链路训练中的有序集<a class="headerlink" href="#142" title="Permanent link">&para;</a></h3>
+<h4 id="1421">14.2.1 概要<a class="headerlink" href="#1421" title="Permanent link">&para;</a></h4>
 <p>我们已经在本书 11 章的 “有序集” 这一节讨论过物理层所有不同类型的有序集。在训练过程中涉及到的物理层有序集包括训练有序集 TS1 以及 TS2 。图 14-4 中是 Gen1 以及 Gen2 模式下的有序集格式。图 14-5 是 Gen3 模式中所使用有序集的格式。接下来我们来进一步详细讨论他们。</p>
 <p><img alt="image-20211225215148969" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20211225215148969.png" /></p>
 <p>图 14-4 Gen1/Gen2 中的 TS1/TS2 格式</p>
-<h4 id="1422-ts1-ts2">14.2.2 TS1 以及 TS2 有序集</h4>
-<p>从图中 14-4 中可以看到，TS1/2 由 16 个符号（译注：字节）组成。在 LTSSM 的轮询、配置以及恢复状态中，通信双方会交换 TS1/2 有序集，本文会在后续的 LTSSM 章节详细讨论，后文分别在表 14-1/14-2中，用表格的形式描述了 TS1/2 16 个符号的具体含义。 </p>
+<h4 id="1422-ts1-ts2">14.2.2 TS1 以及 TS2 有序集<a class="headerlink" href="#1422-ts1-ts2" title="Permanent link">&para;</a></h4>
+<p>从图中 14-4 中可以看到，TS&frac12; 由 16 个符号（译注：字节）组成。在 LTSSM 的轮询、配置以及恢复状态中，通信双方会交换 TS&frac12; 有序集，本文会在后续的 LTSSM 章节详细讨论，后文分别在表 14-1/14-2中，用表格的形式描述了 TS&frac12; 16 个符号的具体含义。 </p>
 <p>为了便于理解和行文，以下用 Gen1 表示速率为 2.5GT/s 的情况，Gen2 表示速率为 5GT/s 的情况，Gen3 表示速率为 8GT/s 的情况。另外值得注意的是，在低速率中，Link 以及 Lane 字段中的填充字符（PAD character）使用 K23.7 ，而在 Gen3 中使用的是 F7h。我们后续的讨论中不会特别提及两者的差异，而统一表示为填充字符，因为这不重要。 </p>
 <p><img alt="image-20211225215638284" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20211225215638284.png" /></p>
 <p>图 14-5 Gen3 中的 TS1/TS2 格式</p>
@@ -2716,7 +2716,7 @@
 <p>表 14-1/14-2是 TS1 和 TS2 格式的大致描述，接下来我们仔细讨论下每个字段的含义。</p>
 <ul>
 <li><strong>Symbol 0：</strong></li>
-<li>Gen1/2，所有有序集的首个符号都是 K28.5(COM) 字符。接收方通过 COM 字符实现符号锁定（译注：即接收方通过正确接收的 COM，确认符号的边界）。因为 COM 字符需要同时出现在所有通道上，因此可以用于多通道间信号去偏斜。</li>
+<li>Gen&frac12;，所有有序集的首个符号都是 K28.5(COM) 字符。接收方通过 COM 字符实现符号锁定（译注：即接收方通过正确接收的 COM，确认符号的边界）。因为 COM 字符需要同时出现在所有通道上，因此可以用于多通道间信号去偏斜。</li>
 <li>Gen3，有序集所在的 Block 之前是 2 比特同步头，同步头之后的首个符号用于表示有序集的类型。TS1 的首个符号是 1Eh, TS2 首个符号是 2Dh。</li>
 <li><strong>Symbol 1（Link #）</strong>：链路编号，在轮询状态中使用填充字符填充，其他状态中为链路被分配的编号</li>
 <li><strong>Symbol 2（Lane #）</strong>：通道编号，在轮询状态中使用填充字符填充，其他状态中为通道被分配的编号</li>
@@ -2726,8 +2726,8 @@
 <li>
 <p><strong>Selectable De‐emphasis</strong></p>
 <ul>
-<li><strong>上游端口（Upstream Ports）</strong>设置该域表示他们在 5GT/s 速率下期望的去加重水平设置，具体的预期设置取决于实现。在 Recovery.RcvrCfg 状态中，设备锁存接收到的该域的值，存放在设备内部。（协议描述中，这个值会被保存在一个名为 select_deemphasis 的变量中）</li>
-<li><strong>下游端口（Downstream Ports）</strong>和<strong>根节点端口（Root Ports）</strong>：在 Polling.Compliance 状态中，基于接收到的该比特数值，设置 select_deemphasis 变量。在 Recovery.RcvrCfg 状态中，发送端设置发送的 TS2 中的该比特信息，数值基于  Link Control 2 寄存器相关比特。由于该寄存器的初始值是由硬件初始化的，所以预期需要在上电阶段后通过固件配置恰当的数值，或者将其硬件初始化值设置为一个保守但是安全（Strapping）的数值。</li>
+<li>**上游端口（Upstream Ports）**设置该域表示他们在 5GT/s 速率下期望的去加重水平设置，具体的预期设置取决于实现。在 Recovery.RcvrCfg 状态中，设备锁存接收到的该域的值，存放在设备内部。（协议描述中，这个值会被保存在一个名为 select_deemphasis 的变量中）</li>
+<li><strong>下游端口（Downstream Ports）**和**根节点端口（Root Ports）</strong>：在 Polling.Compliance 状态中，基于接收到的该比特数值，设置 select_deemphasis 变量。在 Recovery.RcvrCfg 状态中，发送端设置发送的 TS2 中的该比特信息，数值基于  Link Control 2 寄存器相关比特。由于该寄存器的初始值是由硬件初始化的，所以预期需要在上电阶段后通过固件配置恰当的数值，或者将其硬件初始化值设置为一个保守但是安全（Strapping）的数值。</li>
 <li>在 5.0 GT/s 回环模式中，从机去加重水平数值由主机发送的 TS1 中的对应比特设置。</li>
 </ul>
 </li>
@@ -2752,8 +2752,8 @@
 </ul>
 </li>
 </ul>
-<h3 id="143-ltssm">14.3 链路训练与状态控制状态机（LTSSM）</h3>
-<h4 id="1431">14.3.1 概要</h4>
+<h3 id="143-ltssm">14.3 链路训练与状态控制状态机（LTSSM）<a class="headerlink" href="#143-ltssm" title="Permanent link">&para;</a></h3>
+<h4 id="1431">14.3.1 概要<a class="headerlink" href="#1431" title="Permanent link">&para;</a></h4>
 <p>原文 519 页图 14-6 展示了 LTSSM 和链路训练的高层次抽象结构。每个 LTSSM 的状态中又划分为若干次状态。在基础复位（Fundmental Reset），即冷复位（Cold Reset）和暖复位（Warm Reset），或者热复位（Hot Reset）释放后，进入的第一个状态是 Detect 状态。</p>
 <p>LTSSM 总共有 11 个顶层状态，（所谓的顶层状态，即与顶层状态下的次状态区分），他们分别是：</p>
 <ul>
@@ -2774,22 +2774,22 @@
 <li>主动电源管理（ASPM，Active-State Power Management）状态（即硬件驱动的电源管理状态）</li>
 <li>其他状态</li>
 </ul>
-<p>在任意复位释放后，LTSSM 即进入了<strong>训练类状态</strong>（Link Training states），一切正常的话，会按照 Detect =&gt; Polling =&gt; Configuration =&gt; L0 的顺序跳转状态。待进入 L0 状态后，即可以进行正常的数据报文收发操作。</p>
-<p>进入<strong>链路重训练状态</strong>，也即是链路恢复（Recovery） 状态的原因很多，比如从像 L1 这样的<strong>低功耗链路状态（low-power Link state）</strong>中恢复，或者正准备进行链路带宽切换（速率或者链路宽度切换）。在链路重训练状态中，链路会重复类似于训练状态的操作，来解决链路中的问题，并最终回到 L0，这一正常工作的状态。</p>
-<p>设备中的功耗管理软件在进入<strong>低功耗设备状态（low-power device state）</strong>后，比如 D1、D2、D3Hot 或者 D3Cold 之后，会强制链路进入<strong>低功耗软件管理链路状态（low-power Management Link state）</strong>，比如 L1 或者 L2 。</p>
-<p>译注：注意区分这里的<strong>低功耗设备状态（low-power device state）</strong>与<strong>低功耗链路状态（low-power Link state）</strong></p>
+<p>在任意复位释放后，LTSSM 即进入了**训练类状态**（Link Training states），一切正常的话，会按照 Detect =&gt; Polling =&gt; Configuration =&gt; L0 的顺序跳转状态。待进入 L0 状态后，即可以进行正常的数据报文收发操作。</p>
+<p>进入**链路重训练状态**，也即是链路恢复（Recovery） 状态的原因很多，比如从像 L1 这样的**低功耗链路状态（low-power Link state）**中恢复，或者正准备进行链路带宽切换（速率或者链路宽度切换）。在链路重训练状态中，链路会重复类似于训练状态的操作，来解决链路中的问题，并最终回到 L0，这一正常工作的状态。</p>
+<p>设备中的功耗管理软件在进入**低功耗设备状态（low-power device state）<strong>后，比如 D1、D2、D3Hot 或者 D3Cold 之后，会强制链路进入**低功耗软件管理链路状态（low-power Management Link state）</strong>，比如 L1 或者 L2 。</p>
+<p>译注：注意区分这里的**低功耗设备状态（low-power device state）<strong>与**低功耗链路状态（low-power Link state）</strong></p>
 <p>如果链路上很长时间都没有报文需要发送，ASPM 硬件逻辑会使链路自动进入低功耗 <strong>ASPM 状态</strong>（low-power ASPM Link state），比如 L0s 或者 ASPM L1。</p>
-<p>此外，软件可以直接使链路进入一些其他状态，比如禁用状态（Disabled），回环状态（Loopback）或者热复位（Hot Reset）状态。这里，这些状态被归纳为<strong>其他状态</strong>。</p>
+<p>此外，软件可以直接使链路进入一些其他状态，比如禁用状态（Disabled），回环状态（Loopback）或者热复位（Hot Reset）状态。这里，这些状态被归纳为**其他状态**。</p>
 <p><img alt="image-20220105205407630" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220105205407630.png" /></p>
 <p>图 14-6 LTSSM 状态跳转图</p>
-<h4 id="1432-ltssm">14.3.2 LTSSM 状态概要（链路训练与状态状态机状态概要）</h4>
+<h4 id="1432-ltssm">14.3.2 LTSSM 状态概要（链路训练与状态状态机状态概要）<a class="headerlink" href="#1432-ltssm" title="Permanent link">&para;</a></h4>
 <p>以下是对 11 个 LTSSM 状态的高层次概要介绍。</p>
 <ul>
 <li>
 <p><strong>检测状态 Detect</strong>： 复位释放后进入的初始状态。在这个状态中，本方设备从电气特性的角度，检测链路对端设备是否存在。在穿行传输的领域中，一般无需检测对端设备是否存在，但是设置 Detect 状态的目的在于增加测试的便利性（It's done to facilitate testing），我们将在 Detect 之后的 Polling 阶段验证这一观点。除了复位释放之外，还可能从别的 LTSSM 状态进入 Detect。</p>
 </li>
 <li>
-<p><strong>轮询状态 Polling</strong>：在轮询状态中，发送方将以 2.5Gbps 的速率向对端发送 TS1 以及 TS2 序列，使用协议最低速率以实现对早期协议的后向兼容。接收端可以使用接收的 TS1/2 序列实现以下功能：</p>
+<p><strong>轮询状态 Polling</strong>：在轮询状态中，发送方将以 2.5Gbps 的速率向对端发送 TS1 以及 TS2 序列，使用协议最低速率以实现对早期协议的后向兼容。接收端可以使用接收的 TS&frac12; 序列实现以下功能：</p>
 </li>
 <li>
 <p>完成位锁定</p>
@@ -2843,24 +2843,24 @@
 <p><strong>热复位状态 Hot Reset</strong>：软件可以通过置位桥控制（Bridge Control）寄存器的配置次级总线复位（Secondary Bus Reset）比特，复位链路。软件配置后，桥的下游端口会发送训练控制域（Traning Control Field）热复位（Hot Reset）比特置位的 TS1 序列。（详情可见原文 837 页的 “Hot Reset (In-band Reset)” 节）当接收方接收到两个 TS1 序列后，必须复位自身设备。</p>
 </li>
 </ul>
-<h4 id="1433">14.3.3 介绍，示例与状态/次状态</h4>
+<h4 id="1433">14.3.3 介绍，示例与状态/次状态<a class="headerlink" href="#1433" title="Permanent link">&para;</a></h4>
 <p>本章剩余的内容会对每个 LTSSM 状态进行介绍和讨论。基于每种状态不同的复杂度，讨论会包括一些介绍，通用的背景知识，部分状态/次状态还会有对应的示例。基于具体的需求，读者可以只浏览某个状态简介的部分，而跳过详细讨论的部分，本章的组织结构是完全支持读者这么做的。</p>
 <p>每个设备都必须以基础的 2.5GT/S 速率，进行初始链路训练。图 14-7 高亮了初始链路训练过程中涉及的状态。支持更高速率 5.0 或者 8.0 GT/s 的设备，必须进行 Recovery 状态，才能够进行速率切换。</p>
 <p><img alt="image-20220105215954695" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220105215954695.png" /></p>
 <p>图 14-7 2.5Gb/s 速率下，初始链路训练涉及的状态</p>
-<h3 id="144-detect-state">14.4 Detect State // 检测状态</h3>
-<h4 id="1441">14.4.1 简介</h4>
+<h3 id="144-detect-state">14.4 Detect State // 检测状态<a class="headerlink" href="#144-detect-state" title="Permanent link">&para;</a></h3>
+<h4 id="1441">14.4.1 简介<a class="headerlink" href="#1441" title="Permanent link">&para;</a></h4>
 <p>图 14-8 展示了与 Detect 状态相关的状态跳变，以及 Detect 状态的 2 个次状态。 Detect 状态下的链路行为是发送方不断检测链路对端是否有接收方存在。因为 Detect 只有 2 个次状态，所以行为比较简单，本节就直接讨论两个次状态的细节，不再讨论 Detect 状态本身了。</p>
 <p><img alt="image-20220108120331857" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220108120331857.png" /></p>
 <p>图 14-8 检测状态机</p>
-<h4 id="1441-detect">14.4.1 Detect 次状态细节讨论</h4>
-<h5 id="14411-detectquiet">14.4.1.1 Detect.Quiet</h5>
+<h4 id="1441-detect">14.4.1 Detect 次状态细节讨论<a class="headerlink" href="#1441-detect" title="Permanent link">&para;</a></h4>
+<h5 id="14411-detectquiet">14.4.1.1 Detect.Quiet<a class="headerlink" href="#14411-detectquiet" title="Permanent link">&para;</a></h5>
 <p>Quiet 次状态是除了功能级复位（FLR，Function Level Reset）之外所有复位之后的初始状态，以及上电事件（Power-up）之后的初始状态。并且，协议规定必须在复位之后的 20ms 内进入该状态。当然，也可能从其他状态进入 Detect 状态，往往是因为在这些状态中遇到了阻碍，无法正常进入下一个状态，只能进入 Quiet 次状态。（图 14-8 中描述了这些状态，他们包括：Disabled，Loopback，L2，Polling，Configuration 或者 Recovery）Quiet 次状态的属性有以下这些：</p>
 <ul>
 <li>发送机以电气空闲（Electrical Idle）的状态启动（但是此时直流共模电压不需要在通常规定的范围内）。</li>
 <li>目标数据速率为 Gen1 的 2.5GT/s。如果进入该状态时的速率不是  2.5GT/s，LTSSM 必须要在该次状态内等待 1ms，然后再将速率切换至 Gen1。</li>
 <li>物理层的状态比特 LinkUp 为 0 时，向数据链路层表示链路尚未就绪。LinkUp 状态比特是一个内部信号（没有见诸标准配置空间），同样地，在链路训练完成后，LinkUp 转变为 1 ，通知数据链路层以及流控逻辑开始初始化。（详情可见原文 223 页的 “流控初始化流程”节）</li>
-<li>任何先前的均衡（Eq., Equalization）状态会在置位 4 个 2-bit 链路状态寄存器后清除，他们分别是 Eq.Phase 1/2/3 Successful 以及 Eq.Complete </li>
+<li>任何先前的均衡（Eq., Equalization）状态会在置位 4 个 2-bit 链路状态寄存器后清除，他们分别是 Eq.Phase &frac12;/3 Successful 以及 Eq.Complete </li>
 <li>变量</li>
 <li>几个变量会在 Quiet 状态清除：<ul>
 <li>directed_speed_change = 0b</li>
@@ -2881,7 +2881,7 @@
 </ul>
 <p><strong><em>退出状态进入 "Detect.Active"</em></strong></p>
 <p>下一个次状态是 Detect.Active， LTSSM 会在 12ms 超时或者任意一个通道退出电气空闲状态后，转入下一个次状态。 </p>
-<h5 id="14412-detectactive">14.4.1.2 Detect.Active</h5>
+<h5 id="14412-detectactive">14.4.1.2 Detect.Active<a class="headerlink" href="#14412-detectactive" title="Permanent link">&para;</a></h5>
 <p>Active 状态由 Quiet 状态进入。在 Active 状态中，发送机会通过将直流共模电压设置为一个合理范围内的任意电压值，接着再继续变化这个电压值，来测试各个通道上是否有接收端连接。接收端检测逻辑会观测电压变化的速率，也就电压充电的单位时间，并将其于对照值比较。这个对照值一般是没有接收端连接的情况。如果有接收端连接，那么充电的速率会大大降低，两者之间巨大的差距使检测的结果十分容易观察到。（关于这部分内容更详细的信息，可以参考接收端检测的章节：Receiver Detection，原文 460 页）。为了便于表示，下文中将本状态中检测到接收端的通道称之为：检测完成的通道（Detected lanes）。</p>
 <p><strong><em>退出状态进入 "Detect.Quiet"</em></strong></p>
 <p>如果没有任何一个通道检测到接收端存在，那么会返回 Detect.Quiet 状态。只要没有检测机，状态机会一直每隔 12ms 在这两个次状态之间进行一个循环。</p>
@@ -2893,13 +2893,13 @@
 <li>如果这些通道能够以独立的通道运作（见原文 541 页的 “设计支持链路聚合设备” 节），会使用另一个 LTSSM 对这些通道重复检测过程。</li>
 <li>如果不存在另一个 LTSSM，那么这些通道将不会是链路的一部分，需要设置为电气空闲状态。</li>
 </ol>
-<h3 id="145-polling-state">14.5 Polling State // 轮询状态</h3>
-<h4 id="1451">14.5.1 简介</h4>
+<h3 id="145-polling-state">14.5 Polling State // 轮询状态<a class="headerlink" href="#145-polling-state" title="Permanent link">&para;</a></h3>
+<h4 id="1451">14.5.1 简介<a class="headerlink" href="#1451" title="Permanent link">&para;</a></h4>
 <p>LTSSM 进入轮询状态时，链路处于电气空闲状态，不过，轮询状态期间会在链路两端之间交换 TS1 和 TS2 有序集。轮询状态的主要目的是使链路两端的设备能够听懂对方在说些什么，换句话说，他们需要各自在对方的发送比特流上，建立比特和符号锁定状态，并且解决极性翻转（polarity inversion）恢复之类的事宜。在这些工作完成后，设备们能够正确地接收对方发出的 TS1 和 TS2 有序集。图 14-9 展示了轮询状态的各个次状态。</p>
 <p><img alt="image-20220112221703513" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220112221703513.png" /></p>
 <p>图 14-9 轮询状态机</p>
-<h4 id="1451-polling">14.5.1 Polling次状态细节讨论</h4>
-<h5 id="14511-pollingactive">14.5.1.1 Polling.Active</h5>
+<h4 id="1451-polling">14.5.1 Polling次状态细节讨论<a class="headerlink" href="#1451-polling" title="Permanent link">&para;</a></h4>
+<h5 id="14511-pollingactive">14.5.1.1 Polling.Active<a class="headerlink" href="#14511-pollingactive" title="Permanent link">&para;</a></h5>
 <p><em>Polling.Active 期间</em></p>
 <p>一旦链路双方的共模电压稳定在发送余量（Transmit Margin）域中允许的范围内之后，发送方会发送至少 1024 个连续的 TS1 有序集。因为链路双方退出检测状态的时刻可能不同，所以 TS1 命令序列的交换不是同步的。在 Gen1（2.5GT/s） 速率下，发送 1024 个 TS1 序列花费 64us 。</p>
 <p>Active 次状态下，有一些值得注意的细节：</p>
@@ -2909,13 +2909,13 @@
 <li>接收方使用接收到的 TS1 序列实现比特锁定和符号锁定（低于 8GT/s 的速率）或者块锁定（8GT/s 速率）</li>
 </ul>
 <p><em>退出状态进入 Polling.Configuration</em></p>
-<p>在发送方发送完 1024 个 TS1 里最后一个 TS1 序列之后，如果<strong>所有检测到的通道</strong>都收到了 8 个连续的训练序列（如果存在极性翻转的话，那么收到的就是训练序列的补集），并且这些训练序列满足以下条件之一的话，状态机进入 Polling.Configuration 状态：</p>
+<p>在发送方发送完 1024 个 TS1 里最后一个 TS1 序列之后，如果**所有检测到的通道**都收到了 8 个连续的训练序列（如果存在极性翻转的话，那么收到的就是训练序列的补集），并且这些训练序列满足以下条件之一的话，状态机进入 Polling.Configuration 状态：</p>
 <ul>
 <li>接收到的 TS1 的链路和通道字段全部被设置为全填充字符（PAD），并且 Compliance Receive 比特设置为 0b (符号 5 的 比特 4)</li>
 <li>接收到的 TS1 的链路和通道字段都被设置为全填充字符，并且 Loopback 比特设置为 1b (符号 5 的 比特 2)</li>
 <li>接收到的 TS2 的链路和通道字段都被设置为全填充字符</li>
 </ul>
-<p>如果上述条件都没能满足，那么在 24ms 的超时之后，在接收到某个 TS1 之后，已经发送了 1024 个 TS1 序列，只需要<strong>任意检测到的通道</strong>接收到了 8 个连续的TS1 序列或者 TS2 序列，通道以及链路编号是填充符号，并且满足以下条件之一（译注：其实以下条件和超时前的判断条件一致），那么状态机进入 Polling.Configuration 状态。</p>
+<p>如果上述条件都没能满足，那么在 24ms 的超时之后，在接收到某个 TS1 之后，已经发送了 1024 个 TS1 序列，只需要**任意检测到的通道**接收到了 8 个连续的TS1 序列或者 TS2 序列，通道以及链路编号是填充符号，并且满足以下条件之一（译注：其实以下条件和超时前的判断条件一致），那么状态机进入 Polling.Configuration 状态。</p>
 <ul>
 <li>接收到的 TS1 的链路和通道字段全部被设置为全填充字符（PAD），Compliance Receive 比特设置为 0b (符号 5 的 比特 4)</li>
 <li>接收到的 TS1 的链路和通道字段都被设置为全填充字符，Loopback 比特设置为 0b (符号 5 的 比特 2)</li>
@@ -2931,7 +2931,7 @@
 </ul>
 <p><em>退出状态进入 Detect State</em></p>
 <p>如果在 24ms 之后，没有满足进入 Polling.Configuration 状态或者 Polling.Compliance 状态的条件，那么返回 Detect 状态。</p>
-<h5 id="14512-pollingconfiguration">14.5.1.2 Polling.Configuration</h5>
+<h5 id="14512-pollingconfiguration">14.5.1.2 Polling.Configuration<a class="headerlink" href="#14512-pollingconfiguration" title="Permanent link">&para;</a></h5>
 <p>在 Configuration 次状态中，发送方停止发送 TS1 序列，转而发送 TS2 序列，TS2 序列中的链路和通道（lane）字段仍然使用填充字段填充。该状态中，发送方转而发送 TS2 的目的是通知链路对端的设备：本方已经做好准备进入状态机中的下一个状态。转而发送 TS2 是为了使链路两端的设备 LTSSM 同步而设计的握手机制。双方设备都无法独自进入下一状态,除非链路两端的设备都准备就绪。开始发送 TS2 序列是通知对端本方准备就绪的方式。所以一旦设备同时发送并且接收到 TS2 序列，就代表本方和对端设备都已经就绪， 设备可以进入下一状态。</p>
 <p><em>Polling.Configuration 期间</em></p>
 <p>发送方在所有识别的通道上发送 TS2 序列，其链路和通道字段使用填充字段填充。并且发送方必须通知对端自己所支持的所有数据速率，即使是那些不打算使用的数据速率。此外，如果有需要的话，每个通道的接收方必须独立地恢复差分输入信号的极性。关于极性恢复的具体内容，可以参见原文 506 的概览章。另外，Transmit Margin 字段必须重置为 000b。</p>
@@ -2944,18 +2944,18 @@
 <p><img alt="image-20220131214053877" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220131214053877.png" /></p>
 <p>图 14-10  Polling 状态机，包含历史上的 Polling.speed 次状态</p>
 <p>现今，LTSSM 在复位之后会总是会将速率训练为 2.5GT/s，哪怕支持更高的速率。在 LTSSM 状态机进入 L0 状态之后，一旦有更高的可用速率，状态机进入 Recovery 状态，并且尝试将速率训练为双方都支持的最高速率。双方可支持的最高速率会在双方交换的 TS1 和 TS2 序列中体现，所以任意一方都可以通过使自身的状态机进入 Recovery 状态，发起一次速率改变行为。协议中仍然会罗列 Polling.Speed 次状态，但会将其标注为不会进入（unreachable）的状态。</p>
-<h5 id="14513-pollingcompliance">14.5.1.3 Polling.Compliance</h5>
+<h5 id="14513-pollingcompliance">14.5.1.3 Polling.Compliance<a class="headerlink" href="#14513-pollingcompliance" title="Permanent link">&para;</a></h5>
 <p>Compliance 次状态用于测试。发送方会发送特定的码字组合（pattern），构建一种码间干扰和串扰接近最严重的场景，用于链路信号质量分析。在该次状态中，可以发送两类码字，分别是 Compliance pattern 和 modified compliance pattern。</p>
-<h6 id="8b10b-compliance-pattern">用于 8b/10b 编码的  Compliance pattern</h6>
+<h6 id="8b10b-compliance-pattern">用于 8b/10b 编码的  Compliance pattern<a class="headerlink" href="#8b10b-compliance-pattern" title="Permanent link">&para;</a></h6>
 <p>该码字包括 4 个符号（Symbol），码字中这四个符号将按照顺序不停重复，他们分别是：K28.5-，D21.5+，K28.5+ 以及 D10.2，他们名字中的 (-) 表示负极性的校验结果以及 RCD（ //TODO，negative <strong>current running disparity</strong> or CRD，<strong>CRD</strong> means???），而 (+) 表示正极性的 CRD（由于 CRD 是强制的，在码字组合开始时，允许出现校验错误）。如果链路由多条通道组成，那么四个延迟符号（Delay symbol，看上去 Delay 只标识了那些名字以 D 开头的符号，但其实也包括了 K28.5 符号）首先在通道 0 上注入，与前后两个 compliance pattern 保持 2 个符号的间隔（//TODO <strong>two</strong> before the next compliance pattern and two after the compliance pattern）。在通道 0 上发送了最后一个延迟符号之后，转至通道 1 发送（同样地，与前后两个 compliance pattern 保持 2 个符号的间隔）。重复这个过程直到所有 8 个通道发送完毕，再回到通道 0 重新开始，整个过程可以参见原文 529 页上的 表14-3，Compliance pattern 用灰色背景标识。每 8 个通道为 1 组，重复上述的码字组合发送方式。通过以上述规则循环重复发送延迟符号可以确保相邻通道之间存在信号串扰，提供一个最接近最差情况的测试环境。</p>
 <p>表 14-3及其续表 8b/10b 编码的 compliance pattern</p>
 <p><img alt="image-20220201161743327" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220201161743327.png" /></p>
 <p><img alt="image-20220201161752175" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220201161752175.png" /></p>
-<h6 id="128b130b-compliance-pattern">用于 128b/130b 编码的  Compliance pattern</h6>
+<h6 id="128b130b-compliance-pattern">用于 128b/130b 编码的  Compliance pattern<a class="headerlink" href="#128b130b-compliance-pattern" title="Permanent link">&para;</a></h6>
 <p>TODO</p>
-<h6 id="8b10b-modified-compliance-pattern">用于 8b/10b 编码的  Modified Compliance pattern</h6>
+<h6 id="8b10b-modified-compliance-pattern">用于 8b/10b 编码的  Modified Compliance pattern<a class="headerlink" href="#8b10b-modified-compliance-pattern" title="Permanent link">&para;</a></h6>
 <p>TODO</p>
-<h6 id="128b130b-modified-compliance-pattern">用于 128b/130b 编码的  Modified Compliance pattern</h6>
+<h6 id="128b130b-modified-compliance-pattern">用于 128b/130b 编码的  Modified Compliance pattern<a class="headerlink" href="#128b130b-modified-compliance-pattern" title="Permanent link">&para;</a></h6>
 <p>TODO</p>
 <p><em>进入 Polling.Compliance 状态</em></p>
 <p>在进入 Polling.Active 状态后，用于设置发送方的电压范围的链路控制寄存器2 （Link Control 2 register）的发送余量（Transmit Margin）字段生效。</p>
@@ -2968,22 +2968,22 @@
 <p><img alt="image-20220201163230245" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220201163230245.png" /></p>
 <p><img alt="image-20220201163240783" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220201163240783.png" /></p>
 <p><img alt="image-20220201163250837" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220201163250837.png" /></p>
-<h3 id="146-configuration-state">14.6 Configuration State // 配置状态</h3>
+<h3 id="146-configuration-state">14.6 Configuration State // 配置状态<a class="headerlink" href="#146-configuration-state" title="Permanent link">&para;</a></h3>
 <p>设备初始化时，Configuration 状态在 2.5GT/s 速率下配置链路以及通道编号。5GT/s 和 8GT/s 速率时，设备也可能从 Recovery 状态进入 Configuration 状态。此时状态转换的主要目的是为了进行多通道设备的链路位宽动态转换。动态转换仅支持  5GT/s 和 8GT/s 速率的设备。这些高速率设备详细的状态转换过程将在原文 552 页开始的 “详细 Configuration 次状态” 一节中讨论。</p>
-<h4 id="1461-configuration">14.6.1 Configuration 状态综述</h4>
-<p>本状态的主要目标是弄清楚设备端口（Port）和各个通道（Lane）的连接情况，以及为连接的通道分配通道编号。举例来说，对一个连接了 8 个通道的端口来说，可能只有其中的 2 个通道是可用的，再比如这些通道可以被组合为多条链路，比如组合成两个 x4 的链路（每个链路有 4 个通道），Configuration 状态的目的就是为了搞清楚这方面的信息。另外，和其他状态不同的是，端口在此状态的行为区分为<strong>面向上游端口</strong>或者<strong>面向下游端口</strong>两种情况，两类端口在 Configuration 状态中被定义为不同的角色。因此，在本状态中会分别讨论面向上游和下游通道的行为。</p>
+<h4 id="1461-configuration">14.6.1 Configuration 状态综述<a class="headerlink" href="#1461-configuration" title="Permanent link">&para;</a></h4>
+<p>本状态的主要目标是弄清楚设备端口（Port）和各个通道（Lane）的连接情况，以及为连接的通道分配通道编号。举例来说，对一个连接了 8 个通道的端口来说，可能只有其中的 2 个通道是可用的，再比如这些通道可以被组合为多条链路，比如组合成两个 x4 的链路（每个链路有 4 个通道），Configuration 状态的目的就是为了搞清楚这方面的信息。另外，和其他状态不同的是，端口在此状态的行为区分为**面向上游端口**或者**面向下游端口**两种情况，两类端口在 Configuration 状态中被定义为不同的角色。因此，在本状态中会分别讨论面向上游和下游通道的行为。</p>
 <p>DSP （Downstream Port，向下游发送数据）端口在剩余的链路初始化过程中扮演 “领导者”，而 USP （Upstream Port，向上游发送数据）端口的角色是 “跟随者”。"领导者"，也就是 DSP，会为 USP 确定链路以及通道的编号，USP 则只是简单地重复他接收到的值给 DSP，除非出现了编号冲突的情况，我们会在本节后续内容中讨论这种意外情况。Configuration 状态中，双方设备交换的 TS1 序列中会反映分配的链路以及通道编号，如原文 540 页的图 14-13 红圈部分所示，这两个数值域在被分配具体的数值前，使用填充符号（PAD symbol）作为占位符。</p>
 <p><img alt="image-20221011234540282" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221011234540282.png" /></p>
 <p>图 14-13 TS1/TS2 中链路编号和通道编号的编码示意图</p>
-<h4 id="1462">14.6.2 设计支持链路合并的设备</h4>
+<h4 id="1462">14.6.2 设计支持链路合并的设备<a class="headerlink" href="#1462" title="Permanent link">&para;</a></h4>
 <p>设计者一般根据性能与成本的考虑，决定在一条链路上实现多少个通道。PCIe 链路支持多个窄链路聚合成一个更宽的链路，同样的，较宽的链路也可以分拆成多个窄链路。原文 541 页的图 14-14 中是一个有一个上游端口和四个 x2 下游端口的交换机。在本例中，这些通道也可以组成两个 x4 的链路。值得注意的是，PCIe 协议要求每个端口必须有作为一个 x1 链路工作的能力。</p>
 <p>如图左侧可见，交换机内部包含 1 个面向上游的逻辑桥以及 4 个面向下游的逻辑桥。事实上，每个端口都需要一个逻辑桥，因此，交换机需要包含 4 个面向下游的逻辑桥，以支持 4 个面向下游的端口。然而，如果这个交换机如图右方式连接的话，那么剩下的两个逻辑桥就将不工作。在链路训练期间，每个 DSP 中的 LTSSM 将决定具体实现哪些其所支持的连接选项。</p>
 <p><img alt="image-20221012233247598" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221012233247598.png" /></p>
 <p>图 14-14 链路聚合（Link Merging），将通道聚合成更宽的链路</p>
-<h4 id="1463-configuration">14.6.3  Configuration 状态训练示例</h4>
-<h5 id="14631">14.6.3.1 引言</h5>
+<h4 id="1463-configuration">14.6.3  Configuration 状态训练示例<a class="headerlink" href="#1463-configuration" title="Permanent link">&para;</a></h4>
+<h5 id="14631">14.6.3.1 引言<a class="headerlink" href="#14631" title="Permanent link">&para;</a></h5>
 <p>在 Configuration 状态中，链路以及通道的编号工作由 DSP 作为 “领导者” 发起（比如根节点端口或者交换机的面向下游端口）。而终端（Endpoint）以及交换机面向上游端口无法发起这一过程，只能作为 “跟随者” 响应。接下来让我们通过一些示例，来使相关的概念更容易理解。</p>
-<h5 id="14632-1">14.6.3.2 链路配置示例 1</h5>
+<h5 id="14632-1">14.6.3.2 链路配置示例 1<a class="headerlink" href="#14632-1" title="Permanent link">&para;</a></h5>
 <p>如原文 543 页的图 14-15 所示，在这个例子中假定双方设备都只支持单个链路，但通道宽度可以是 x4,x2 或者 x1。通道编号分配在设备内部完成，必须从 0 开始连续编号。物理上的通道编号显示在图中所画的设备框内，而逻辑上的，或者说通告的（reported）通道编号，在 TS 有序集中反映。一般来说，逻辑和物理编号是一致的，但是也不尽然。</p>
 <p><strong>链路编号协商</strong></p>
 <ol>
@@ -3007,7 +3007,7 @@
 </ol>
 <p><img alt="image-20221013214216141" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221013214216141.png" /></p>
 <p>图 14-17 示例 1 中的 step5 与 step6</p>
-<h5 id="14633-2">14.6.3.3 链路配置示例 2</h5>
+<h5 id="14633-2">14.6.3.3 链路配置示例 2<a class="headerlink" href="#14633-2" title="Permanent link">&para;</a></h5>
 <p>第二个需要掌握的例子，首先还是那个有 4 个面向下游通道的设备，不过不同的是，这个例子中这个设备可以配置为单个 x4 链路，或者配置为两个 x2 链路的组合，或者配置为四个 x1 链路的组合，甚至还有一个 x2 链路和两个 x1 链路的组合，如原文 546 页图 14-18 所示。</p>
 <p>如果四个通道全部检测到接收端存在，并全部进入 Configuration，那么就会有这么几种可能的连接：</p>
 <ul>
@@ -3042,7 +3042,7 @@
 <li>USP 在收到链路和通道编号没有变化的 TS2 后，也可以发送相同的 TS2 序列。</li>
 <li>双方端口在收到至少 8 个 TS2 以及至少发送 16 个 TS2 后，发送一些逻辑空闲数据后，转移状态到 L0。在本例中，右侧链路的 USP 进行了内部通道编号颠倒。</li>
 </ol>
-<h5 id="14634-3">14.6.3.4 链路配置示例 3：如果通道配置失败</h5>
+<h5 id="14634-3">14.6.3.4 链路配置示例 3：如果通道配置失败<a class="headerlink" href="#14634-3" title="Permanent link">&para;</a></h5>
 <p>最后我们来再看看再配置过程中，某个通道如果不能正常工作会发生什么。这个例子基于 USP 的通道 2 不能正常工作，如原文 550 页图 14-21 所示。值得注意的是这个通道的问题并没有严重到断开物理连接，因为如果那样，DSP 将不会把它识别为接收端，并不会把它纳入链路。然而，即使通道的物理连接性没有问题，通道 2 的接收端或者发送端将无法完成配置工作。（或者两者都是）</p>
 <p>在本例中，链路训练过程可能会显著变长，因为在大多数状态跳转过程中，都需要等待所有通道就绪，如果只有一部分通道就绪，剩下一些没有，那么就需要等待超时条件满足才能跳转状态。</p>
 <p>接下来的步骤描述了通过 Configuration 状态机各次状态跳转，处理这种异常情况的过程。</p>
@@ -3068,11 +3068,11 @@
 <p><img alt="image-20221015154134317" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221015154134317.png" /></p>
 <p>图 14-23 图 14-22 示例 3 的 step 5 和 6</p>
 <p>在双方端口在收到至少 8 个 TS2 以及至少发送 16 个 TS2 后，发送一些逻辑空闲数据后，转移状态到 L0。其他未完成配置的通道，如本例中的通道 2 和 3，转为电气空闲状态，直到下一次 DSP 发起链路训练操作，那个时候会继续尝试正常的训练过程，以期故障排除并完成配置。</p>
-<h4 id="1464-configuration">14.6.4  Configuration 状态各次状态详细讨论</h4>
+<h4 id="1464-configuration">14.6.4  Configuration 状态各次状态详细讨论<a class="headerlink" href="#1464-configuration" title="Permanent link">&para;</a></h4>
 <p>本小节将详细讨论 Configuration 各次状态，其如原文 553 页图 14-24 所示。在前一小节讨论过链路训练的例子之后，这些次状态应该很容易理解。</p>
 <p><img alt="image-20221015154755609" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221015154755609.png" /></p>
 <p>图 14-24 Configuration 状态机</p>
-<h5 id="14641-configurationlinkwidthstart">14.6.4.1 Configuration.Linkwidth.Start</h5>
+<h5 id="14641-configurationlinkwidthstart">14.6.4.1 Configuration.Linkwidth.Start<a class="headerlink" href="#14641-configurationlinkwidthstart" title="Permanent link">&para;</a></h5>
 <p>有两种情况会进入该状态，一种是 Polling 状态正常结束跳转（在原文 527 页 “Polling.Configuration” 详述），另一种则是在 Recovery 状态中发现链路或者通道编号相较于前次指定时发生了变化，因此无法正常完成 Recovery 状态时跳转（在原文 571 页 “Recovery State” 详细描述了这种状态）。</p>
 <p><strong>A. Downstream 通道</strong></p>
 <p><em>Configuration.Linkwidth.Start 期间</em></p>
@@ -3089,7 +3089,7 @@
 <li>在激活不工作的通道时，发送端必须等待发送共模电压（Tx common mode voltage）稳定，才能退出电气空闲状态并开始发送 TS1。</li>
 <li>对于组合为同一链路的通道，他们的链路编号必须相同。只能在支持多链路配置的不同链路之间分配不同的链路编号。</li>
 </ul>
-<p>进入<em>“在未满足以下任何有效跳转条件时，则触发 24ms 超时” 状态</em> </p>
+<p>进入*“在未满足以下任何有效跳转条件时，则触发 24ms 超时” 状态* </p>
 <p>任何收到过至少一个链路和通道编号均为填充符号的 TS1 序列的通道，如果现在收到两个连续的链路编号有效，而通道编号仍然为填充符号的 TS1，那么 LTSSM 将转移至 Configuration.Linkwidth.Accept 次状态。</p>
 <p><em>转移至 ”Configuration.Linkwidth.Start“ 状态</em></p>
 <p>如果 DSP 接收到的第一批 TS1 中，链路编号就已经不是填充符号了，那么 DSP 通过这种现象就意识到存在交叉链路（Crosslink），链路对端设备此时也是 DSP。针对这种情况，面向下游的通道将转换为面向上游通道，DSP 等待长度随机的超时时间后，重新进入 Configuration.Linkwidth.Start 状态，只不过此时该通道将变成面向上游的通道。</p>
@@ -3123,7 +3123,7 @@
 <li>DSP 必须在发送的 TS1 中通告自身所有支持的速率，其中需要包括端口不打算使用的速率。</li>
 </ul>
 <p><strong>Crosslinks 交叉链路</strong>. 对于支持交叉链路特性的 USP 来说，当 LinkUp = 0b 时，需要在所有检测到接收端的通道上至少发送 16-32 个 TS1，其中链路编号和通道编号采用填充符号。之后，USP 将根据接收到的内容判断对端是否存在交叉链路。</p>
-<p>进入<em>“在未满足以下任何有效跳转条件时，则触发 24ms 超时” 状态</em> </p>
+<p>进入*“在未满足以下任何有效跳转条件时，则触发 24ms 超时” 状态* </p>
 <p>如果一些通道接收到了两个连续的链路编号有效，通道编号为填充符号的 TS1，那么这个端口就会进入 Configuration.Linkwidth.Accept 次状态，USP 选取其中一个接收到的链路编号作为这些通道的链路编号，并在所有收到链路编号非空的 TS1 的通道上，回复采用该链路编号的 TS1，通道编号继续使用填充字符。对于剩下的通道，如果他们检测到了接收方，但是还没有收到链路编号，那么则发送链路编号和通道编号都采用填充符号的 TS1。</p>
 <ul>
 <li>
@@ -3153,10 +3153,10 @@
 </ul>
 <p><em>转移至 Loopback 状态</em></p>
 <p><strong>译注：加粗部分为 USP 和 DSP 不同之处</strong></p>
-<p>如果支持 loopback 的发送端受到更高层逻辑的指示，发送 Loopback 比特置位的 TS1 或者 TS2，或者<strong>所有</strong>正在发送<strong>以及接收</strong> TS1 的通道收到连续两个 Loopback 比特置位的 TS1 后，将转移至 Loopback 状态。任意发送 Loopback 比特置位的端口将变成 Loopback master，而收到他们的端口将变成 Loopback slave。</p>
+<p>如果支持 loopback 的发送端受到更高层逻辑的指示，发送 Loopback 比特置位的 TS1 或者 TS2，或者**所有**正在发送**以及接收** TS1 的通道收到连续两个 Loopback 比特置位的 TS1 后，将转移至 Loopback 状态。任意发送 Loopback 比特置位的端口将变成 Loopback master，而收到他们的端口将变成 Loopback slave。</p>
 <p><em>转移至 Detect 状态</em></p>
 <p>如果在 24ms 超时到期后，仍然没有任何满足有效跳转条件，那么转移至 Detect 状态。</p>
-<h5 id="14642-configurationlinkwidthaccept">14.6.4.2 Configuration.Linkwidth.Accept</h5>
+<h5 id="14642-configurationlinkwidthaccept">14.6.4.2 Configuration.Linkwidth.Accept<a class="headerlink" href="#14642-configurationlinkwidthaccept" title="Permanent link">&para;</a></h5>
 <p>此时，USP 正在其所有通道上发送 TS1 进行回应，所有通道上的 TS1 中的链路编号都保持一致。链路编号来自于 DSP 的倡议，USP 直接在所有通道的 TS1 中反应了该链路编号值。这样一来 DSP 通过计算有多少通道响应该链路编号值，明确了链路宽度。接下来 DSP 需要发起提议，为这些通道指定各自的通道编号。所以 DSP 作为训练的主导者（leader），继续发送 TS1 序列，不过此时各通道的 TS1 各自携带有为其指定的通道编号值，而不再是填充符号。当然，这些 TS1 的链路编号仍然是相同的。接下来本节详细讨论 DSP 和 USP 在该状态的行为。 </p>
 <p><strong>A. Downstream 通道</strong></p>
 <p><em>Configuration.Linkwidth.Accept期间</em></p>
@@ -3168,7 +3168,7 @@
 <p>USP 在从 DSP 提供的链路编号中选择其中一个，填充至所有通道的 TS1 中，反馈发送给 DSP。这里所有通道指的是那些所有接收链路编号不为填充字符 TS1 的通道。在所有剩余的通道中，如果检测到对端接收方，但是没有接收到有效链路编号的通道，将继续发送链路编号和通道编号采用填充符号的 TS1。</p>
 <p><em>转移至 ”Configuration.Lanenum.Wait“ 状态</em></p>
 <p>USP 必须对 DSP 提出的通道编号分配做出响应。如果一个链路可以由多个发送链路编号非填充字符 TS1 的通道合并组成，并且它们接收到两个连续 TS1，其中链路编号相等，通道编号不为填充字符，那么 USP 应该在可行的情况下，发送通道编号相同的 TS1 表示接受分配，或者在必要的时候回应不同的编号值提议。（比如应用了选配的通道顺序翻转特性时）</p>
-<h5 id="14643-configurationlanenumwait">14.6.4.3 Configuration.Lanenum.Wait</h5>
+<h5 id="14643-configurationlanenumwait">14.6.4.3 Configuration.Lanenum.Wait<a class="headerlink" href="#14643-configurationlanenumwait" title="Permanent link">&para;</a></h5>
 <p>在讨论 Configuration.Lanenum.Wait 状态之前，本节将首先提供一些帮助性的背景知识。链路通道的编号方式，是从 0 到这条链路所支持的最大编号。比如说一个 x8 链路，将会把它的通道编号为 0-7。端口需要支持链路容纳其所拥有的最大通道数，也需要支持链路容纳最少至一个通道。通道总是从 0 开始编号，并且需要是连续编号不中断的。比如，如果一个 x8 链路上有些通道不工作，它可能可以转而配置成一个 x4 链路，这种情况下它必须使用通道 0-3。再举一个例子，如果是链路的通道 2 无法正常工作，无法使用通道 0，1，3，4 组成一个 x4 链路，因为它们的编号是不连续的。链路上任何剩余的通道必须发送链路和通道编号都使用填充符号的 TS1。</p>
 <p>协议在 Configuration 状态部分多次强调了一项时序要求，本节不再多次重复这一部分，但需要意识到这项限制对 DSP 和 USP 都有效：</p>
 <p>为了避免将链路的宽度配置小于正常宽度，协议建议如果在多通道链路上发现某些通道出现错误或者失去 Block Alignment 状态，那么延迟一段时间后再进行本过程。8b/10b 编码时等待至少 2 个 TS1，128b/130b 编码时至少等待 34 个 TS1，但任何情况下不要等待超过 1ms。</p>
@@ -3196,7 +3196,7 @@
 </ul>
 <p><em>转移至 Detect 状态</em></p>
 <p>触发了上述的 2ms 超时事件，或者所有通道接收到两个连续的 TS1，其链路和通道编号都为填充符号。</p>
-<h5 id="14644-configurationlanenumaccept">14.6.4.4 Configuration.Lanenum.Accept</h5>
+<h5 id="14644-configurationlanenumaccept">14.6.4.4 Configuration.Lanenum.Accept<a class="headerlink" href="#14644-configurationlanenumaccept" title="Permanent link">&para;</a></h5>
 <p><strong>A. Downstream 通道</strong></p>
 <p><em>Configuration.Lanenum.Accept期间</em></p>
 <p>DSP 已经在上一个状态中接收到了链路和通道编号为非填充值的 TS1。在本状态中，DSP 必须决定是否能够按照 USP 返回的通道编号顺序建立一条链路。下面列出了三种可能的状态跳变方式。</p>
@@ -3224,7 +3224,7 @@
 <p>和 DSP 时的情形一样，新的通道编号必须从 0 开始顺序递增，指派给链路所使用的通道。任何没有接收到 TS1 的通道不能成为链路的一部分，并且中断通道编号递增。剩下不使用的通道，必须在其上发送链路和通道编号都为填充符号的 TS1。</p>
 <p><em>转移至 Detect 状态</em></p>
 <p>如果没有链路可以被配置，或者所有通道接收到两个连续的链路和通道编号都为填充符号的 TS1。</p>
-<h5 id="14645-configurationcomplete">14.6.4.5 Configuration.Complete</h5>
+<h5 id="14645-configurationcomplete">14.6.4.5 Configuration.Complete<a class="headerlink" href="#14645-configurationcomplete" title="Permanent link">&para;</a></h5>
 <p>Configuration.Complete 是唯一的 TS2 序列交换的状态。正如前文讨论的那样，TS2 交换是链路两端的设备间，互相确认已经准备好状态跳转的握手确认机制。这是对先前状态中 TS1 序列交换的链路编号以及通道编号的最终确认。</p>
 <p>值得注意的是协议允许双方设备在进入本状态时，改变它们的支持速率列表和链路宽度恢复能力（upconfigure capability），但一旦进入本状态后，这些设置就不再允许修改。因为设备进入本状态后将记录对方在 TS2 中通告的这些能力和设置，具体内容将在本节进行讨论。</p>
 <p><strong>A. Downstream 通道</strong></p>
@@ -3277,7 +3277,7 @@
 <p>任何没有配置为链路一部分的通道将与当前的 LTSSM 不再有关联，其他所需的条件与上述列出的非超时时的条件一致。</p>
 <p><em>转移至 Detect 状态</em></p>
 <p>在超时后，如果未满足上一段的条件，则转入 Detect 状态。</p>
-<h5 id="14646-configurationidle">14.6.4.6 Configuration.Idle</h5>
+<h5 id="14646-configurationidle">14.6.4.6 Configuration.Idle<a class="headerlink" href="#14646-configurationidle" title="Permanent link">&para;</a></h5>
 <p><em>Configuration.Idle 期间</em></p>
 <p>在 Configuration.Idle 次状态中，发送方不断发送空闲数据，等待接收到足够数量的空闲数据后，将链路转为 L0 状态。此时，物理层向上层报告链路已经处于就绪状态（Linkup = 1b）。</p>
 <p>对于 8b/10b 编码而言，发送方在所有已配置的通道上发送空闲数据，所谓空闲数据其实就是数值零经过加扰和编码之后的数值。</p>
@@ -3300,22 +3300,22 @@
 <p>c) 注意：该变量记录了因为配置过程没有起作用，从而导致状态机从 Configuration.Idle 状态跳转到 Recovery 状态的次数。这可能是因为均衡设置不合适，或者当前选择的速率无法正常工作导致的，Recovery 状态内会采取措施尝试解决这些问题。该变量限制了从本状态跳转至 Recovery 状态的尝试次数，从而避免了永久的无限循环。如果链路在 256 次尝试后（变量计数至 FFh）仍然没法正常工作，那么跳转回 Detect 状态重新开始，并希望这次能有更好的结果。</p>
 <p><em>转移至 Detect 状态</em></p>
 <p>否则，即 idle_to_rlock_transitioned 为 FFh 时，跳转至 Detect 状态。</p>
-<h3 id="147-l0-state-l0">14.7 L0 State // L0 状态</h3>
+<h3 id="147-l0-state-l0">14.7 L0 State // L0 状态<a class="headerlink" href="#147-l0-state-l0" title="Permanent link">&para;</a></h3>
 <p>L0 状态是链路的全功能正常工作状态, 虽然刚进入此状态时处于逻辑空闲状态,但之后链路两端的设备会交换 TLP 和 DLLP（译注：此处按照个人理解翻译了，原文为 This is the normal, fully‐operational Link state, <strong>during which Logical Idle</strong>, TLPs and DLLPs are exchanged between Link neighbors.）。在链路训练过程完成后，会立刻达成 L0 状态。物理层此时通过 LinkUp 变量通知更高层的逻辑: 链路已经准备就绪。此外变量 idle_to_rlock_transitioned 也复位为 00h。</p>
 <p><em>转移至 Recovery 状态</em></p>
 <p>如果本方设备提议改变链路速率或者宽度，或者对端设备已经进入了 Recovery 或者电气空闲状态，表示提议发起链路速率或者宽度改变，那么状态机的下一个状态是 Recovery 状态。让我们接下来用一些略详细的篇幅来介绍三种情况。</p>
-<h4 id="1471-speed-change">14.7.1 Speed Change // 速率切换</h4>
+<h4 id="1471-speed-change">14.7.1 Speed Change // 速率切换<a class="headerlink" href="#1471-speed-change" title="Permanent link">&para;</a></h4>
 <p>协议中提到两种触发自动速率改变的情况。</p>
-<p>第一种情况是链路双方都支持 2.5GT/s 以上的速率，并且链路处于活跃状态时（数据链路层报告 DL_Active），或者链路一方通过 TS1/2 有序集请求速率转换时。举个例子，如果对方声明支持更高的速率，并且软件通过使能重训练（Retrain Link ）比特，并将目标速率（Target Link Speed，见原文 569 页的图 14-26）设置为与当前不同的速率，那么 DSP 会发起一次速率转换。</p>
+<p>第一种情况是链路双方都支持 2.5GT/s 以上的速率，并且链路处于活跃状态时（数据链路层报告 DL_Active），或者链路一方通过 TS&frac12; 有序集请求速率转换时。举个例子，如果对方声明支持更高的速率，并且软件通过使能重训练（Retrain Link ）比特，并将目标速率（Target Link Speed，见原文 569 页的图 14-26）设置为与当前不同的速率，那么 DSP 会发起一次速率转换。</p>
 <p>第二种速率切换的情况是链路双方都支持 8GT/s 速率，并且一方打算进行 Tx 均衡。这两种情况下变量 directed_speed_change 都会被设置为 1b，并且 changed_speed_recovery 比特会被清除为 0b。</p>
 <p>如果链路对端在 Configuration.Complete 或者 Recovery.RcvrCfg 状态中从未通告过比 2.5 GT/s 更高的速率，那么当前端口不会发起速率改变（也就是不会设置 directed_speed_change 变量）。</p>
 <p><img alt="image-20221207000703021" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221207000703021.png" /></p>
 <p>图 14-25 链路控制寄存器</p>
 <p><img alt="image-20221207000727764" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221207000727764.png" /></p>
 <p>图 14-26 链路控制寄存器 2</p>
-<h4 id="1472-link-width-change">14.7.2 Link Width Change // 链路宽度切换</h4>
+<h4 id="1472-link-width-change">14.7.2 Link Width Change // 链路宽度切换<a class="headerlink" href="#1472-link-width-change" title="Permanent link">&para;</a></h4>
 <p>当变量 upconfigure_capable 设置为 1b 时，上层的逻辑（Upper layer）一般只会减少链路宽度，用于恢复链路的原始宽度。如果禁止硬件自主决定位宽（Hardware Autonomous Width Disable）比特被置位为 1b，那么端口将只能通过减少链路宽度来解决可靠性问题。仅当链路对端伙伴通告其具有链路宽度恢复能力，并且链路宽度没有被配置为最大宽度时，上层逻辑才可以发起一次链路宽度增加操作。除了上述指导性建议以外，协议中没有其他关于何时进行链路宽度改变的规定，因此该行为的细节取决于具体实现。</p>
-<h4 id="1473-link-partner-initiated">14.7.3 Link Partner Initiated //链路伙伴发起链路改变的情形</h4>
+<h4 id="1473-link-partner-initiated">14.7.3 Link Partner Initiated //链路伙伴发起链路改变的情形<a class="headerlink" href="#1473-link-partner-initiated" title="Permanent link">&para;</a></h4>
 <p>协议中描述了三种链路伙伴发起链路改变的情形：</p>
 <p>首先第一种情况，本方端口在链路上的所有通道上检测或者推断出电气空闲状态（详见原文 596 页的表 14-10），并且此前没有在任何通道上接收到 EIOS 有序集。此时，端口可以选择留在 L0 状态或者进入 Recovery 状态。如果由此产生错误，那么端口可能通过置位 Retrain link 比特的方式进入 Recovery 状态。</p>
 <p>第二种情况，本方端口在任何已配置的通道上接收到 TS1 或者 TS2 序列（128b/130b 编码时接收到 EIEOS），这表示对端已经进入 Recovery 状态。由于这两种情况都是由对端发起的，因此本方端口发送端被允许完成正在进行中的 TLP 或者 DLLP。</p>
@@ -3330,13 +3330,13 @@
 <p>当链路伙伴被命令在链路上发起 L1 状态转移后，它会在所有通道上发送一个 EIOS 序列（如果速率为 5.0 GT/s，那就发两个 ），并在任意通道上接收到一个 EIOS 后，下一个跳转状态是 L1 状态。值得注意的是，链路进入 L1 状态之前需要链路双方都事先同意，因此需要一项数据链路层握手机制保证双方都已经准备好进入 L1。关于 L1 状态的详情，可以参考原文 733 页的 ”链路电源管理“ 一节 （原书第 16 章）。</p>
 <p><em>转移至 ”L2“ 状态</em></p>
 <p>当链路伙伴被命令在链路上发起 L2 状态转移后，它会在所有通道上发送一个 EIOS 序列（如果速率为 5.0 GT/s，那就发两个 ），并在任意通道上接收到一个 EIOS 后，下一个跳转状态是 L2 状态。值得注意的是，链路进入 L2 状态之前需要链路双方都事先同意，因此需要一项数据链路层握手机制保证双方都已经准备好进入 L2。关于 L2 状态的详情，可以参考原文 733 页的 ”链路电源管理“ 一节 （原书第 16 章）。</p>
-<h3 id="148-recovery-state">14.8 Recovery State // 恢复状态</h3>
+<h3 id="148-recovery-state">14.8 Recovery State // 恢复状态<a class="headerlink" href="#148-recovery-state" title="Permanent link">&para;</a></h3>
 <p>如果一切如预期一样顺利，那么链路可以在不进入 Recovery 状态的情况下，直接被训练进入 L0 状态，这一正常工作状态。但我们之前讨论过，在两种情况下一定需要进入 Recovery 状态。</p>
 <p>首先一种情况，如果在 Configuration.Idle 状态中没能成功接收到正确的链路符号，那么 LTSSM 会进入 Recovery 状态，尝试纠正链路中的信号质量问题，比如通过调整均衡参数的方式。</p>
 <p>第二种情况，在链路以 2.5GT/s 速率训练完成，进入 L0 状态后，如果双方都支持更高的速率，那么 LTSSM 会进入 Recovery 状态，将速率调整为双方同时支持或者通告的最高速率。这种情况下，LTSSM 必须重新进行比特锁定和符号或者块锁定，以及链路间的去除偏斜操作。</p>
 <p>链路编号以及通道编号正常情况下需要保持不变，除非需要改变链路宽度。这种情况下 LTSSM 进入 Configuration 状态，重新进行链路宽度协商。</p>
 <p>注意：简洁起见，本章后续中使用锁定（Lock）一词表示已经完成了比特锁定和 8b/10b 编码的符号锁定、或者 128b/130b 编码的块锁定。接收端必须首先完成比特和符号或者块的锁定操作之后，才能在链路上识别出有效的符号、序列以及报文。</p>
-<h4 id="1481-recovery">14.8.1 几个进入 Recovery 状态的理由</h4>
+<h4 id="1481-recovery">14.8.1 几个进入 Recovery 状态的理由<a class="headerlink" href="#1481-recovery" title="Permanent link">&para;</a></h4>
 <ul>
 <li>从 L1 状态退出时，必须进入 Recovery 状态重新训练，因为协议中，退出 L1没有任何快速重训练选项。（比如发送 FTS 序列等方法）</li>
 <li>从 L0s 状态退出时，如果接收方在规定的时间内，没能依靠 FTS 序列完成同步，那么也必须进入 Recovery 状态重新训练。</li>
@@ -3348,23 +3348,23 @@
 <li>接收端在完成配置的链路上接收到 TS1，TS2 序列，从而获知到对端已经进入 Recovery 状态。</li>
 <li>接收端在完成配置的链路上，在没有接收到 EIOS （Electrical Idle Ordered Set）序列的情况下检测到了电气空闲状态。</li>
 </ul>
-<h4 id="1482-recovery">14.8.2 初始化 Recovery 状态</h4>
+<h4 id="1482-recovery">14.8.2 初始化 Recovery 状态<a class="headerlink" href="#1482-recovery" title="Permanent link">&para;</a></h4>
 <p>链路中的任意一方都可以通过向对端发送 TS1 序列来发起进入 Recovery 状态的请求。当一个 PCIe 端口接收到 TS1 时，他便获知对端已经进入了 Recovery 状态，随后其跟随对端进入 Recovery 状态。进入 Recovery  状态之后，本方端口也开始向对方回复 TS1 序列。双方接收端都通过对方的 TS1 序列完成锁定（如果有需要的话），然后按照需求进入各个次状态。Recovery 各个次状态如原文 573 页图 14-27 所示，本节后续将详细讨论各个次状态中都进行了哪些操作。</p>
 <p><img alt="image-20220521212650955" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20220521212650955.png" /></p>
 <p>图 14-27 Recovery 状态机</p>
-<h4 id="1483-recovery">14.8.3 Recovery 状态各次状态详细讨论</h4>
-<h5 id="recoveryrcvrlock"><em>Recovery.RcvrLock 状态期间</em></h5>
+<h4 id="1483-recovery">14.8.3 Recovery 状态各次状态详细讨论<a class="headerlink" href="#1483-recovery" title="Permanent link">&para;</a></h4>
+<h5 id="recoveryrcvrlock"><em>Recovery.RcvrLock 状态期间</em><a class="headerlink" href="#recoveryrcvrlock" title="Permanent link">&para;</a></h5>
 <p>在 Recovery.RcvrLock 状态期间，无论链路的速率为多少，发送方总是在所有已配置通道上发送 TS1 序列，TS1 序列中的链路以及通道编号，和在 Configuration 状态期间设置的数值相同。如果进入 Recovery 状态的目的是切换速率，那么发起方发送的 TS1 序列中的，数据速率识别符号（Data Rate Identifier Symbol）中的 speed_change 比特会被设置为 1，并将内部变量 directed_speed_change 也设置为 1。在对端设备接收到 speed_change 比特为 1 的 TS1 序列后，也会同样将其内部变量 directed_speed_change 设置为 1。此外，一旦进入 Recovery.RcvrLock 状态后，另一个内部变量 successful_speed_negotiation 会清除，设置为 0。</p>
 <p>在 Recovery.RcvrLock 状态中，面向上游端口（USP）可以指定面向下游端口（DSP）在 5GT/s 速率下使用的去加重等级系数（de‐emphasis level）。USP 通过 TS1 序列中的可选去加重等级（Selectable  de‐emphasis leve）比特，来指定 DSP 的数值设置。但是 DSP 有可能会因为链路上的比特错误，无法接收到 USP 发送的这一信息，所以 USP 可以在因为速率切换进入  Recovery 状态后，再次指定 DSP 的去加重等级。如果 DSP 打算采用 USP 所要求的的数值，那么 DSP 必须在 Recovery.RcvrLock 状态中记录接收到的可选去加重等级比特的数值。</p>
 <p>在进入 Recovery.RcvrLock 状态时，TS1 序列接收方也可以被指定新的发送电压数值。接收方会在进入该状态时采样一次链路控制寄存器2（ Link Control 2 register）中的 Transmit Margin 比特，并且保持该数值有效，直到下一次从  L0, L0s, 或者 L1 进入到 Recovery 状态，采样到新的数值为止。</p>
 <p>DSP 如果想将速率切换到 8GT/s 并且重新进行均衡的话，需要发送  speed_change 比特置为 1，并且速率声明为 8GT/s 的 EQ TS1 序列。如果一个 USP 连续接收到 8 个  speed_change 比特置为 1，并且速率声明支持 8GT/s 的EQ TS1 或者 EQ TS2 序列后，USP 也会宣告支持使用 8GT/s 速率，除非 USP 确认在该速率下存在可靠性问题，并且无法靠均衡解决。值得注意的是，任意端口可以在进入  Recovery 状态时，改变其通告支持的速率，但需要确保自身可以稳定可靠地支持这一速率。除了上述这种情形外，端口在 Recovery.RcvrLock 状态，Recovery.RcvrCfg 状态以及 Recovery.Equalization 状态中，不得改变自己通告的支持速率。</p>
-<h5 id="recoveryrcvrcfg"><em>转移至 Recovery.RcvrCfg 状态</em></h5>
+<h5 id="recoveryrcvrcfg"><em>转移至 Recovery.RcvrCfg 状态</em><a class="headerlink" href="#recoveryrcvrcfg" title="Permanent link">&para;</a></h5>
 <p>Recovery.RcvrLock 状态满足下述条件后，转移至 Recovery.RcvrCfg 状态。如果双方接收到 8 个连续的 TS1 或者 TS2 序列，其中链路与通道编号与发送的数值一致，并且序列中的 speed_change 比特与本地变量 directed_speed_change 一致，并且 EC 域数值为 00b （8 GT/s 速率下，译注：即无需进行均衡训练）。</p>
 <ul>
 <li>如果设置了 Extended Synch 比特，那么在进入 Recovery.RcvrCfg 状态之前，必须最少发送 1024 个连续的 TS1 序列。</li>
 <li>如果原先是从 Recovery.Equalization 状态进入当前次状态，那么 USP 需要比较所有通道上接收的均衡参数或者 preset，将他们和均衡的 Phase2 中所接收的最终参数集（final set of coefficient）或者 preset 进行比较。如果他们数值不一致，那么 USP 会将其发送的 TS2 序列中的  Request Equalization 比特设置为 1。</li>
 </ul>
-<h5 id="recoveryequalization"><em>转移至 Recovery.Equalization 状态</em></h5>
+<h5 id="recoveryequalization"><em>转移至 Recovery.Equalization 状态</em><a class="headerlink" href="#recoveryequalization" title="Permanent link">&para;</a></h5>
 <p>当数据速率为 8 GT/s 时，数据通道必须采取合适的均衡参数，以获得良好的信号完整性。本节的内容并不适用于更低速的速率。对于运行在 8GT/s 速率的链路来说，他们并不是每次进入 Recovery  状态时，都需要经过 Recovery.Equalization 次状态。链路只会在满足下述情况时，才会进入 Recovery.Equalization 状态：</p>
 <p>如果内部变量 <strong>start_equalization_w_preset</strong> 设置为 1，那么：</p>
 <p>a）USP 需要在转为 8.0 GT/s 速率之前，采样其接收的连续 8 个 TS2 中的 preset 数值。USP 必须采用其中的发送端 preset，可以选择是否采用其中的接收端 preset。</p>
@@ -3386,24 +3386,24 @@
 <li>如果变量 changed_speed_recovery 被设置为 1，表示某个高于 2.5 GT/s 的速率已经能够正常工作，但是在切换到新的协商速率后，链路不能工作，这种情况下速率会被恢复为由 L0 或者 L1 进入 Recovery 状态前的数值。</li>
 </ul>
 <p><strong><em>转移至 Configuration 状态</em></strong></p>
-<p>如果没有发起速率改变请求，（即 directed_speed_change 变量为 0，并且 TS1/2 中的 speed_change 比特也为 0），或者双方协商后发现彼此同时支持的最高速率只是 2.5 GT/s，此时 LTSSM 会转移至 Configuration 状态。</p>
+<p>如果没有发起速率改变请求，（即 directed_speed_change 变量为 0，并且 TS&frac12; 中的 speed_change 比特也为 0），或者双方协商后发现彼此同时支持的最高速率只是 2.5 GT/s，此时 LTSSM 会转移至 Configuration 状态。</p>
 <p><strong><em>转移至 Detect 状态</em></strong></p>
 <p>如果上述条件都没能满足，那么接下来转移至 Detect 状态。</p>
-<h4 id="1484">14.8.4 一次速率变换示例</h4>
+<h4 id="1484">14.8.4 一次速率变换示例<a class="headerlink" href="#1484" title="Permanent link">&para;</a></h4>
 <p>在 Recovery 状态的章节中，协议提供了一个速率变换过程的示例。示例中两个链路上的伙伴（设备 A 和设备 B）同时从复位状态中释放，并且都支持 5.0 GT/s 和 8.0 GT/s 速率。</p>
 <p>首先，链路会以  2.5 GT/s 的速率自动训练为 L0 状态。（这一行为很大概率会在后续的协议版本中保留，因为后续协议将提供和先前设备的后向兼容性。）</p>
 <p>在这个示例中，两个设备都支持更高的速率，并通过训练过程中发送的 TS 有序集中的速率标识符字段通知了对方这一情况。两者都明白对方支持更高速率，并且它们其中的一个（比如设备 A）会首先将内部变量 directed_speed_change 设置为 1。此时，设备 A 会进入 Recovery.RcvrLock 状态并且发送 speed_change 比特置为 1 的 TS1 序列。如果目标速率为 8.0 GT/s，且链路之前从未达到过该速率，那么设备间会交换 EQ TS1 来传达 TX 均衡使用的 preset，而不是交换普通的 TS1。</p>
 <p>设备 B 在接收到 TS1 序列后，也转移到 Recovery.RcvrLock 状态。当其识别到连续 8 个接收 TS1 中的 speed_change 比特都为 1 时，设备 B 通过将其发送 TS1 中的 speed_change 比特也置为 1 作为回应，并进入 Recovery.Speed 状态。设备 A 等待设备 B 做出回应后，当其也接收到 8 个 speed_change 比特置为 1 的 TS1 后，设备 A 经由 Recovery.RcvrCfg 状态进入 Recovery.Speed 状态。在 Recovery.Speed 状态中，发送端被置于电气空闲状态中，链路速率被设置为双方都支持的最高速率，变量 directed_speed_change 的值随即被清除为零。</p>
 <p>在等待一段时间后，双方重返 Recovery.RcvrLock 状态，以新速率重新激活发送端（本例中是 8 GT/s）。此后，双方重新交换 TS1，此时 TS1 中的 speed_change 比特数值已经被清除为 0b。如果链路在新速率下工作正常，那么双方会经由 Recovery.RcvrCfg 状态返回 L0 状态。然而，如果设备 B 出现了一些状况，比如无法实现比特锁定，这会造成该次状态中的逻辑超时，并且返回 Recovery.Speed 状态。此时，设备 A 可能已经正常进入了 Recovery.RcvrCfg 状态，不过当其在链路上检测到对端重新进入电气空闲状态时，这表示对端重新回到了 Recovery.Speed 状态，设备 A 也会返回该状态。重回 Recovery.Speed 状态使双方设备间恢复到进入 Recovery 状态前的速率（本例中是 2.5 GT/s），并返回 Recovery.RcvrLock 状态。</p>
 <p>面对这种情况，设备 A 可能重新将内部变量 directed_speed_change 设置为 1，并且第二次尝试速率变换流程。如果第二次速率切换仍然失败，设备 A 可能会选择将 8.0 GT/s 移出其通告的支持速率列表，并以新的支持速率列表重新开始速率切换。此时，双方共同支持的最高速率变成了 5.0 GT/s。如果之后还是不能正常工作，那么设备 A 可能会放弃向更高速率的切换。设备如何以及何时选择更新其通告的支持速率列表，以及放弃切换到更高速率的尝试，协议中都没有具体定义，都取决于具体的实现细节。</p>
-<h4 id="1485">14.8.5 链路均衡概览</h4>
+<h4 id="1485">14.8.5 链路均衡概览<a class="headerlink" href="#1485" title="Permanent link">&para;</a></h4>
 <p>本节是对链路均衡过程一个概括性的介绍，如果读者对均衡过程中的状态机具体行为感兴趣的话，可以阅读本节以了解这方面的知识。</p>
 <p>链路的速率越高，相比低速率会受到更多的信号干扰。为了补偿这方面的信号质量损失，并且最大程度上降低系统设计的成本和精力，PCIe 3.0 协议增加了对发送端均衡的需求。与低速率采取的固定去加重系数方法不同，去加重本身是发送均衡的简化版本，发送均衡采取了一种通过主动握手流程，将发送端与当前信号实际传输环境相适配。握手时，接收端每个通道上都会评估输入信号的质量，并根据信号质量，建议链路伙伴为满足信号质量需求，应当采取何种发送均衡参数。</p>
 <p>链路均衡过程在首次达到 8.0 GT/s 速率后进行，尽管不是强制要求，但是协议强烈建议由硬件自动开始均衡过程。如果不支持硬件自动均衡机制，那么该设计则必须配备基于软件的均衡机制。如果任意一方端口无法通过均衡过程达到预期的信号质量，LTSSM 会认为该速率下链路无法正常工作，返回 Recovery.Speed 状态，并要求降低速率。</p>
 <p>整个均衡过程包括四个阶段，将在下文中详细讨论。一旦速率改变为  8.0 GT/s 后，当前所处的均衡阶段由接收的 TS1 中的 EC（Equalization Control）字段通知，如图 14-28 所示。</p>
 <p><img alt="image-20221219233513774" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221219233513774.png" /></p>
-<p>图 14-28  8.0 GT/s 速率 TS1/2 中的 EC 字段示意</p>
-<h5 id="14851-phase-0">14.8.5.1 Phase 0</h5>
+<p>图 14-28  8.0 GT/s 速率 TS&frac12; 中的 EC 字段示意</p>
+<h5 id="14851-phase-0">14.8.5.1 Phase 0<a class="headerlink" href="#14851-phase-0" title="Permanent link">&para;</a></h5>
 <p>当 DSP 准备好从低速率转换到 8.0 GT/s 时，DSP 进入 Recovery.RcvrCfg 次状态，通过 EQ TS2 向 USP 发送 Tx Presets 以及 Rx Hints，具体帧格式如原文 510 页 ”TS1 和 TS2 有序集“ 一节所述。（需要注意的是，如果链路已经工作在 8.0 GT/s 速率，那么将跳过这个步骤。）DSP 发送的 Tx Preset 值来自于均衡控制寄存器（Equalization Control register）的内容，如原文 579 页图 14-29 所示。有一点值得强调的是，各个通道的均衡值可能不同。DSP 会应用寄存器中的 DSP 端数值给本地发送端使用，并可选的将在本地接收端应用 DSP 数值。在转为更高速率时，DSP 会将寄存器中的 USP 数值发送给 USP 使用。</p>
 <p><img alt="image-20221220233542633" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221220233542633.png" /></p>
 <p>图 14-29 均衡控制寄存器示意图</p>
@@ -3413,10 +3413,10 @@
 <p><img alt="image-20221220233755765" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221220233755765.png" /></p>
 <p>表 14-9 Rx Preset Hint 编码方式'</p>
 <p>一旦进入速率切换流程，DSP 会进入均衡阶段 1（Phase 1），并且发送 EC = 01b 的 TS1，接下来就等待 USP 回应 EC 数值相同的 TS 了。</p>
-<p>同时，USP 从均衡阶段 0 启动，如原文 581 页图 14-30 所示，开始通过发送 TS1 序列回复此前从 EQ TS1/2 中收到的 preset 数值。在支持这些数值的前提下，USP 会将其应用到到发送端，并可选地在接收端应用 Rx Hints。USP 被允许在评估输入信号质量之前等待 500ns，一旦 USP 能够识别出两个连续的 TS1 序列，那么就可以进入下一个阶段。这意味着信号质量满足了最低的 BER=10-4 需求（Bit Error Ratio，也就是每 10000 个比特的错误小于一个比特）。接下来，USP 将其发送的 TS1 中的 EC 数值改为 01b，并进入 Phase 1，将控制权转回给 DSP。</p>
+<p>同时，USP 从均衡阶段 0 启动，如原文 581 页图 14-30 所示，开始通过发送 TS1 序列回复此前从 EQ TS&frac12; 中收到的 preset 数值。在支持这些数值的前提下，USP 会将其应用到到发送端，并可选地在接收端应用 Rx Hints。USP 被允许在评估输入信号质量之前等待 500ns，一旦 USP 能够识别出两个连续的 TS1 序列，那么就可以进入下一个阶段。这意味着信号质量满足了最低的 BER=10-4 需求（Bit Error Ratio，也就是每 10000 个比特的错误小于一个比特）。接下来，USP 将其发送的 TS1 中的 EC 数值改为 01b，并进入 Phase 1，将控制权转回给 DSP。</p>
 <p><img alt="image-20221220235107264" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221220235107264.png" /></p>
 <p>图 14-30 均衡过程：开始阶段</p>
-<h5 id="14852-phase-1">14.8.5.2 Phase 1</h5>
+<h5 id="14852-phase-1">14.8.5.2 Phase 1<a class="headerlink" href="#14852-phase-1" title="Permanent link">&para;</a></h5>
 <p>DSP 采取和 USP 一样的措施，通过检测背靠背连续的 TS1 来达到 10-4 的误码率。在此期间，DSP 与对端交流其 Tx presets 以及 FS (Full Swing)、LF (Low Frequency) 以及 Post‐cursor coefficient 数值，如原文 584 页图 14-32 所示。协议额外指定了参数 C-1/C0/C+1 必须满足的一些规则，它们包括：</p>
 <ol>
 <li>|C‐1| &lt;= 下取整(FS/4)</li>
@@ -3434,7 +3434,7 @@
 <p>一旦 DSP 认为当前链路工作正常（即 DSP 接收到 EC = 01b 的输入 TS1），可以进入下一阶段时，DSP 结束当前阶段并发起进入 Phase2 的请求，通过把 TS1 中的 EC 比特设置为 10b，如原文 583 页图 14-31 所示，并将下一阶段的控制权交给 USP。当 USP 回复 EC 比特 = 10b 的 TS1 后，双方端口都进入 Phase 2。如果一切顺利的话，DSP 可能认为当前的信号质量已经足够好了，不需要更进一步的调整。在这种情况下，DSP 发送 EC=00b 的 TS1 以退出均衡过程。 </p>
 <p><img alt="image-20221224173235812" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221224173235812.png" /></p>
 <p>图 14-31 均衡过程：开始阶段2</p>
-<h5 id="14853-phase-2">14.8.5.3 Phase 2</h5>
+<h5 id="14853-phase-2">14.8.5.3 Phase 2<a class="headerlink" href="#14853-phase-2" title="Permanent link">&para;</a></h5>
 <p>此时，信号质量足够链路双方从信号中读取出 TS1 序列，但是不足以维持长时间的运行。一旦双方端口都处于 Phase2，USP 被允许要求改变 DSP 的发送设置，并评估它们是否适合当前的环境，USP 不断迭代这个过程，直到链路达到当前环境下的最佳设置。发起改变请求时，USP 改变其发送的 TS1 中的均衡信息字段的数值。如原文 584 页图 14-32 所示，几个相关的字段如下：</p>
 <ul>
 <li><strong>Tx Preset:</strong> Tx Preset 是发送端的粗粒度调节，用于将发送端设置为当前信号环境下正确的大致范围内。USP 设置了 Tx Preset 的值，并将 Use Preset 比特（符号 6 的比特 7）位置 1，通知 DSP 发送端使用 USP 提供的 Tx Preset 值。如果 Use Preset 比特没有置位，那么 DSP 将会理解为：保持当前的 Preset 不变，而应该调整发送参数（coefficient）。发送参数是发送端的细粒度调节方法。</li>
@@ -3450,11 +3450,11 @@
 <p>图 14-33 三抽头发送均衡器示意图</p>
 <p><img alt="image-20221225121112626" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221225121112626.png" /></p>
 <p>图 14-34 均衡过程：Phase 2 阶段的调整</p>
-<h5 id="14854-phase-3">14.8.5.4 Phase 3</h5>
+<h5 id="14854-phase-3">14.8.5.4 Phase 3<a class="headerlink" href="#14854-phase-3" title="Permanent link">&para;</a></h5>
 <p>DSP 发送 EC = 11b 的 TS1 作为对 USP 进入 Phase 3 的回应，此时可以对 UPS 发送端进行同样的信号评估过程。同样地，DSP 发送 TS1 要求 USP 应用一组新的发送端设置：如果 Use Preset 比特置起，则 DSP 定义了一组新的 presets，否则就是 DSP 提供新的参数。新的发送端设置将连续发送 1us，或者此次发送端设置改变申请的结果已经评估完毕后停止。评估必须等待 500ns 加上信号在发送逻辑和接收逻辑之间的来回时间。DSP 可以尝试不同的均衡设置，直到发现其中某个设置取得了预期中的信号质量。此时，DSP 通过发送 EC = 00b，表示退出均衡状态。</p>
 <p><img alt="image-20221225160119098" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221225160119098.png" /></p>
 <p>图 14-35 均衡过程：Phase 3 阶段的调整</p>
-<h5 id="14855">14.8.5.5 均衡过程中的注意事项</h5>
+<h5 id="14855">14.8.5.5 均衡过程中的注意事项<a class="headerlink" href="#14855" title="Permanent link">&para;</a></h5>
 <p>此节整理了协议中和均衡过程相关的其他事项，如下：</p>
 <ul>
 <li>所有通道都需要参与到均衡过程中，即使是那些只在 upconfig 事件后才会变成激活状态的通道。</li>
@@ -3466,9 +3466,9 @@
 <li>组件有必要储存 8 GT/s 速率均衡阶段取得的均衡数值。协议并没有明确要求这一点，但是本文作者认为，如果存储下这些均衡结果，那么即使切换到低速率后，再切换回 8 GT/s 速率时，可以直接使用存储的结果。这一点是有意义的，不然的话，此时会花费大量的时间重新进行均衡，却有可能获得相同的均衡结果，因为此时相比于彼时的电气环境并没有变化。</li>
 <li>组件可以随时调整它们接收端的细粒度设置，只要这不会导致链路进入不稳定状态或者进入 Recovery 状态。</li>
 </ul>
-<h3 id="1486">14.8.6 均衡次状态详览</h3>
+<h3 id="1486">14.8.6 均衡次状态详览<a class="headerlink" href="#1486" title="Permanent link">&para;</a></h3>
 <p>本节将详细讨论链路均衡时涉及的状态。</p>
-<h4 id="14861-recoveryequalization">14.8.6.1 Recovery.Equalization</h4>
+<h4 id="14861-recoveryequalization">14.8.6.1 Recovery.Equalization<a class="headerlink" href="#14861-recoveryequalization" title="Permanent link">&para;</a></h4>
 <p>Recovery.Equalization 是用于在 8 GT/s 及以上速率进行链路均衡过程的次状态。更低的速率无需使用均衡功能， LTSSM 状态机也不会进入该次状态。因为均衡是 PCIe 一个新的，并且复杂的话题，所以在上一节 ”14.8.5 链路均衡概览“  中，从更抽象的层次描述了整个均衡过程。接下来，让我们通过遍历每个次状态来看整个均衡的详细过程。</p>
 <p><strong>面向下游通道// Downstream Lanes</strong></p>
 <p>DSP 从 Phase 1 开始整个均衡过程。在开始时，一些寄存器状态比特标志位需要被清除，包括链路状态寄存器 2 （Link Status 2 register，原文 588 页 图 14-36）中的以下比特，都会在进入该状态后被清除：</p>
@@ -3484,7 +3484,7 @@
 <p>图 14-36 链路状态 2 寄存器示意图</p>
 <p><img alt="image-20221225194550320" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221225194550320.png" /></p>
 <p>图 14-37 链路控制 3 寄存器示意图</p>
-<h5 id="phase-1-downstream">Phase 1 Downstream</h5>
+<h5 id="phase-1-downstream">Phase 1 Downstream<a class="headerlink" href="#phase-1-downstream" title="Permanent link">&para;</a></h5>
 <p>DSP 发送 EC = 01b 的 TS1 序列，其中均衡相关字段填充通道均衡控制寄存器（ Lane Equalization Control register）中的 Tx Preset，以及 Preset 对应的 FS、LF 以及 Post-cursor 参数。如果 DSP 需要时间等待接收信号稳定，那么在评估输入信号之前，允许等待 500ns。</p>
 <p><strong><em>转换至 ”Phase 2 Downstream“ 状态</em></strong></p>
 <p>当 DSP 接收到两个连续的 EC = 01b 的 TS1 序列，并且 DSP 想要继续均衡过程，那么 DSP 进入 Phase 2。此时，端口会将均衡 Phase 1 成功完成（ Equalization Phase 1 Successful） 比特置为 1，并存储接收到的 LF 以及 FS 数值用于 Phase 3 使用（如果 DSP 打算调整 USP 的发送参数的话）。</p>
@@ -3492,7 +3492,7 @@
 <p>如果 DSP 不打算进行 Phase 2 以及 Phase 3 的话，那么 DSP 会将所有状态比特设置为 1b（比如 Equalization Phase 1 Successful，Equalization Phase 2 Successful，Equalization Phase 3 Successful 以及 Eq.Complete）DSP 这么做可能的原因是当前的输入信号质量已经足够好了，所以不再需要后续的阶段。</p>
 <p><strong><em>转换至  “Recovery.Speed” 状态</em></strong></p>
 <p>如果直到 24ms 超时，都没有接收到 TS1，那么接下来转入 Recovery.Speed 状态，successful_speed_negotiation 标志清除为 0b，并将均衡完成状态比特设置为 1b。</p>
-<h5 id="phase-2-downstream">Phase 2 Downstream</h5>
+<h5 id="phase-2-downstream">Phase 2 Downstream<a class="headerlink" href="#phase-2-downstream" title="Permanent link">&para;</a></h5>
 <p>DSP 发送 EC = 10b 的 TS1 序列，各通道根据以下情况独立设置参数：</p>
 <ul>
 <li>如果首次接收到两个连续的 EC = 10b 的 TS1（代表 USP 已经进入 Phase 2），或者此次参数或 Preset 相比上次有所变化，如果对方所要求的参数是合法、受支持的，那么 DSP 会在接收到 TS1 的 500ns 内应用这些发送参数，并在 DSP 发送给 USP 的 TS1 中反映这些变化，TS1 中的参数拒绝（Reject Coefficient）数值比特被清除为 0b。值得注意的是，参数的改变不能导致超过 1ns 的非法电压或者发送端参数。</li>
@@ -3505,7 +3505,7 @@
 <p>如果直到 32ms 超时，仍然没能转换到 Phase 3，那么接下来转入 Recovery.Speed 状态，successful_speed_negotiation 标志清除为 0b，并将均衡完成（Equalization Complete）状态比特设置为 1b。</p>
 <p><img alt="image-20221231213955536" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20221231213955536.png" /></p>
 <p>图 14-38 参数拒绝数值域示意图</p>
-<h5 id="phase-3-downstream">Phase 3 Downstream</h5>
+<h5 id="phase-3-downstream">Phase 3 Downstream<a class="headerlink" href="#phase-3-downstream" title="Permanent link">&para;</a></h5>
 <p>DSP 发送 EC = 11b 的 TS1序列，为每个通道开始单独的面向上游（Upstream）发送设置评估的过程。</p>
 <p>在发送的 TS1 序列中，DSP 可以通过将 Use Preset 比特设置为 1b，以及在 Tx Preset 域填入预期的数值，要求一次 Preset 设置变更。也可以通过将 Use Preset 比特设置为 0b，以及在  Pre‐cursor, Cursor, 以及 Post‐Cursor Coefficient 域填入预期数值，要求一次参数变更。任意一种变更，DSP 都必须持续进行至少 1us，直至信号评估完成。如果要采用新的 Preset 或者参数，那么必须同时在所有通道上发送它们。然而，如果某个通道想要保持其 Preset 或者参数不变，那么该通道无需发起变更要求。</p>
 <p>DSP 需要等待足够长的时间以确保 USP 发送端有机会应用所要求的设置更新,（500ns 加上信号的往返延迟），然后重新完成块对齐并评估接收到的 TS1 序列。因为在等待期间，DSP 预期 USP 不会发送任何有效的信号，甚至可能会发送一些非法信号，所以可能需要在等待足够长的时间之后，再进行块对齐操作。</p>
@@ -3525,7 +3525,7 @@
 <li>Equalization Complete</li>
 </ul>
 <p>链路控制 3 寄存器（Link Control 3 register）的  Perform Equalization 比特和内部变量 start_equalization_w_preset 也会被清除为 0b。变量 equalization_done_8GT_data_rate 置位为 1b。</p>
-<h5 id="phase-0-upstream">Phase 0 Upstream</h5>
+<h5 id="phase-0-upstream">Phase 0 Upstream<a class="headerlink" href="#phase-0-upstream" title="Permanent link">&para;</a></h5>
 <p>USP 发送 EC = 00b 的 TS1 序列，此时使用的是进入该状态前 DSP 通过 EQ TS2 传递的发送 Preset。发送的 TS1 中的均衡信息域中填充了实际使用的 Preset 值，以及 Preset 对应的 Pre-cursor，Cursor，以及 Post-cursor 参数值。值得注意的是，当通道在 EQ TS2 中接收到颠倒的，或者不支持的 Preset 数值时，或者干脆没有接收到 EQ TS2 时，此时 USP 使用的 Tx Preset 和相应参数由通道的具体实现决定。</p>
 <p><strong><em>转换至 ”Phase 1 Upstream“ 状态</em></strong></p>
 <p>当所有的已配置通道接收到两个连续的，EC = 01b 的 TS1 序列后，代表 USP 能够正确识别出 DSP 发送的 TS1 序列，之后 USP 进入 Phase 1 阶段。DSP 总是从 Phase 1 阶段开始，因此 EC 也总是 = 01b。</p>
@@ -3533,7 +3533,7 @@
 <p>USP 在进入 Phase 0 后（译注：此处似乎应为 Phase 1），在评估输入的 TS1 数据之前可能需要等待 500ns，用于接收端稳定地接收信号。</p>
 <p><strong><em>转换至  “Recovery.Speed” 状态</em></strong></p>
 <p>如果直到 12ms 超时，仍然没能识别接收到的 TS1 序列，那么接下来转入 Recovery.Speed 状态，successful_speed_negotiation 标志清除为 0b，并将均衡完成（Equalization Complete）状态比特设置为 1b。</p>
-<h5 id="phase-1-upstream">Phase 1 Upstream</h5>
+<h5 id="phase-1-upstream">Phase 1 Upstream<a class="headerlink" href="#phase-1-upstream" title="Permanent link">&para;</a></h5>
 <p>USP 发送 EC = 01b 的 TS1 序列，使用 Phase 0 中决定的发送设置，并在发送的 TS1 序列中反映正在使用的 FS、LF 以及 Post-cursor 等参数。</p>
 <p><strong><em>转换至 ”Phase 2 Upstream“ 状态</em></strong></p>
 <p>如果所有已配置通道上都接收到了两个连续的，EC = 10b 的 TS1，这代表 DSP 希望进入 Phase 2，那么 USP 在此之后进入 Phase 2 阶段，并将均衡阶段 1 成功（Equalization Phase 1 Successful）状态比特置为 1b。</p>
@@ -3541,7 +3541,7 @@
 <p>如果所有已配置通道上都接收到了两个连续的，EC = 00b 的 TS1，这代表 DSP 认为均衡过程已经完成，希望跳过之后的均衡阶段。这种情况下，USP 的下一个跳转状态是 Recovery.RcvrLock，并将均衡阶段 1 成功（Equalization Phase 1 Successful）状态比特和均衡完成（Equalization Complete）状态比特置为 1b。</p>
 <p><strong><em>转换至  “Recovery.Speed” 状态</em></strong></p>
 <p>如果直到 12ms 超时，上述两个条件仍然没有满足，那么接下来转入 Recovery.Speed 状态，successful_speed_negotiation 标志清除为 0b，并将均衡完成（Equalization Complete）状态比特设置为 1b。</p>
-<h5 id="phase-2-upstream">Phase 2 Upstream</h5>
+<h5 id="phase-2-upstream">Phase 2 Upstream<a class="headerlink" href="#phase-2-upstream" title="Permanent link">&para;</a></h5>
 <p>在该阶段，UPS 发送 EC = 10b 的 TS1，开始调优 DSP 发送设置的过程。正如前文所述 DSP 的相关过程，此时的调整是每个通道分别进行的。具体过程如下：</p>
 <p>在发送的 TS1 序列中，USP 可以将 Tx Preset 域设置为预期的数值，要求一次 Preset 设置变更，通过将 Use Preset 比特设置为 1b 通知 DSP 开始使用新的 Preset。或者，通过将 Use Preset 比特设置为 0b，以及在  Pre‐cursor, Cursor, 以及 Post‐Cursor Coefficient 域设置预期数值，要求一次参数变更。DSP 会采用新的参数，而不是读取 Preset 域的数值。一旦开始要求变更，USP 都必须持续进行至少 1us，直至信号评估完成。如果要采用新的 Preset 或者参数，那么必须同时在所有通道上发送它们。然而，如果某个通道想要保持其 Preset 或者参数不变，那么该通道上无需发起变更请求。</p>
 <p>USP 需要等待足够长的时间以确保 DSP 发送端有机会应用所要求的设置更新,（500ns 加上信号的往返延迟），然后重新完成块对齐并评估接收到的 TS1 序列。在等待期间，USP 预期 DSP 不会发送任何有效的信号，甚至可能会发送一些非法信号，这就是为什么需要在等待足够长的时间之后，再进行块对齐操作的原因。</p>
@@ -3551,7 +3551,7 @@
 <p>如果所有已配置通道上都已经将对端发送设置调整为最优，那么 USP 在此之后进入 Phase 3 阶段，并将均衡阶段 2 成功（Equalization Phase 2 Successful）状态比特置为 1b。</p>
 <p><strong><em>转换至  “Recovery.Speed” 状态</em></strong></p>
 <p>如果直到 24ms 超时（可以容忍 -0 或者 2ms 的偏差），仍然没能完成均衡过程，那么接下来转入 Recovery.Speed 状态，successful_speed_negotiation 标志清除为 0b，并将均衡完成（Equalization Complete）状态比特设置为 1b。</p>
-<h5 id="phase-3-upstream">Phase 3 Upstream</h5>
+<h5 id="phase-3-upstream">Phase 3 Upstream<a class="headerlink" href="#phase-3-upstream" title="Permanent link">&para;</a></h5>
 <p>USP 发送 EC = 11b 的 TS1序列，开始响应 DSP 所要求的发送设置更改请求。</p>
 <p>如果没有接收到两个连续的 TS1，那么保持当前的 Tx preset 以及参数数值不变。但如果首次接收到两个连续的 EC = 11b 的 TS1（代表 DSP 已经进入 Phase 3），或者此次参数或 Preset 相比上次有所变化，如果所要求的参数是合法、被支持的，那么 USP 会在接收到 TS1 的 500ns 内应用这些发送参数，并在发送给 DSP 的 TS1 中反映这一参数的变化，TS1 中的参数拒绝（Reject Coefficient）数值比特被清除为 0b。值得注意的是，参数的改变不能导致超过 1ns 的非法电压或者发送端参数。</p>
 <ul>
@@ -3561,7 +3561,7 @@
 <p>如果 DSP 对更新后的信号质量满意，那么 DSP 开始发送 EC = 00b 的 TS1 序列，表示希望结束均衡过程。当 USP 接收到连续两个这样的 TS1 之后，USP 转入 Recovery 具体次状态，将均衡 Phase 3 成功（ Eq. Phase 3 Successful ）状态比特设置为 1b，并将均衡完成（Equalization Complete）状态比特设置为 1b。</p>
 <p><strong><em>转换至  “Recovery.Speed” 状态</em></strong></p>
 <p>如果直到 32ms 超时，仍然没能满足上述条件，那么接下来转入 Recovery.Speed 状态，successful_speed_negotiation 标志清除为 0b，并将均衡完成（Equalization Complete）状态比特设置为 1b。</p>
-<h4 id="14862-recoveryspeed">14.8.6.2 Recovery.Speed</h4>
+<h4 id="14862-recoveryspeed">14.8.6.2 Recovery.Speed<a class="headerlink" href="#14862-recoveryspeed" title="Permanent link">&para;</a></h4>
 <p>当进入该次状态时，设备发送端必须进入电气空闲状态，然后等待其接收端也进入电气空闲状态。之后，如果速率转换是成功的（successful_speed_negotiation = 1b），那么在此至少等待 800ns，如果速率转换不成功（successful_speed_negotiation = 0b），那么至少在此等待 6us，但是等待的时间都不要超过额外的 1ms。</p>
 <p>如果链路速率是 2.5GT/s 或者 8GT/s，那么在进入该次状态前必须发送一个 EIOS，如果速率是 5GT/s，那么必须发送两个。所谓进入电气空闲状态是指在链路上看到一些 EIOS，或者检测到，或者推断出当前正处于电气空闲状态（详见原文 736 页 ”Elecitrical Idle“ 节）。</p>
 <p>只有当接收端也进入电气空闲状态后，才能进行链路运行速率改变。如果链路已经工作于双方所能支持的最高速率，那么进入该次状态也不会改变运行速率。</p>
@@ -3588,15 +3588,15 @@
 </tr>
 <tr>
 <td>Recovery.RcvrCfg</td>
-<td>1280 UI 内没有见到 TS1/2</td>
-<td>1280 UI 内没有见到 TS1/2</td>
-<td>4ms 内没有见到 TS1/2</td>
+<td>1280 UI 内没有见到 TS&frac12;</td>
+<td>1280 UI 内没有见到 TS&frac12;</td>
+<td>4ms 内没有见到 TS&frac12;</td>
 </tr>
 <tr>
 <td>Recovery.Speed (successful_speed_negotiation = 1b)</td>
-<td>1280 UI 内没有见到 TS1/2</td>
-<td>1280 UI 内没有见到 TS1/2</td>
-<td>4680UI 内没有见到 TS1/2</td>
+<td>1280 UI 内没有见到 TS&frac12;</td>
+<td>1280 UI 内没有见到 TS&frac12;</td>
+<td>4680UI 内没有见到 TS&frac12;</td>
 </tr>
 <tr>
 <td>Recovery.Speed (successful_speed_negotiation = 0b)</td>
@@ -3627,7 +3627,7 @@
 <p>否则，新的速率会恢复为 2.5GT/s，并且  changed_speed_recovery 变量同样会保持为 0b。协议指出该情况对应于此前在 L0 状态中链路速率大于 2.5GT/s，但是链路一方不能在该速率正常运行，并在第一次的 Recovery.RcvrLock 状态中超时退出。</p>
 <p><strong><em>转换至 Detect状态</em></strong></p>
 <p>如果上述转换到 Recovery.RcvrLock 状态的条件都没有被满足，那么状态会转移为 Detect。协议指出在正常的流程中不会出现这种跳转情况，出现这种情况代表此时链路双方已经根本无法正常通信了。</p>
-<h4 id="14863-recoveryrcvrcfg">14.8.6.3 Recovery.RcvrCfg</h4>
+<h4 id="14863-recoveryrcvrcfg">14.8.6.3 Recovery.RcvrCfg<a class="headerlink" href="#14863-recoveryrcvrcfg" title="Permanent link">&para;</a></h4>
 <p>该状态只会从 Recovery.RcvrLock 状态跳转进来，当接收到至少 8 个带有与此前协商值一致的链路和通道编号的 TS1 或者 TS2 之后跳转。跳转进入本状态意味着在 Recovery.RcvrLock 状态中重新建立了比特和符号或者块锁定，此时端口需要决定在 Recovery 状态是否还有操作需要进行。如果进入 Recovery 状态的目的仅仅是在离开链路电源管理状态之后重新建立比特和符号锁定，那么在该状态只会在链路上交换 TS2 序列，然后跳转至下一个状态：Recovery.Idle。但是，如果进入 Recovery 状态还另有理由（比如出于改变链路速率或者宽度的需求），那么在该状态中会进行相应动作，随后跳转至适合的后续状态。</p>
 <p>在本次状态中，发送方在所有已配置通道上发送 TS2，其中带有与先前协商结果一致的链路和通道编号。如果内部变量 directed_speed_change 设置为 1b，那么 TS2 中 speed_change 比特也被置为 1b。TS2 中的 N_FTS 变量也需要更新为与当前速率匹配的数值。在进入本次状态后，内部变量 start_equalization_w_preset 清除为 0b。</p>
 <p>在速率发生改变后，在 TS2 中应该也能看到不同的 N_FTS 的数值，将来退出 L0s 低功耗状态时必须用到该数值。当采用 8b/10b 编码时，离开本次状态前，必须完成通道间的去偏斜操作。设备必须在其接收的 TS2 中，提取并保存对端所支持的速率标识符，并覆盖先前的采样值。当采用 128b/130b 编码时，设备必须记录 TS2 中的 Request Equalization 比特，用于后续使用。</p>
@@ -3654,14 +3654,14 @@
 <li>当采用 8b/10b 编码时，在接收到 speed_change 比特为 1 的 TS2 序列后，已经在该通道上发送了至少 32 个 speed_change 比特为 1 的 TS2 序列，并且没有被任何 EIEOS 打断。当采用 128b/130b 编码时，在接收到 speed_change 比特为 1 的 TS2 序列后，已经在该通道上发送了至少 128 个 speed_change 比特为 1 的 TS2 序列，并且没有被任何 EIEOS 打断。</li>
 </ul>
 <p>LTSSM 跳转到 Recovery.Speed 状态也可能是这么一种情况：链路双方自从 L0 或者 L1 状态进入 Recovery 状态后，链路双方已经将链路速率协商为更高的速率（changed_speed_recovery = 1b）。但是在某个通道上接收到 EIOS 或者检测到电气空闲状态，并且在进入本状态后未接收到任何 TS2 序列。这代表链路双方尝试切换到更高的链路速率，但是链路对端伙伴表示因为某种原因，其在新的速率下无法正常工作。这种情况下，新的速率会返回到链路进入到 Recovery 状态之前的速率。</p>
-<p>还有一种跳转到 Recovery.Speed 状态的情况是：链路双方自从 L0 或者 L1 状态进入 Recovery 状态后，链路双方<em>没能</em>将链路速率协商为更高的速率（changed_speed_recovery = 0b），不过此时链路的速率高于  2.5GT/s，但是在某个通道上接收到 EIOS 或者检测到电气空闲状态，并且在进入本状态后未接收到任何 TS2 序列。这种情况表示链路在当前速率下无法工作，解决的办法是把新的速率降低回到最低的 2.5GT/s。</p>
+<p>还有一种跳转到 Recovery.Speed 状态的情况是：链路双方自从 L0 或者 L1 状态进入 Recovery 状态后，链路双方*没能*将链路速率协商为更高的速率（changed_speed_recovery = 0b），不过此时链路的速率高于  2.5GT/s，但是在某个通道上接收到 EIOS 或者检测到电气空闲状态，并且在进入本状态后未接收到任何 TS2 序列。这种情况表示链路在当前速率下无法工作，解决的办法是把新的速率降低回到最低的 2.5GT/s。</p>
 <p><strong><em>转换至 Configuration状态</em></strong></p>
 <p>如果在任意已配置通道上，接收到 8 个连续的 TS1 序列，其链路编号或者通道编号和发送的数值不一致，并且 speed_change 比特为 0b，或者不共同支持高于 2.5GT/s 的速率。</p>
 <p>进入 Configuration 状态前，内部变量 changed_speed_recovery 和 directed_speed_change 会清除为 0b。如果 N_FTS 变量有更新，那么更新后的数值必须用于后续的 L0s 状态。</p>
 <p><strong><em>转换至 Detect状态</em></strong></p>
 <p>如果 48ms 超时后，上述各种状态转换的条件都没有被满足，那么在  2.5GT/s 或者 5GT/s 速率时，状态会转移为 Detect。</p>
 <p>如果速率为  8GT/s，那么还存在一种可能的状态转移行为，那就是虽然本次速率改变失败了，但是速率改变的可尝试次数还没有用完，这一点由变量 idle_to_rlock_transitioned 的数值所反应。如果速率为  8GT/s 时，变量 idle_to_rlock_transitioned 数值小于 FFh，那么新的状态会是 Recovery.Idle。在状态跳转后，变量 changed_speed_recovery 和 directed_speed_change 还是会被清除为 0b。然而，一旦变量 idle_to_rlock_transitioned 数值达到 FFh，那么当 48ms 超时触发后，下一个状态将会是 Detect。</p>
-<h4 id="14864-recoveryidle">14.8.6.4 Recovery.Idle</h4>
+<h4 id="14864-recoveryidle">14.8.6.4 Recovery.Idle<a class="headerlink" href="#14864-recoveryidle" title="Permanent link">&para;</a></h4>
 <p>正如名字体现地那样，发送端会在该次状态内发送 Idle 序列，作为进入正常工作 L0 状态之前的准备。当采用 8b/10b 编码时，会正常地在所有通道上发送 Idle 数据。当采用 128b/130b 编码时，会首先发送一个 SDS 序列来开始一段数据流，接下来才会在所有通道上发送 Idle 符号。</p>
 <p><strong><em>转换至 L0 状态</em></strong></p>
 <p>如果下述条件之一满足，那么下一个状态是 L0。在这两种情况下，如果自上次从 Recovery 状态或者 Configuration 状态进入 L0 状态后，曾经设置过链路重训练比特（Retrain Link bit），那么 DSP 会将链路带宽管理状态比特写为 1b（如原文 597 页图 14-39 所示）。</p>
@@ -3682,38 +3682,38 @@
 <p><strong><em>转换至 Disable 状态</em></strong></p>
 <p>如果以下条件之一满足，那么进入 Disable 状态：</p>
 <ul>
-<li>链路对端的 DSP 或者，可选支持的 crosslink 端口受到上层逻辑的指令，在所发送的 TS1/2 中使能链路关闭（Disable Link）比特。</li>
+<li>链路对端的 DSP 或者，可选支持的 crosslink 端口受到上层逻辑的指令，在所发送的 TS&frac12; 中使能链路关闭（Disable Link）比特。</li>
 <li>USP 或者，可选支持的 crosslink 端口在任意已配置通道上接收到的连续两个 TS1 中的链路关闭（Disable Link）比特都为 1b。 </li>
 </ul>
 <p><strong><em>转换至 Hot Reset状态</em></strong></p>
 <p>如果以下条件之一满足，那么进入 Hot Reset 状态：</p>
 <ul>
-<li>链路对端的 DSP 或者，可选支持的 crosslink 端口受到上层逻辑的指令，在所发送的 TS1/2 中使能 Hot Reset比特。</li>
+<li>链路对端的 DSP 或者，可选支持的 crosslink 端口受到上层逻辑的指令，在所发送的 TS&frac12; 中使能 Hot Reset比特。</li>
 <li>USP 或者，可选支持的 crosslink 端口在任意已配置通道上接收到的连续两个 TS1 中的 Hot Reset 比特都为 1b。 </li>
 </ul>
 <p><strong><em>转换至 Loopback 状态</em></strong></p>
 <p>如果以下条件之一满足，那么进入Loopback 状态：</p>
 <ul>
-<li>发送端确定自己有成为 Loopback 主机的能力（细节由具体实现决定，协议没有提供具体的方式去验证这一点）并受到上层逻辑的指令，在所发送的 TS1/2 中使能 Loopback 比特。</li>
+<li>发送端确定自己有成为 Loopback 主机的能力（细节由具体实现决定，协议没有提供具体的方式去验证这一点）并受到上层逻辑的指令，在所发送的 TS&frac12; 中使能 Loopback 比特。</li>
 <li>USP 或者，可选支持的 crosslink 端口在任意已配置通道上接收到的连续两个 TS1 中的 Loopback 比特都为 1b。 接收方成为 Loopback 从机。</li>
 </ul>
 <p><strong><em>转换至 Detect 状态</em></strong></p>
 <p>如果上述条件都没有得到满足，那么在 2ms 超时触发后，转入 Detect 状态。除非 idle_to_rlock_transitioned 变量数值小于 FFh，此时转入 Recovery 相关状态。当转入 Recovery.RcvrLock 状态时，如果数据速率为 8.0 GT/s 时，idle_to_rlock_transitioned 变量值递增 1b，如果数据速率为  5.0 GT/s 或者 2.5 GT/s，那么该变量数值设置为 FFh。 </p>
-<h3 id="149-l0s-state-l0s">14.9 L0s State // L0s 状态</h3>
+<h3 id="149-l0s-state-l0s">14.9 L0s State // L0s 状态<a class="headerlink" href="#149-l0s-state-l0s" title="Permanent link">&para;</a></h3>
 <p>L0s 是一个低功耗链路状态，L0s 返回 L0 状态的退出延迟最短。设备通过硬件逻辑自动控制进出 L0s 状态的行为，无需软件参与。链路双方都可以单独地进入或者退出 L0s 状态。</p>
-<h4 id="1491-l0s">14.9.1 L0s 发送端状态机</h4>
+<h4 id="1491-l0s">14.9.1 L0s 发送端状态机<a class="headerlink" href="#1491-l0s" title="Permanent link">&para;</a></h4>
 <p>链路地发送端和接收端有不同的 L0s 次状态，首先讨论发送端的 L0s 各次状态。如原文 603 页地图 14-40 所示，L0s 状态的发送端状态机是一个非常简单的结构。</p>
 <p><img alt="image-20230102172928981" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230102172928981.png" /></p>
 <p>图 14-40 L0s 发送端状态机</p>
-<h5 id="14911-tx_l0sentry">14.9.1.1 Tx_L0s.Entry. 状态</h5>
+<h5 id="14911-tx_l0sentry">14.9.1.1 Tx_L0s.Entry. 状态<a class="headerlink" href="#14911-tx_l0sentry" title="Permanent link">&para;</a></h5>
 <p>发送端在上层逻辑的命令下进入 L0s 状态。协议没有具体规定发送端进入 L0s 状态的条件，但直观地说，发送端会在空闲状态持续一段时间后进入 L0s 状态：这段时间内没有发送过 TLP 或者 DLLP。为了进入 L0s 状态，发送端通过发送一个 EIOS （5GT/s 速率下发送两个 EIOS），进入电气空闲状态。然而，此时发送端还没有真正关闭，并且需要维持共模电压在协议规定的范围内。</p>
 <p><strong><em>转移至 Tx_L0s.Idle. 状态</em></strong></p>
 <p>在经过  T TX‐IDLE‐MIN （20ns）时长后，进入 Tx_L0s.Idle. 状态。这段延时是为了确保发送端已经进入了电气空闲状态。</p>
-<h5 id="14912-tx_l0sidle">14.9.1.2 Tx_L0s.Idle. 状态</h5>
+<h5 id="14912-tx_l0sidle">14.9.1.2 Tx_L0s.Idle. 状态<a class="headerlink" href="#14912-tx_l0sidle" title="Permanent link">&para;</a></h5>
 <p>在该次状态中，发送端继续保持电气空闲状态，直到有上层逻辑命令退出为止。因为这个方向的链路处于电气空闲状态，所以能够节约一些能耗，节能是 L0s 状态的主要作用。</p>
 <p><strong><em>转移至 Tx_L0s.FTS. 状态</em></strong></p>
 <p>在上层逻辑的命令下，状态机会转移至 Tx_L0s.FTS. 状态，比如上层需要恢复报文发送时。LTSSM 具体退出该状态的方式，由设计实现决定。</p>
-<h5 id="14913-tx_l0sfts">14.9.1.3 Tx_L0s.FTS. 状态</h5>
+<h5 id="14913-tx_l0sfts">14.9.1.3 Tx_L0s.FTS. 状态<a class="headerlink" href="#14913-tx_l0sfts" title="Permanent link">&para;</a></h5>
 <p>在该次状态中，发送端会开始不断发送 FTS 有序集，以训练链路对端的接收端。所发送的 FTS 有序集数量取自对方在上次进入 L0 状态的训练过程中，发送的 TS 训练中通告的 N_FTS 字段。协议中提到一点，如果对方响应超时，那么发送端可能会增加发送的 FTS 有序集数量，超过 Recovery 状态中对端通告的 N_FTS 数量。</p>
 <p>如果 Extened Synch 比特置位（如原文 644 页图 14-71 所示），发送端必须发送 4096 个 FTS 有序集，而不是 N_FTS 个。该特性为同步外部测试和分析设备拓展了所需的同步时间，它们可能无法像正常的对端设备那样，在较短的时间内恢复比特锁定。</p>
 <p>在任何速率下，不能在 FTS 序列之前发送 SOS 序列。然后，在 5GT/s 速率时，必须在 FTS 序列之前发送 4 到 8 个 EIE 符号。在 128b/130b 编码时，必须在 FTS 序列之前发送一个 EIEOS 序列。</p>
@@ -3721,20 +3721,20 @@
 <p>发送端会在发送完所有必须的 FTS 序列后，并满足下述条件时，转移至 L0 状态：</p>
 <p>a) 8b/10b: 在 FTS 序列发送之后，在所有已配置通道上发送过一个 SOS 序列。</p>
 <p>b) 128b/130b: 首先发送一个 EIEOS 序列，其后是 SDS 序列以及数据流。</p>
-<h4 id="1492-l0s">14.9.2 L0s 接收端状态机</h4>
+<h4 id="1492-l0s">14.9.2 L0s 接收端状态机<a class="headerlink" href="#1492-l0s" title="Permanent link">&para;</a></h4>
 <p>原文 605 页图 14-41 展示了接收端 L0s 状态机示意图。如果接收端的 Link Capability 寄存器表示支持 ASPM 功能，那么接收端必须实现 L0s 状态功能。当然，即使不支持 ASPM 功能，接收端也可以实现 L0s 状态。</p>
 <p><img alt="image-20230102194656932" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230102194656932.png" /></p>
 <p>图 14-41 接收端 L0s 状态机</p>
-<h5 id="14921-rx_l0sentry">14.9.2.1 Rx_L0s.Entry. 状态</h5>
+<h5 id="14921-rx_l0sentry">14.9.2.1 Rx_L0s.Entry. 状态<a class="headerlink" href="#14921-rx_l0sentry" title="Permanent link">&para;</a></h5>
 <p>如果接收端接收端支持 L0s 状态，在不满足进入 L1 或者 L2 的条件的情况下，在收到 EIOS 后进入该状态。</p>
 <p><strong><em>转移至 Rx_L0s.Idle. 状态</em></strong></p>
 <p>在经过  T TX‐IDLE‐MIN （20ns）时长后，进入 Rx_L0s.Idle. 状态。</p>
-<h5 id="14922-rx_l0sidle">14.9.2.2 Rx_L0s.Idle. 状态</h5>
+<h5 id="14922-rx_l0sidle">14.9.2.2 Rx_L0s.Idle. 状态<a class="headerlink" href="#14922-rx_l0sidle" title="Permanent link">&para;</a></h5>
 <p>此时，接收端处于电气空闲状态，在条件满足后退出电气空闲状态。</p>
 <p>这时候，说一点有关电气空闲状态的题外话，早期版本的  PCIe 协议中，电气空闲状态与否取决于 squelch-detect 电路对电压阈值的测量结果。后来，随着链路速度的提高，测量如此之小的电压差变得越来越困难。因此，在更新的协议中，允许通过链路的行为来推断电气空闲与否，而不是真的通过测量电路电压。然而，有一点需要注意，如果不是通过检测电路电压来判断链路进入电气空闲状态，那么也不能通过电路电压判断链路退出了电气空闲状态。为了解决这个问题，引入了一种新的有序符号集 EIEOS（Electrical Idle Exit Ordered Set）。EIEOS 由交替的全零和全一字节组成，在链路上创造了一种类似于低频时钟的信号。一旦接收方进入电气空闲状态后，其可以通过检测 EIEOS 有序集，来得知链路是否退出了电气空闲状态。</p>
 <p><strong><em>转移至 Rx_L0s.FTS. 状态</em></strong></p>
 <p>如果接收方如上所述，检测到了链路退出电气空闲状态，那么接下来链路进入 Rx_L0s.FTS. 状态。</p>
-<h5 id="14923-rx_l0sfts">14.9.2.3 Rx_L0s.FTS. 状态</h5>
+<h5 id="14923-rx_l0sfts">14.9.2.3 Rx_L0s.FTS. 状态<a class="headerlink" href="#14923-rx_l0sfts" title="Permanent link">&para;</a></h5>
 <p>在该次状态中，接收端已经检测到链路上退出电气空闲状态的信号，并正在尝试从输入的比特流中重建比特和符号（或块）锁定，此时的输入比特流其实就是对端发送的 FTS 有序集。</p>
 <p><strong><em>转移至 L0 状态</em></strong></p>
 <p>如果在所有已配置通道上接收到 SOS 有序集（8b/10b 编码），或者 SDS 有序集（128b/130b 编码），那么接收端退出至 L0 状态。接收端必须有能力在跳转后迅速接收有效数据，并且在状态转移之前，需要完成通道间的去偏斜操作（deskew）。</p>
@@ -3743,24 +3743,24 @@
 <p>8b/10b 编码时，最小超时数值为 40 * [N_FTS +3] * UI，最大超时数值则是前者的两倍。因为每个符号传输需要 10bit，上述数值可以转换为 4*N_FTS + 12 符号（UI 代表 1bit 的传输时间）。额外的 12 个符号解释为：6 个符号是最大情况下的 SOS 有序集长度，4 个符号用于额外的 FTS，而剩下 2 个符号用于符号间的间隔（Symbol margin）。总体而言，最小超时时间是发送所需 FTS 数量的 FTS 加上额外 12 个符号所需的时间，而最大超时时间则是前者的两倍。</p>
 <p>如果 extended synch 比特置位，那么最小超时时间是 2048 个 FTS，最大超时时间是 4096 个 FTS。如果是超过 2.5GT/s 的速率，那么接收端实际用到的超时时间还要加上 4 到 8 个 EIE 符号。</p>
 <p>128b/130b 编码时，最小超时数值为 130 * [N_FTS +5 +12 + Floor(N_FTS/32) ] * UI，最大超时数值则是前者的两倍。数值 130 * UI 代表传输 130 比特的时间，也就是一个块，所以经过换算后就变成了：[N_FTS +5 +12 + Floor(N_FTS/32) ] 块。数值 5 + Floor(N_FTS/32) 代表需要发送 EIEOS 的间隔，Floor(N_FTS/32) 表示了需要每隔 32 个 FTS 发送一个 EIEOS。剩下的 5 个块分别代表：第一个 EIEOS，最后一个 EIEOS，SDS，周期性的 EIEOS 以及一个额外的 EIEOS，防止发送端选择在 SDS 后发送两个 EIEOS。最后，12 代表在 extended synch 比特置起时，需要发送的 12 个 SOS，该比特置起时，超时长度为 N_FTS = 4096。</p>
-<h3 id="1410-l1-state-l1">14.10 L1 State // L1 状态</h3>
+<h3 id="1410-l1-state-l1">14.10 L1 State // L1 状态<a class="headerlink" href="#1410-l1-state-l1" title="Permanent link">&para;</a></h3>
 <p>L1 是一个相较于 L0s 状态更加激进地减少功耗的链路电源状态，作为代价，L1 会有更长的低功耗状态退出延迟。和 L0s 一样，L1 是 ASPM 可选支持的一项状态，也就是说设备可以在没有软件参与的情况下，由硬件自动进入或者退出低功耗状态。然而，和 L0s 不同的是，软件也可以直接命令 USP 发起链路进入 L1 状态的改变，通过将设备电源状态改变为更低功耗的状态（D1，D2，或者 D3）做到这一点。L1 状态和 L0s 状态的不同点还在于，L1 状态会影响链路双向的状态，而 L0s 只作用于链路单个方向。</p>
 <p><img alt="image-20230107122121817" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230107122121817.png" /></p>
 <p>图 14-42 L1 状态机</p>
 <p>当设备在检测到链路进入电气空闲状态时，会认为链路伙伴希望将链路转为 L0s，L1 或者 L2 等低功耗状态，为了区分到底应该进入哪种低功耗状态，在进入 L1 状态之前，链路双方会首先达到一致。通过握手机制使链路双方明白对方已经准备就绪，此时可以安全地继续进入 L1 的流程。原文 733 页的 “链路电源状态管理介绍” （Introduction to Link Power Management）一节提供了这套机制更多的细节，有兴趣的读者可以参阅。原文 608 页的图 14-42 展示了 L1 状态相关的状态跳转关系，我们将在后一节中展开讨论。</p>
-<h4 id="14101-l1-entry">14.10.1 L1 Entry 状态</h4>
+<h4 id="14101-l1-entry">14.10.1 L1 Entry 状态<a class="headerlink" href="#14101-l1-entry" title="Permanent link">&para;</a></h4>
 <p>当 USP 想要进入 L1 状态时，必须向链路伙伴发出请求进入 L1 的申请，得到对端可行的回复之后，才可以进入 L1 状态（进入 L1 状态的申请可能是 ASPM 或者软件发起的）。在接收到可以进入 L1 状态的回应后，USP 进入 L1.Entry 次状态。</p>
 <p>DSP 进入 L1 状态需要满足以下条件，DSP 必须接收到 USP 发出的请求进入 L1 状态的申请，并给出肯定的答复。接下来，DSP 等待链路上出现电气空闲状态有序集（EIOS，Electrical Idle Ordered Set），并使接收到 EIOS 的通道进入电气空闲状态后，进入 L1.Entry 次状态。</p>
 <p><strong><em>L1 Entry 状态期间</em></strong></p>
 <p>所有已配置通道的发送端发送 EIOS 并进入电气空闲状态，此时需要保持合适的直流共模电压（DC common mode voltage）。</p>
 <p><strong><em>转移至 L1.Idle 状态</em></strong></p>
 <p>在等待 TTX‐IDLE‐MIN （20ns）后进入 L1.Idle 次状态。这段延时是为了确保发送端已经进入了电气空闲状态。</p>
-<h4 id="14102-l1-idle">14.10.2 L1 Idle 状态</h4>
+<h4 id="14102-l1-idle">14.10.2 L1 Idle 状态<a class="headerlink" href="#14102-l1-idle" title="Permanent link">&para;</a></h4>
 <p>此时，发送端仍然保持电气空闲状态。</p>
 <p>当速率超过 2.5GT/s 时，LTSSM 必须在该次状态至少停留 40ns。在协议中，该延迟被描述为 “用于给逻辑准备好电气空闲状态检测电路留出时间，防止出现链路进入 L1 又很快退出的情况（检测不到这次进出 L1 状态）”。</p>
 <p><strong><em>转移至 Recovery 状态</em></strong></p>
 <p>当发送端收到上层指令退出 L1 状态，或者接收端检测到链路退出电气空闲状态时，下一步转移至 Recovery 状态。退出 L1 状态的原因可能是发送端需要发送 DLLP 或者 TLP，或者希望改变链路的宽度或者速率。如果需要改变链路速率，允许端口将变量 directed_speed_change 设置为 1b，并且将变量 changed_speed_recovery 清除为 0b。可选的，端口可能从 L1 退出，通过将 directed_speed_change 设置为 1b 发起速率改变请求，直接进入 Recovery 状态，而不是像通常情况下，从 L0 进入 Recovery 状态。</p>
-<h3 id="1411-l2-state-l2">14.11 L2 State // L2 状态</h3>
+<h3 id="1411-l2-state-l2">14.11 L2 State // L2 状态<a class="headerlink" href="#1411-l2-state-l2" title="Permanent link">&para;</a></h3>
 <p>L2 状态是相比 L1 状态程度更深的低功耗模式，相应地，也需要更长的恢复时间。当设备处于 D3Cold 电源状态下，并完成相应的链路握手之后，在电源管理软件的命令下，USP 发起进入 L2 状态的请求（使链路两个方向上都进入 L2 状态）。</p>
 <p>系统在一切就绪后会切断主电源。在主电源移除后，设备会进入 L2 或者 L3 状态，取决于备用电源 Vaux 是否可用。如果 Vaux 存在，那么链路进入 L2 状态，否则进入 L3 状态。</p>
 <p>L2 状态的目的在于使用低功耗的 Vaux 给设备供电，在需要链路恢复电源的事件发生后唤醒系统。设备有两种标准方法通知系统该类事件的发生。一个是边带（side-band）信号 WAKE# 引脚，另一个是链路（in-band）信号 Beacon。WAKE# 信号对于 L2 来说不是必须的，但是如果使用可选的 Beacon，那么其是必须的。（译注：）协议中明确指出工作在 5.0 或者 8.0 GT/s 的设备，无需支持 Beacon 特性，所以看上去 Beacon 是一项过时（legacy）的特性，仅用于运行在 2.5 GT/s 的设备。关于链路唤醒选项的更多细节，可以参见原文 772 页的 “Waking Non-Communicating Links” 一节。</p>
@@ -3768,7 +3768,7 @@
 <p>当发送端进入电气空闲状态时，可能代表想将链路转为 L0s，L1 或者 L2 等低功耗状态中的其中一种，所以需要机制来区分到底发送端想进入哪种低功耗状态。在进入 L2 状态之前，链路双方会首先达到一致。通过握手机制使链路双方明白对方已经准备就绪。原文 733 页的 “链路电源状态管理介绍” （Introduction to Link Power Management）一节提供了这套机制更多的细节，有兴趣的读者可以参阅。原文 611 页的图 14-43 展示了 L2 状态相关的状态跳转关系，我们将在后一节中展开讨论。</p>
 <p><img alt="image-20230107154607535" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230107154607535.png" /></p>
 <p>图 14-43 L2 状态机示意图</p>
-<h4 id="14111-l2idle">14.11.1 L2.Idle 状态</h4>
+<h4 id="14111-l2idle">14.11.1 L2.Idle 状态<a class="headerlink" href="#14111-l2idle" title="Permanent link">&para;</a></h4>
 <p>进入该次状态前，所有必须的握手流程必须已经在链路上的两个端口之间完成，并且端口已经发送或者接收到所需的 EIOS 序列。</p>
 <p>所有已配置发送端必须至少在电气空闲状态，等待 TTX‐IDLE‐MIN （20ns）。但是因为此时主电源已经被关闭，因此发送端无需将直流共模电压保持在协议规定的范围内。接收端则在最短 20ns 的延迟结束前，不会开始检测链路是否退出电气空闲状态。所有接收端必须打开终结（termination）功能，处于低阻抗模式。</p>
 <p><strong><em>转移至 L2.TransmitWake 状态</em></strong></p>
@@ -3777,21 +3777,21 @@
 <p><strong><em>转移至 Detect 状态</em></strong></p>
 <p>在主电源恢复后，转移至 Detect 状态。</p>
 <p>在端口主电源恢复后，在任何预先定义的通道上检测到退出电气空闲状态后，意味着这些通道可以被协商为通道 0 （多通道链路必须至少有 2 个预先定义的通道），之后转入 Detect 状态。如果是交换机的 USP 经历了上述过程，那么其必须将其 DSP 状态转移为 Detect 状态。</p>
-<h4 id="14112-l2transmitwake">14.11.2 L2.TransmitWake 状态</h4>
+<h4 id="14112-l2transmitwake">14.11.2 L2.TransmitWake 状态<a class="headerlink" href="#14112-l2transmitwake" title="Permanent link">&para;</a></h4>
 <p>在该次状态，发送端会至少在通道 0 上发送 Beacon。注意该状态仅作用于 USP，因为只有 USP 可以发送 Beacon。</p>
 <p><strong><em>转移至 Detect 状态</em></strong></p>
 <p>如果 USP 的任意接收端检测到链路退出电气空闲状态后，转移为 Detect 状态。当然，此时双方设备的电源必须已经恢复，链路伙伴才能够退出电气空闲状态。</p>
-<h3 id="1412-hot-reset-state">14.12 Hot Reset State // 热复位状态</h3>
-<h3 id="1413-disable-state-disable">14.13 Disable State // Disable 状态</h3>
-<h3 id="1414-loopback-state">14.14 Loopback State // 回环状态</h3>
-<h3 id="1415-dynamic-bandwidth-changes">14.15 Dynamic Bandwidth Changes // 动态带宽改变</h3>
+<h3 id="1412-hot-reset-state">14.12 Hot Reset State // 热复位状态<a class="headerlink" href="#1412-hot-reset-state" title="Permanent link">&para;</a></h3>
+<h3 id="1413-disable-state-disable">14.13 Disable State // Disable 状态<a class="headerlink" href="#1413-disable-state-disable" title="Permanent link">&para;</a></h3>
+<h3 id="1414-loopback-state">14.14 Loopback State // 回环状态<a class="headerlink" href="#1414-loopback-state" title="Permanent link">&para;</a></h3>
+<h3 id="1415-dynamic-bandwidth-changes">14.15 Dynamic Bandwidth Changes // 动态带宽改变<a class="headerlink" href="#1415-dynamic-bandwidth-changes" title="Permanent link">&para;</a></h3>
 <p>更新一代的 PCIe 协议以更高的速率和更宽的链路提供了比早先版本更高的性能，但也消耗了更多功耗。所以，2.0 协议的作者提出了另一种电源管理机制，即允许硬件在运行过程中动态地（on the fly）调整链路的速率和宽度。这项机制允许链路在需要提高性能时，使用尽可能快的速率和尽可能宽的链路宽度。而在需要降低功耗时，尽可能低地降低链路速率，或者减少链路宽度，或者二者皆为。动态带宽改变机制相比改变链路状态或者设备电源状态地机制，有两点明显的优势：</p>
 <p>第一点，在带宽改变期间，链路始终能够工作，改变带宽对业务传输的中断时间较短。第二点优势在于节省功耗的程度更大。举例来说，一个 x16 链路，如果以一个 x1 链路工作，所需的功耗比一个 L0s 状态的 x16 链路还要小。</p>
 <p>除了节省功耗之外，带宽降低还可以用于解决可靠性问题。举例而言，某个不可接受的链路可靠性问题可能是过高的链路速率造成的。这种情况下，链路双方都可以通过带宽改变过程，从自己宣告的支持速率列表中移除较高的速率。不过，协议中没有具体规定设备如何做出该可靠性决定。有趣的是（译注：好像也没有很有趣），除了通过带宽改变过程之外，设备也可以通过直接进入 Recovery 状态，通告不同的速率支持列表来解决这个问题。</p>
 <p>改变链路的速率或者带宽需要链路被重新训练。当链路处于 L0 状态，需要改变速率时，希望改变速率的端口的 LTSSM 会向链路对端发送 TS1，使链路双方端口的 LTSSM 进入 Recovery 状态，完成速率切换后返回 L0 状态。</p>
 <p>相似地，希望改变链路宽度的端口向链路对端发送 TS1，使链路双方端口的 LTSSM 进入 Recovery 状态，然后进入 Configuration 状态，完成链路宽度切换后以新的链路宽度返回 L0 状态。</p>
 <p>因为链路带宽改变需要 LTSSM 的参与，这与速率改变有所不同，所以在本节中会分别讨论链路带宽管理的两个过程：动态链路速率改变和动态链路宽度改变。本节将单独地讨论这两个话题，接下来让我们从链路速率切换开始本节的内容。</p>
-<h4 id="14151-dynamic-link-speed-changes">14.15.1 Dynamic Link Speed Changes //动态链路速率改变</h4>
+<h4 id="14151-dynamic-link-speed-changes">14.15.1 Dynamic Link Speed Changes //动态链路速率改变<a class="headerlink" href="#14151-dynamic-link-speed-changes" title="Permanent link">&para;</a></h4>
 <p>为了帮助读者们回忆前几节中讨论的 LTSSM 各状态，原文 620 页的图 14-45 提供了 LTSSM 粗略的状态转移图。在最早的 Gen1 协议中，速率切换被规划在 Polling 状态进行，但是在随后的 Gen2 中，速率转换行为被改在 Recovery 状态进行。</p>
 <p><img alt="image-20230109214025144" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230109214025144.png" /></p>
 <p>图 14-45 LTSSM 状态概览</p>
@@ -3801,13 +3801,13 @@
 <p>图 14-46 TS1 含义</p>
 <p><img alt="image-20230109220234097" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230109220234097.png" /></p>
 <p>图 14-47 TS2 含义</p>
-<h4 id="14152-upstream-port-initiates-speed-change-usp">14.15.2 Upstream Port Initiates Speed Change // USP 发起的速率改变</h4>
+<h4 id="14152-upstream-port-initiates-speed-change-usp">14.15.2 Upstream Port Initiates Speed Change // USP 发起的速率改变<a class="headerlink" href="#14152-upstream-port-initiates-speed-change-usp" title="Permanent link">&para;</a></h4>
 <p>速率改变必须由 USP （面向上游的端口，一般指 EP 设备）发起，发起后进入 Recovery 状态。Recovery 状态的次状态如原文 622 页的图 14-48 所示，其中与本节相关的部分，使用椭圆圈出高亮了。接下来的讨论将会在高层次的速率改变过程展开，将不会深入讨论 LTSSM 的行为细节。如果想要了解其中的细节，可以参见原文 571 页的 “Recovery State” 一节。</p>
 <p><img alt="image-20230109220843227" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230109220843227.png" /></p>
 <p>图 14-48 Recovery 状态次状态示意图</p>
-<h4 id="14153-speed-change-example">14.15.3 Speed Change Example // 速率改变示例</h4>
+<h4 id="14153-speed-change-example">14.15.3 Speed Change Example // 速率改变示例<a class="headerlink" href="#14153-speed-change-example" title="Permanent link">&para;</a></h4>
 <p>通过原文 623 页的图 14-49 展示的速率改变示例，我们能更清楚地了解整个过程。注意，该示例中略去了均衡（Equalization）相关状态，以使整个示例的示意图更加简单和容易理解。考虑到示例展示的是从 2.5GT/s 改变到 5GT/s 的过程，所以反正也不会进入均衡次状态。如果速率要改变为 8GT/s，那么整个过程也是相同的，除了需要在最后增加进入均衡次状态进行均衡的过程。如果需要了解更多关于均衡次状态的信息，可以参照原文 587 页的  “Recovery.Equalization” 一节（译文 14.8.6 节）。</p>
-<p>在如图 14-49 所示的示例拓扑连接中，EP 设备仅有一个 USP，连接到 RC 唯一的 DSP。在<strong>发起阶段</strong>中，只有 USP 可以发起速率改变请求，示例中的 USP 也是这么做的，其内部变量 Directed Speed Change 标志位先前已经在硬件实现定义的条件满足后置起，触发 USP 发起速率改变请求。在发起速率改变请求时，USP 将其 LTSSM 跳变至 Recovery 状态，进入 Recovery.RcvrLock 次状态，并发起 Speed Change 比特置起，包括其所支持速率列表的 TS1 序列，如原文 623 页的图 14-49 所示。当 DSP 接收到这些 USP 发生的 TS1 序列后，其同样进入 Recovery 状态，并开始给 USP 返回 TS1 序列。因为接收到的 TS1 中的 Speed Change 比特置起，所以 RC 内部变量 Directed Speed Change 标志位也被置起，这样一来 RC DSP 发送的 TS1 序列中的 Speed Change 比特同样会被置起。因为链路之后会尝试进入双方所同时支持的最高速率，所以，如果某个设备希望链路使用更低的速率，其只需要在宣告的速率列表中，不要列出它不想使用的更高速率即可。</p>
+<p>在如图 14-49 所示的示例拓扑连接中，EP 设备仅有一个 USP，连接到 RC 唯一的 DSP。在**发起阶段**中，只有 USP 可以发起速率改变请求，示例中的 USP 也是这么做的，其内部变量 Directed Speed Change 标志位先前已经在硬件实现定义的条件满足后置起，触发 USP 发起速率改变请求。在发起速率改变请求时，USP 将其 LTSSM 跳变至 Recovery 状态，进入 Recovery.RcvrLock 次状态，并发起 Speed Change 比特置起，包括其所支持速率列表的 TS1 序列，如原文 623 页的图 14-49 所示。当 DSP 接收到这些 USP 发生的 TS1 序列后，其同样进入 Recovery 状态，并开始给 USP 返回 TS1 序列。因为接收到的 TS1 中的 Speed Change 比特置起，所以 RC 内部变量 Directed Speed Change 标志位也被置起，这样一来 RC DSP 发送的 TS1 序列中的 Speed Change 比特同样会被置起。因为链路之后会尝试进入双方所同时支持的最高速率，所以，如果某个设备希望链路使用更低的速率，其只需要在宣告的速率列表中，不要列出它不想使用的更高速率即可。</p>
 <p><img alt="image-20230122234814609" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230122234814609.png" /></p>
 <p>图 14-49 速率改变示例 - 发起阶段</p>
 <p><strong>第二阶段</strong>，当 USP 检测到返回的 TS1 序列输入后，USP 状态机跳变为 Recovery.RcvrCfg 次状态，并开始发送 Speed Change 比特仍然置起的 TS2 序列，过程如原文 624 页图 14-50 所示。如果速率改变并不是因为链路可靠性引起的，那么这些 TS2 中的自主带宽改变（Autonomous Change）比特置为 1。DSP 在接收到这些 Speed Change 比特置起的 TS2 后， LTSSM 同样进入 Recovery.RcvrCfg 次状态，并向 USP 返回 Speed Change 比特置起的 TS2。不过，DSP 发送的 TS2 中的自主带宽改变比特数值与接收到的 TS2 中的数值相反（译注：此例中，取反为 0）。</p>
@@ -3827,18 +3827,18 @@
 <p>如果速率改变因为一些原因失败，设备不被允许在失败并返回 L0 的 200ms 内重新协商该速率或者更高速率，或者等待链路伙伴通告其支持新的更高速率，才能重新发起速率改变协商。</p>
 <p><img alt="image-20230123110336814" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230123110336814.png" /></p>
 <p>图 14-55 速率改变-结束阶段</p>
-<h4 id="14154-software-control-of-speed-changes">14.15.4 Software Control of Speed Changes // 速率改变的软件控制</h4>
-<p>当硬件已经决定改变链路速率后，软件无法再控制速率改变流程，但是软件可以限制或者禁止硬件的速率改变行为。通过原文 628 页图 14-56 所示的链路控制 2 （Link Control 2）寄存器的<strong>目标链路速率</strong>（Target Link Speed）数值可以限制硬件速率改变行为。该数值会设定 USP 所能发起速率改变的最高目标速率，或者用于保持当前链路速率。软件也可以强制硬件尝试将链路速率设定为某个特定速率，首先设置 USP 的<strong>目标链路速率</strong>，然后置位<strong>链路控制</strong>（Link Control）寄存器中的（Retrain Link）<strong>链路重训练</strong>比特，寄存器域如原文 629 页图 14-57 所示。另外，如前文所述，软件可以通过链路带宽通知机制得知任何硬件完成的链路速率或者带宽变化。最后，软件可以通过设置<strong>禁止硬件自发速率改变</strong>（Hardware Autonomous Speed Disable）比特关闭硬件的自动速率改变功能。</p>
+<h4 id="14154-software-control-of-speed-changes">14.15.4 Software Control of Speed Changes // 速率改变的软件控制<a class="headerlink" href="#14154-software-control-of-speed-changes" title="Permanent link">&para;</a></h4>
+<p>当硬件已经决定改变链路速率后，软件无法再控制速率改变流程，但是软件可以限制或者禁止硬件的速率改变行为。通过原文 628 页图 14-56 所示的链路控制 2 （Link Control 2）寄存器的**目标链路速率**（Target Link Speed）数值可以限制硬件速率改变行为。该数值会设定 USP 所能发起速率改变的最高目标速率，或者用于保持当前链路速率。软件也可以强制硬件尝试将链路速率设定为某个特定速率，首先设置 USP 的**目标链路速率**，然后置位**链路控制**（Link Control）寄存器中的（Retrain Link）<strong>链路重训练**比特，寄存器域如原文 629 页图 14-57 所示。另外，如前文所述，软件可以通过链路带宽通知机制得知任何硬件完成的链路速率或者带宽变化。最后，软件可以通过设置**禁止硬件自发速率改变</strong>（Hardware Autonomous Speed Disable）比特关闭硬件的自动速率改变功能。</p>
 <p><img alt="image-20230123111643639" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230123111643639.png" /></p>
 <p>图 14-56 链路控制 2 寄存器</p>
 <p><img alt="image-20230123111727117" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230123111727117.png" /></p>
 <p>图 14-57 链路控制寄存器</p>
-<h4 id="14155-dynamic-link-width-changes">14.15.5 Dynamic Link Width Changes // 动态链路宽度改变</h4>
+<h4 id="14155-dynamic-link-width-changes">14.15.5 Dynamic Link Width Changes // 动态链路宽度改变<a class="headerlink" href="#14155-dynamic-link-width-changes" title="Permanent link">&para;</a></h4>
 <p>链路宽度改变的基本过程和速率改变相同，但是位宽改变的过程会相对更加复杂，因为牵涉到更多的 LTSSM 状态改变步骤。软件在使能链路宽度改变之前需要了解一件重要的事情，那就是对端设备是否支持将窄链路恢复成宽度较宽的链路（该特性被称为 Link Upconfiguring）。设备在他们训练期间发送的 TS2 序列中的 Rate ID 域的比特 6 位置通告他们是否支持这一特性，如原文 630 页图 14-58 所示。如果对端设备不支持这一特性，那么意味着将链路宽度改小会是一锤子买卖（无法恢复回原来将宽的链路宽度），此时只会在出现链路可靠性问题时，才会减小链路宽度。</p>
 <p><img alt="image-20230123112734464" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230123112734464.png" /></p>
 <p>图 14-58 TS2 序列内容</p>
-<h4 id="14156-link-width-change-example">14.15.6 Link Width Change Example // 链路宽度改变示例</h4>
-<p>让我来看一个示例，示例基于如原文 631 页图 14-59 所示的连接拓扑，一个根端口（Root Port）连接到一个 EP（千兆以太网设备）。同样地，只有 USP 才能够发起链路宽度的改变，和前文速率改变时一样，USP 先使自身进入 Recovery 状态发起这一操作。但此时不会在 TS1/2 中置起 Speed Change 标志。为了确定改变后的链路宽度，USP 会通知 DSP 在从 Recovery 状态返回 L0 状态之前，进入一次 Configuration 状态，如原文 631 页图 14-60 所述。Configuration 状态包含多个次状态，原文 632 页的图 14-60 给出了一个简化版的状态跳变过程示意图。接下来，我们会一一讨论各个步骤。</p>
+<h4 id="14156-link-width-change-example">14.15.6 Link Width Change Example // 链路宽度改变示例<a class="headerlink" href="#14156-link-width-change-example" title="Permanent link">&para;</a></h4>
+<p>让我来看一个示例，示例基于如原文 631 页图 14-59 所示的连接拓扑，一个根端口（Root Port）连接到一个 EP（千兆以太网设备）。同样地，只有 USP 才能够发起链路宽度的改变，和前文速率改变时一样，USP 先使自身进入 Recovery 状态发起这一操作。但此时不会在 TS&frac12; 中置起 Speed Change 标志。为了确定改变后的链路宽度，USP 会通知 DSP 在从 Recovery 状态返回 L0 状态之前，进入一次 Configuration 状态，如原文 631 页图 14-60 所述。Configuration 状态包含多个次状态，原文 632 页的图 14-60 给出了一个简化版的状态跳变过程示意图。接下来，我们会一一讨论各个步骤。</p>
 <p><img alt="image-20230123124950510" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230123124950510.png" /></p>
 <p>图 14-59 链路宽度改变示例拓扑连接图</p>
 <p><img alt="image-20230123124958034" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230123124958034.png" /></p>
@@ -3863,13 +3863,13 @@
 <p>和动态速率改变时一样，软件不能够发起链路宽度改变，但是可以通过设置链路控制（Link Control）寄存器中的相应比特禁止硬件发起该请求，如原文 638 页的图 14-67 所示。但和速率改变的时不同的情况是，没有相应的软件机制能够将链路宽度设为特定值。</p>
 <p><img alt="image-20230123223743198" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230123223743198.png" /></p>
 <p>图 14-67 链路控制寄存器</p>
-<h3 id="1416-related-configuration-registers">14.16 Related Configuration Registers // 相关配置寄存器</h3>
+<h3 id="1416-related-configuration-registers">14.16 Related Configuration Registers // 相关配置寄存器<a class="headerlink" href="#1416-related-configuration-registers" title="Permanent link">&para;</a></h3>
 <p>我们在前文中多次提及一些和链路初始化和训练相关的配置寄存器（Configuration Register），在这一节我们将对它们做一番总结。</p>
-<h4 id="14161-link-capabilities-register">14.16.1 Link Capabilities Register // 链路能力寄存器</h4>
+<h4 id="14161-link-capabilities-register">14.16.1 Link Capabilities Register // 链路能力寄存器<a class="headerlink" href="#14161-link-capabilities-register" title="Permanent link">&para;</a></h4>
 <p>链路能力寄存器各比特含义如原文 639 页图 14-68 所示，本节详细描述了和链路初始化和训练相关比特的含义。</p>
 <p><img alt="image-20230124205246881" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230124205246881.png" /></p>
 <p>图 14-68 链路能力寄存器各比特含义示意图</p>
-<h5 id="max-link-speed-30">Max Link Speed [3:0]</h5>
+<h5 id="max-link-speed-30">Max Link Speed [3:0]<a class="headerlink" href="#max-link-speed-30" title="Permanent link">&para;</a></h5>
 <p>此处描述的是链路的最高速率，其值是一个指向链路能力 2 （Link Capabilities 2）寄存器的链路支持速率向量（Supported Link Speeds Vector）域的指针。指针指向的比特所代表的速率为链路最高速率，具体定义如下：
 • 0001b ‐ Supported Link Speeds Vector field bit 0
 • 0010b ‐ Supported Link Speeds Vector field bit 1
@@ -3879,7 +3879,7 @@
 • 0110b ‐ Supported Link Speeds Vector field bit 5
 • 0111b ‐ Supported Link Speeds Vector field bit 6</p>
 <p>除此以外所有的值为 reserved，无含义。同一个 USP 中的多个 function 必须使用同一个数值。该寄存器是一个只读寄存器。</p>
-<h5 id="maximum-link-width94">Maximum Link Width[9:4]</h5>
+<h5 id="maximum-link-width94">Maximum Link Width[9:4]<a class="headerlink" href="#maximum-link-width94" title="Permanent link">&para;</a></h5>
 <p>此处描述的是 PCIe 链路的最大宽度，具体定义如下：</p>
 <p>• 00 0000b: Reserved
 • 00 0001b: x1
@@ -3890,7 +3890,7 @@
 • 01 0000b: x16
 • 10 0000b: x32</p>
 <p>除此以外所有的值为 reserved，无含义。同一个 USP 中的多个 function 必须使用同一个数值。该寄存器是一个只读寄存器。</p>
-<h4 id="14162-link-capabilities-2-register-2">14.16.2 Link Capabilities 2 Register // 链路能力 2 寄存器</h4>
+<h4 id="14162-link-capabilities-2-register-2">14.16.2 Link Capabilities 2 Register // 链路能力 2 寄存器<a class="headerlink" href="#14162-link-capabilities-2-register-2" title="Permanent link">&para;</a></h4>
 <p>在上一幅图片图 14-68 的链路寄存器中的最高链路速率域，是一个指向本寄存器链路支持速率向量域的指针，该域在寄存器的位置如图 14-69 所示，具体定义如下：</p>
 <p>• Bit 0 = 2.5 GT/s
 • Bit 1 = 5.0 GT/s
@@ -3898,11 +3898,11 @@
 • Bits 6:3 RsvdP (reserved 并 preserved)</p>
 <p><img alt="image-20230124210352578" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230124210352578.png" /></p>
 <p>图 14-69 链路能力 2 寄存器</p>
-<h4 id="14163-link-status-register">14.16.3 Link Status Register // 链路状态寄存器</h4>
+<h4 id="14163-link-status-register">14.16.3 Link Status Register // 链路状态寄存器<a class="headerlink" href="#14163-link-status-register" title="Permanent link">&para;</a></h4>
 <p>链路状态寄存器如原文 597 页的图 14-39 所示：</p>
 <p><img alt="image-20230124210554310" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230124210554310.png" /></p>
 <p>图 14-39 链路状态寄存器</p>
-<h5 id="current-link-speed30">Current Link Speed[3:0]</h5>
+<h5 id="current-link-speed30">Current Link Speed[3:0]<a class="headerlink" href="#current-link-speed30" title="Permanent link">&para;</a></h5>
 <p>该只读寄存器表示当前的链路速度。在链路首次进入 L0 状态时，链路速度始终为 2.5GT/s。在此之后，如果链路双方共同支持更高的速率，则链路通过进入 Recovery 状态，尝试改变到更高的速度。该寄存器域的编码方式和最大链路速度域相同，为一个指向链路支持速率向量域的指针：</p>
 <p>• 0001b ‐ Supported Link Speeds Vector field bit 0
 • 0010b ‐ Supported Link Speeds Vector field bit 1
@@ -3913,7 +3913,7 @@
 • 0111b ‐ Supported Link Speeds Vector field bit 6</p>
 <p>除此以外所有的值为 reserved，无含义。</p>
 <p><strong>注意</strong>：如果链路还没有 link up，则该域为未定义状态（LinkUp = 0b）。</p>
-<h5 id="negotiated-link-width94">Negotiated Link Width[9:4]</h5>
+<h5 id="negotiated-link-width94">Negotiated Link Width[9:4]<a class="headerlink" href="#negotiated-link-width94" title="Permanent link">&para;</a></h5>
 <p>该寄存器表示的是链路宽度协商的结果。有七种可能的宽度，其他为无含义值。具体含义如下：</p>
 <p>• 00 0001b: for x1.
 • 00 0010b for x2.
@@ -3924,19 +3924,19 @@
 • 10 0000b for x32.</p>
 <p>除此以外所有的值为 reserved，无含义。</p>
 <p><strong>注意</strong>：如果链路还没有 link up，则该域为未定义状态（LinkUp = 0b）。</p>
-<h5 id="undefined10">Undefined[10]</h5>
+<h5 id="undefined10">Undefined[10]<a class="headerlink" href="#undefined10" title="Permanent link">&para;</a></h5>
 <p>目前的协议版本中，该域无定义。在早前的协议版本中，如果链路训练发生错误，那么硬件会将该位写 1，并在 LTSSM 进入 L0 状态后清除。目前协议规定软件可以向该寄存器域中写入任何值，但必须忽略从该寄存器中读取的任何值。</p>
-<h5 id="link-training11">Link Training[11]</h5>
+<h5 id="link-training11">Link Training[11]<a class="headerlink" href="#link-training11" title="Permanent link">&para;</a></h5>
 <p>该只读寄存器为 1 时表示 LTSSM 正处于训练过程中。技术上来讲，该比特为 1 时，表示 LTSSM 正处于 Configuration 或者 Recovery 状态中，或者此时链路重训练（Retrain Link）比特被写 1，但实际的链路训练还没开始。该比特在 LTSSM 退出 Configuration 或者 Recovery 状态后被清除。因为 LTSSM 处于训练过程中必须对软件可见，所以该比特只对 DSP 有意义，所以在 EP，桥设备和交换机的 USP 中没有作用，该比特必须硬连线固定为 0b。 </p>
 <p><img alt="image-20230124213046483" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230124213046483.png" /></p>
 <p>图 14-70 链路状态寄存器</p>
-<h4 id="14164-link-control-register">14.16.4 Link Control Register // 链路控制寄存器</h4>
+<h4 id="14164-link-control-register">14.16.4 Link Control Register // 链路控制寄存器<a class="headerlink" href="#14164-link-control-register" title="Permanent link">&para;</a></h4>
 <p>链路状态寄存器各域如原文 644 页图 14-71 所示，其中有三个我们感兴趣的寄存器域。</p>
-<h5 id="link-disable">Link Disable</h5>
+<h5 id="link-disable">Link Disable<a class="headerlink" href="#link-disable" title="Permanent link">&para;</a></h5>
 <p>该比特被设置为 1 时，链路被置为未使能（Disable）状态。直观上来说，该比特不可被 EP，桥设备和交换机的 USP 使用，因为即使在链路未使能状态下，该比特也必须能被软件访问。无论在何种链路状态下，写该寄存器后，立刻进行的读操作都会读出写入的值。 在清除该比特后，软件必须小心地处理传统方式复位后，第一个 Configuration 读请求在时序上的要求。</p>
-<h5 id="retrain-link">Retrain Link</h5>
+<h5 id="retrain-link">Retrain Link<a class="headerlink" href="#retrain-link" title="Permanent link">&para;</a></h5>
 <p>该比特可被软件用于在任何软件认为有必要地时候，发起链路重训练请求，比如想要恢复错误时。该比特不可被 EP，桥设备和交换机的 USP 使用。当该比特被设置为 1 时，其会将 LTSSM 强制设为 Recovery 状态，不会等待 Configuration 写请求的 completion 包返回（如有）。</p>
-<h5 id="extended-synch">Extended Synch</h5>
+<h5 id="extended-synch">Extended Synch<a class="headerlink" href="#extended-synch" title="Permanent link">&para;</a></h5>
 <p>该比特和训练有关是因为该比特用于大幅增加两个 LTSSM 状态下的用时，用于帮助较慢的外部测试或者分析设备，在正常通信恢复时，能够与设备建立同步。其中一个场景是在退出 L0s 时，此时置起该比特会在退出 L0s 时，强制发送 4096 个 FTS。另一个场景是在 Recovery 状态中，在进入 Recovery.RcvrCfg 之前，置起该比特会强制发送 1024 个 TS1 序列。</p>
 <p><img alt="image-20230124215322806" src="../img/14%20%E9%93%BE%E8%B7%AF%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E8%AE%AD%E7%BB%83/image-20230124215322806.png" /></p>
 <p>图 14-71 链路控制寄存器</p>

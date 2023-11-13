@@ -1700,7 +1700,7 @@
   
 
 
-<h1 id="_1">计算机图形学</h1>
+<h1 id="_1">计算机图形学<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>本文参考了如下网站：</p>
 <ul>
 <li><a href="http://www.songho.ca/opengl/gl_projectionmatrix.html">OpenGL Projection Matrix - Song Ho Ahn</a></li>
@@ -1708,10 +1708,10 @@
 <li><a href="http://www.songho.ca/opengl/gl_projectionmatrix.html">gluPerspective</a></li>
 <li><a href="https://eliemichel.github.io/LearnWebGPU/basic-3d-rendering/3d-meshes/projection-matrices.html">Projection matrices</a></li>
 </ul>
-<h2 id="_2">齐次坐标</h2>
-<p>齐次坐标是在 3 维的坐标 $(x, y, z)$ 的基础上，添加一维，变成 $(x, y, z, w)$，对应 3 维的 $(x/w, y/w, z/w)$，这样做可以方便一些计算。</p>
-<p>因此从 3 维坐标转换为齐次坐标的时候，添加一维 $w = 1$，变成 $(x, y, z, 1)$。为了让 3 维的向量和点在齐次坐标下可以进行运算，可以向 3 维向量添加一维 $w=0$，此时 $w=0$ 表示向量，$w \ne 0$ 表示点。</p>
-<h2 id="_3">坐标变换</h2>
+<h2 id="_2">齐次坐标<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>齐次坐标是在 3 维的坐标 <span class="arithmatex"><span class="MathJax_Preview">(x, y, z)</span><script type="math/tex">(x, y, z)</script></span> 的基础上，添加一维，变成 <span class="arithmatex"><span class="MathJax_Preview">(x, y, z, w)</span><script type="math/tex">(x, y, z, w)</script></span>，对应 3 维的 <span class="arithmatex"><span class="MathJax_Preview">(x/w, y/w, z/w)</span><script type="math/tex">(x/w, y/w, z/w)</script></span>，这样做可以方便一些计算。</p>
+<p>因此从 3 维坐标转换为齐次坐标的时候，添加一维 <span class="arithmatex"><span class="MathJax_Preview">w = 1</span><script type="math/tex">w = 1</script></span>，变成 <span class="arithmatex"><span class="MathJax_Preview">(x, y, z, 1)</span><script type="math/tex">(x, y, z, 1)</script></span>。为了让 3 维的向量和点在齐次坐标下可以进行运算，可以向 3 维向量添加一维 <span class="arithmatex"><span class="MathJax_Preview">w=0</span><script type="math/tex">w=0</script></span>，此时 <span class="arithmatex"><span class="MathJax_Preview">w=0</span><script type="math/tex">w=0</script></span> 表示向量，<span class="arithmatex"><span class="MathJax_Preview">w \ne 0</span><script type="math/tex">w \ne 0</script></span> 表示点。</p>
+<h2 id="_3">坐标变换<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <p>OpenGL 中坐标变换经过了如下的步骤：</p>
 <ol>
 <li>物体坐标，4D 齐次坐标</li>
@@ -1721,11 +1721,11 @@
 <li>把 3D 坐标对应到屏幕上的 2D 坐标</li>
 </ol>
 <p>参考：<a href="https://songho.ca/opengl/gl_transform.html">OpenGL Transformation</a></p>
-<h2 id="normalized-device-coordinates">Normalized Device Coordinates</h2>
+<h2 id="normalized-device-coordinates">Normalized Device Coordinates<a class="headerlink" href="#normalized-device-coordinates" title="Permanent link">&para;</a></h2>
 <p>NDC（Normalized Device Coordinates）是经过一系列变换以后，得到的最终的 3D 坐标。</p>
-<p>以 OpenGL 为例，NDC 就是一个在三个坐标轴上都在 $[-1, 1]$ 之间的立方体，只有在这个立方体中的物体才可能被显示出来。</p>
-<p>NDC 的坐标范围在不同的图形 API 下可能不一样，例如 OpenGL 和 WebGL 是从 $(-1, -1, -1)$ 到 $(1, 1, 1)$，而 DirectX-12、Metal、Vulkan 和 WebGPU 是从 $(-1, -1, 0)$ 到 $(1, 1, 1)$，也就是 Z 轴上的范围只有 $[0, 1]$。</p>
-<p>最后显示在屏幕上的时候，显示区域的左下角就对应 $x=-1, y=-1$，右上角对应 $x=1, y=1$（也可能是左上角 $x=-1, y=-1$，右下角 $x=1, y=1$，不同的图形 API 规定不同）。$z$ 轴对应深度，显示在前面的（$z$ 较小的）会遮挡显示在后面的（$z$ 较大的）。</p>
+<p>以 OpenGL 为例，NDC 就是一个在三个坐标轴上都在 <span class="arithmatex"><span class="MathJax_Preview">[-1, 1]</span><script type="math/tex">[-1, 1]</script></span> 之间的立方体，只有在这个立方体中的物体才可能被显示出来。</p>
+<p>NDC 的坐标范围在不同的图形 API 下可能不一样，例如 OpenGL 和 WebGL 是从 <span class="arithmatex"><span class="MathJax_Preview">(-1, -1, -1)</span><script type="math/tex">(-1, -1, -1)</script></span> 到 <span class="arithmatex"><span class="MathJax_Preview">(1, 1, 1)</span><script type="math/tex">(1, 1, 1)</script></span>，而 DirectX-12、Metal、Vulkan 和 WebGPU 是从 <span class="arithmatex"><span class="MathJax_Preview">(-1, -1, 0)</span><script type="math/tex">(-1, -1, 0)</script></span> 到 <span class="arithmatex"><span class="MathJax_Preview">(1, 1, 1)</span><script type="math/tex">(1, 1, 1)</script></span>，也就是 Z 轴上的范围只有 <span class="arithmatex"><span class="MathJax_Preview">[0, 1]</span><script type="math/tex">[0, 1]</script></span>。</p>
+<p>最后显示在屏幕上的时候，显示区域的左下角就对应 <span class="arithmatex"><span class="MathJax_Preview">x=-1, y=-1</span><script type="math/tex">x=-1, y=-1</script></span>，右上角对应 <span class="arithmatex"><span class="MathJax_Preview">x=1, y=1</span><script type="math/tex">x=1, y=1</script></span>（也可能是左上角 <span class="arithmatex"><span class="MathJax_Preview">x=-1, y=-1</span><script type="math/tex">x=-1, y=-1</script></span>，右下角 <span class="arithmatex"><span class="MathJax_Preview">x=1, y=1</span><script type="math/tex">x=1, y=1</script></span>，不同的图形 API 规定不同）。<span class="arithmatex"><span class="MathJax_Preview">z</span><script type="math/tex">z</script></span> 轴对应深度，显示在前面的（<span class="arithmatex"><span class="MathJax_Preview">z</span><script type="math/tex">z</script></span> 较小的）会遮挡显示在后面的（<span class="arithmatex"><span class="MathJax_Preview">z</span><script type="math/tex">z</script></span> 较大的）。</p>
 <p>因此 NDC 到屏幕坐标的对应关系是：</p>
 <ol>
 <li>x 轴：-1 -&gt; x, 1 -&gt; x + w</li>
@@ -1733,289 +1733,404 @@
 <li>z 轴：-1 -&gt; n, 1 -&gt; f</li>
 </ol>
 <p>其中 x, y, w 和 h 用 glViewport 函数设置，n 和 f 用 <a href="https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDepthRange.xhtml">glDepthRange</a> 设置。</p>
-<h2 id="_4">正交投影</h2>
-<p>正交投影要做的是把一个长方体线性映射到 NDC 中，以 OpenGL 为例，也就是要映射到三个维度上都是 $[-1, 1]$ 之间的立方体。</p>
+<h2 id="_4">正交投影<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>正交投影要做的是把一个长方体线性映射到 NDC 中，以 OpenGL 为例，也就是要映射到三个维度上都是 <span class="arithmatex"><span class="MathJax_Preview">[-1, 1]</span><script type="math/tex">[-1, 1]</script></span> 之间的立方体。</p>
 <p>这个长方体的边和坐标轴平行，因此可以用以下几个变量来定义长方体的坐标：</p>
 <ol>
 <li>left, right, top, bottom：定义了长方体上平行于 X-Y 屏幕的面的位置，其中 left 和 right 就是 X 轴上的最小值和最大值，bottom 和 top 就是 Y 轴上的最小值和最大值</li>
 <li>near，far：定义了长方体在 Z 轴上的区间，离原点最近的平面的 Z 值是 <code>-near</code>，最远的平面的 Z 值是 <code>-far</code></li>
 </ol>
-<p>下面用这些坐标的首字母来简称：$l$ 代表 left，依此类推。</p>
-<p>目标是把这个长方体映射到 $[-1, 1]$ 的立方体上。</p>
-<p>首先考虑 X 轴：要线性地把 $x=l$ 映射到 $x=-1$，把 $x=r$ 映射到 $x=1$，可以得到 $x' = \frac{2}{r-l}x-\frac{r+l}{r-l}$。</p>
-<p>同理，Y 坐标的计算公式是 $y' = \frac{2}{t-b}y-\frac{t+b}{t-b}$。</p>
-<p>Z 轴上多了一个负号：线性地把 $z=-n$ 映射到 $z=-1$，把 $z=-f$ 映射到 $z=1$，得到 $z' = \frac{-2}{f-n}z-\frac{f+n}{f-n}$。</p>
-<p>注：如果 NDC 的 Z 轴范围是 $[0, 1]$，那么 Z 轴的计算公式就是 $z' = \frac{-1}{f-n}z-\frac{n}{f-n}$</p>
+<p>下面用这些坐标的首字母来简称：<span class="arithmatex"><span class="MathJax_Preview">l</span><script type="math/tex">l</script></span> 代表 left，依此类推。</p>
+<p>目标是把这个长方体映射到 <span class="arithmatex"><span class="MathJax_Preview">[-1, 1]</span><script type="math/tex">[-1, 1]</script></span> 的立方体上。</p>
+<p>首先考虑 X 轴：要线性地把 <span class="arithmatex"><span class="MathJax_Preview">x=l</span><script type="math/tex">x=l</script></span> 映射到 <span class="arithmatex"><span class="MathJax_Preview">x=-1</span><script type="math/tex">x=-1</script></span>，把 <span class="arithmatex"><span class="MathJax_Preview">x=r</span><script type="math/tex">x=r</script></span> 映射到 <span class="arithmatex"><span class="MathJax_Preview">x=1</span><script type="math/tex">x=1</script></span>，可以得到 <span class="arithmatex"><span class="MathJax_Preview">x' = \frac{2}{r-l}x-\frac{r+l}{r-l}</span><script type="math/tex">x' = \frac{2}{r-l}x-\frac{r+l}{r-l}</script></span>。</p>
+<p>同理，Y 坐标的计算公式是 <span class="arithmatex"><span class="MathJax_Preview">y' = \frac{2}{t-b}y-\frac{t+b}{t-b}</span><script type="math/tex">y' = \frac{2}{t-b}y-\frac{t+b}{t-b}</script></span>。</p>
+<p>Z 轴上多了一个负号：线性地把 <span class="arithmatex"><span class="MathJax_Preview">z=-n</span><script type="math/tex">z=-n</script></span> 映射到 <span class="arithmatex"><span class="MathJax_Preview">z=-1</span><script type="math/tex">z=-1</script></span>，把 <span class="arithmatex"><span class="MathJax_Preview">z=-f</span><script type="math/tex">z=-f</script></span> 映射到 <span class="arithmatex"><span class="MathJax_Preview">z=1</span><script type="math/tex">z=1</script></span>，得到 <span class="arithmatex"><span class="MathJax_Preview">z' = \frac{-2}{f-n}z-\frac{f+n}{f-n}</span><script type="math/tex">z' = \frac{-2}{f-n}z-\frac{f+n}{f-n}</script></span>。</p>
+<p>注：如果 NDC 的 Z 轴范围是 <span class="arithmatex"><span class="MathJax_Preview">[0, 1]</span><script type="math/tex">[0, 1]</script></span>，那么 Z 轴的计算公式就是 <span class="arithmatex"><span class="MathJax_Preview">z' = \frac{-1}{f-n}z-\frac{n}{f-n}</span><script type="math/tex">z' = \frac{-1}{f-n}z-\frac{n}{f-n}</script></span></p>
 <p>总结一下就是：</p>
-<p>\begin{align}
-x' = \frac{2}{r-l}x-\frac{r+l}{r-l} \
-y' = \frac{2}{t-b}y-\frac{t+b}{t-b} \
+<div class="arithmatex">
+<div class="MathJax_Preview">\begin{align}
+x' = \frac{2}{r-l}x-\frac{r+l}{r-l} \\
+y' = \frac{2}{t-b}y-\frac{t+b}{t-b} \\
 z' = \frac{-2}{f-n}z-\frac{f+n}{f-n}
-\end{align}</p>
-<p>考虑到实际采用的是齐次坐标系，$w$ 不变，所以 $w' = w$。把上面的等式写成矩阵的形式，就是：</p>
-<p>$$
+\end{align}</div>
+<script type="math/tex; mode=display">\begin{align}
+x' = \frac{2}{r-l}x-\frac{r+l}{r-l} \\
+y' = \frac{2}{t-b}y-\frac{t+b}{t-b} \\
+z' = \frac{-2}{f-n}z-\frac{f+n}{f-n}
+\end{align}</script>
+</div>
+<p>考虑到实际采用的是齐次坐标系，<span class="arithmatex"><span class="MathJax_Preview">w</span><script type="math/tex">w</script></span> 不变，所以 <span class="arithmatex"><span class="MathJax_Preview">w' = w</span><script type="math/tex">w' = w</script></span>。把上面的等式写成矩阵的形式，就是：</p>
+<div class="arithmatex">
+<div class="MathJax_Preview">
 \begin{pmatrix}
-\frac{2}{r-l} &amp; 0 &amp; 0 &amp; -\frac{r+l}{r-l} \
-0 &amp; \frac{2}{t-b} &amp; 0 &amp; -\frac{t+b}{t-b} \
-0 &amp; 0 &amp; \frac{-2}{f-n} &amp; -\frac{f+n}{f-n} \
+\frac{2}{r-l} &amp; 0 &amp; 0 &amp; -\frac{r+l}{r-l} \\
+0 &amp; \frac{2}{t-b} &amp; 0 &amp; -\frac{t+b}{t-b} \\
+0 &amp; 0 &amp; \frac{-2}{f-n} &amp; -\frac{f+n}{f-n} \\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{pmatrix}
-$$</p>
+</div>
+<script type="math/tex; mode=display">
+\begin{pmatrix}
+\frac{2}{r-l} & 0 & 0 & -\frac{r+l}{r-l} \\
+0 & \frac{2}{t-b} & 0 & -\frac{t+b}{t-b} \\
+0 & 0 & \frac{-2}{f-n} & -\frac{f+n}{f-n} \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+</script>
+</div>
 <p>这正是 OpenGL 正交投影函数 glOrtho() 所计算的矩阵：</p>
-<figure>
-<p><img alt="" src="../cg_glortho.png" width="300" />
-  </p>
-<figcaption>正交投影矩阵（图源 <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glOrtho.xml">glOrtho</a>）</figcation>
-</figcaption>
+<figure markdown>
+  ![](cg_glortho.png){ width="300" }
+  <figcaption>正交投影矩阵（图源 <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glOrtho.xml">glOrtho</a>）</figcation>
 </figure>
+
 <p>mesa 中的实现：</p>
-<pre><code class="language-c">// Source: https://github.com/Mesa3D/mesa/blob/957009978ef6d7121fc0d710d03bc20097d4d46b/src/mesa/math/m_matrix.c#L813C1-L840
-void
-_math_float_ortho(float *m,
-                  float left, float right,
-                  float bottom, float top,
-                  float nearval, float farval)
-{
-#define M(row,col)  m[col*4+row]
-   M(0,0) = 2.0F / (right-left);
-   M(0,1) = 0.0F;
-   M(0,2) = 0.0F;
-   M(0,3) = -(right+left) / (right-left);
+<div class="highlight"><pre><span></span><code><span class="c1">// Source: https://github.com/Mesa3D/mesa/blob/957009978ef6d7121fc0d710d03bc20097d4d46b/src/mesa/math/m_matrix.c#L813C1-L840</span>
+<span class="kt">void</span>
+<span class="nf">_math_float_ortho</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span>
+<span class="w">                  </span><span class="kt">float</span><span class="w"> </span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">right</span><span class="p">,</span>
+<span class="w">                  </span><span class="kt">float</span><span class="w"> </span><span class="n">bottom</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">top</span><span class="p">,</span>
+<span class="w">                  </span><span class="kt">float</span><span class="w"> </span><span class="n">nearval</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">farval</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="cp">#define M(row,col)  m[col*4+row]</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0F</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">right</span><span class="o">-</span><span class="n">left</span><span class="p">);</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="p">(</span><span class="n">right</span><span class="o">+</span><span class="n">left</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">right</span><span class="o">-</span><span class="n">left</span><span class="p">);</span>
 
-   M(1,0) = 0.0F;
-   M(1,1) = 2.0F / (top-bottom);
-   M(1,2) = 0.0F;
-   M(1,3) = -(top+bottom) / (top-bottom);
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0F</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">top</span><span class="o">-</span><span class="n">bottom</span><span class="p">);</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="p">(</span><span class="n">top</span><span class="o">+</span><span class="n">bottom</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">top</span><span class="o">-</span><span class="n">bottom</span><span class="p">);</span>
 
-   M(2,0) = 0.0F;
-   M(2,1) = 0.0F;
-   M(2,2) = -2.0F / (farval-nearval);
-   M(2,3) = -(farval+nearval) / (farval-nearval);
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">-2.0F</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">farval</span><span class="o">-</span><span class="n">nearval</span><span class="p">);</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="p">(</span><span class="n">farval</span><span class="o">+</span><span class="n">nearval</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">farval</span><span class="o">-</span><span class="n">nearval</span><span class="p">);</span>
 
-   M(3,0) = 0.0F;
-   M(3,1) = 0.0F;
-   M(3,2) = 0.0F;
-   M(3,3) = 1.0F;
-#undef M
-}
-</code></pre>
-<h2 id="_5">透视投影</h2>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0F</span><span class="p">;</span>
+<span class="cp">#undef M</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="_5">透视投影<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p>透视投影要做的是把一个四棱台（Square Frustum，四棱锥水平切开，底面和顶面是正方形，其余四个面都是梯形）映射到 NDC 上。其中四棱台的四条棱延长以后，交于原点。也就是说焦点就是坐标轴的原点。</p>
 <p>相比正交投影，透视投影最大的不同在于它近大远小的特性，更加贴近实际：正交投影无论深度多少，看到的物体大小不变；而在透视投影中，从原点出发，到 near 平面上的一点连成射线，这条射线上的点都对应同一个屏幕上的点，因此远的物体在屏幕上看的小，近的物体在屏幕上看得大。</p>
-<p>因此在实现透视投影的时候，就要利用这条从原点出发到 near 平面的一点的射线：由于这条射线上的点都对应屏幕上同一个点，因此在 NDC 中也对应同一个 $(x', y')$ 坐标。那么，在计算 $x'$ 和 $y'$ 的时候，先利用相似三角形关系，把点映射到 near 平面上（near 平面的 Z 坐标是 $z=-n$）：</p>
-<p>\begin{align}
-\frac{x'}{x} = \frac{-n}{z} \
+<p>因此在实现透视投影的时候，就要利用这条从原点出发到 near 平面的一点的射线：由于这条射线上的点都对应屏幕上同一个点，因此在 NDC 中也对应同一个 <span class="arithmatex"><span class="MathJax_Preview">(x', y')</span><script type="math/tex">(x', y')</script></span> 坐标。那么，在计算 <span class="arithmatex"><span class="MathJax_Preview">x'</span><script type="math/tex">x'</script></span> 和 <span class="arithmatex"><span class="MathJax_Preview">y'</span><script type="math/tex">y'</script></span> 的时候，先利用相似三角形关系，把点映射到 near 平面上（near 平面的 Z 坐标是 <span class="arithmatex"><span class="MathJax_Preview">z=-n</span><script type="math/tex">z=-n</script></span>）：</p>
+<div class="arithmatex">
+<div class="MathJax_Preview">\begin{align}
+\frac{x'}{x} = \frac{-n}{z} \\
 \frac{y'}{y} = \frac{-n}{z}
-\end{align}</p>
-<p>这样就得到了四棱台到长方体的映射，但是这里涉及到对 $z$ 的除法运算，为了在矩阵中实现针对 $z$ 的除法运算，需要利用齐次坐标自带的除法：$(x, y, z, w) \to (x/w, y/w, z/w)$，也就是说，把 $z$ 的值挪到 $w$ 上，就相当于实现了除法。按照这个思路，可以得到下面的矩阵：</p>
-<p>$$
+\end{align}</div>
+<script type="math/tex; mode=display">\begin{align}
+\frac{x'}{x} = \frac{-n}{z} \\
+\frac{y'}{y} = \frac{-n}{z}
+\end{align}</script>
+</div>
+<p>这样就得到了四棱台到长方体的映射，但是这里涉及到对 <span class="arithmatex"><span class="MathJax_Preview">z</span><script type="math/tex">z</script></span> 的除法运算，为了在矩阵中实现针对 <span class="arithmatex"><span class="MathJax_Preview">z</span><script type="math/tex">z</script></span> 的除法运算，需要利用齐次坐标自带的除法：<span class="arithmatex"><span class="MathJax_Preview">(x, y, z, w) \to (x/w, y/w, z/w)</span><script type="math/tex">(x, y, z, w) \to (x/w, y/w, z/w)</script></span>，也就是说，把 <span class="arithmatex"><span class="MathJax_Preview">z</span><script type="math/tex">z</script></span> 的值挪到 <span class="arithmatex"><span class="MathJax_Preview">w</span><script type="math/tex">w</script></span> 上，就相当于实现了除法。按照这个思路，可以得到下面的矩阵：</p>
+<div class="arithmatex">
+<div class="MathJax_Preview">
 \begin{pmatrix}
-n &amp; 0 &amp; 0 &amp; 0 \
-0 &amp; n &amp; 0 &amp; 0 \
-0 &amp; 0 &amp; A &amp; B \
+n &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; n &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; A &amp; B \\
 0 &amp; 0 &amp; -1 &amp; 0
 \end{pmatrix}
-$$</p>
-<p>其中 $A$ 和 $B$ 是未知数。验证一下上面的矩阵是否实现了除法：</p>
+</div>
+<script type="math/tex; mode=display">
+\begin{pmatrix}
+n & 0 & 0 & 0 \\
+0 & n & 0 & 0 \\
+0 & 0 & A & B \\
+0 & 0 & -1 & 0
+\end{pmatrix}
+</script>
+</div>
+<p>其中 <span class="arithmatex"><span class="MathJax_Preview">A</span><script type="math/tex">A</script></span> 和 <span class="arithmatex"><span class="MathJax_Preview">B</span><script type="math/tex">B</script></span> 是未知数。验证一下上面的矩阵是否实现了除法：</p>
 <p>首先是生成齐次坐标：</p>
-<p>$$
+<div class="arithmatex">
+<div class="MathJax_Preview">
 (x, y, z) \to (x, y, z, 1)
-$$</p>
+</div>
+<script type="math/tex; mode=display">
+(x, y, z) \to (x, y, z, 1)
+</script>
+</div>
 <p>矩阵变换以后：</p>
-<p>\begin{align}
-x' &amp;= nx \
-y' &amp;= ny \
-z' &amp;= Az + B \
+<div class="arithmatex">
+<div class="MathJax_Preview">\begin{align}
+x' &amp;= nx \\
+y' &amp;= ny \\
+z' &amp;= Az + B \\
 w' &amp;= -z
-\end{align}</p>
-<p>再从齐次坐标变回来，得到 $(-\frac{nx}{z}, -\frac{ny}{z}, -A-\frac{B}{z})$。可以看到，x 和 y 都得到了和前面用相似三角形计算出来一样的结果，但是 z 的值出现了变化。但是没有关系，虽然 z 的值变了，但是它依然是保序的，只需要继续保证它在 $[-f, -n]$ 范围即可：</p>
-<p>\begin{align}
--n = -A-\frac{B}{-n} \
+\end{align}</div>
+<script type="math/tex; mode=display">\begin{align}
+x' &= nx \\
+y' &= ny \\
+z' &= Az + B \\
+w' &= -z
+\end{align}</script>
+</div>
+<p>再从齐次坐标变回来，得到 <span class="arithmatex"><span class="MathJax_Preview">(-\frac{nx}{z}, -\frac{ny}{z}, -A-\frac{B}{z})</span><script type="math/tex">(-\frac{nx}{z}, -\frac{ny}{z}, -A-\frac{B}{z})</script></span>。可以看到，x 和 y 都得到了和前面用相似三角形计算出来一样的结果，但是 z 的值出现了变化。但是没有关系，虽然 z 的值变了，但是它依然是保序的，只需要继续保证它在 <span class="arithmatex"><span class="MathJax_Preview">[-f, -n]</span><script type="math/tex">[-f, -n]</script></span> 范围即可：</p>
+<div class="arithmatex">
+<div class="MathJax_Preview">\begin{align}
+-n = -A-\frac{B}{-n} \\
 -f = -A-\frac{B}{-f}
-\end{align}</p>
-<p>求解可得 $A=n+f, B=-nf$，因此前面的矩阵就是：</p>
-<p>$$
+\end{align}</div>
+<script type="math/tex; mode=display">\begin{align}
+-n = -A-\frac{B}{-n} \\
+-f = -A-\frac{B}{-f}
+\end{align}</script>
+</div>
+<p>求解可得 <span class="arithmatex"><span class="MathJax_Preview">A=n+f, B=-nf</span><script type="math/tex">A=n+f, B=-nf</script></span>，因此前面的矩阵就是：</p>
+<div class="arithmatex">
+<div class="MathJax_Preview">
 \begin{pmatrix}
-n &amp; 0 &amp; 0 &amp; 0 \
-0 &amp; n &amp; 0 &amp; 0 \
-0 &amp; 0 &amp; n+f &amp; -nf \
+n &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; n &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; n+f &amp; -nf \\
 0 &amp; 0 &amp; -1 &amp; 0
 \end{pmatrix}
-$$</p>
-<p>到这一步，就完成了四棱台到长方体的映射，接下来就是正交投影了，把长方体映射到 NDC 上，因此最终整体的投影矩阵就是把两个矩阵乘起来（正交投影矩阵左乘上面的矩阵），得到的结果如下：</p>
-<p>$$
+</div>
+<script type="math/tex; mode=display">
 \begin{pmatrix}
-\frac{2}{r-l} &amp; 0 &amp; 0 &amp; -\frac{r+l}{r-l} \
-0 &amp; \frac{2}{t-b} &amp; 0 &amp; -\frac{t+b}{t-b} \
-0 &amp; 0 &amp; \frac{-2}{f-n} &amp; -\frac{f+n}{f-n} \
+n & 0 & 0 & 0 \\
+0 & n & 0 & 0 \\
+0 & 0 & n+f & -nf \\
+0 & 0 & -1 & 0
+\end{pmatrix}
+</script>
+</div>
+<p>到这一步，就完成了四棱台到长方体的映射，接下来就是正交投影了，把长方体映射到 NDC 上，因此最终整体的投影矩阵就是把两个矩阵乘起来（正交投影矩阵左乘上面的矩阵），得到的结果如下：</p>
+<div class="arithmatex">
+<div class="MathJax_Preview">
+\begin{pmatrix}
+\frac{2}{r-l} &amp; 0 &amp; 0 &amp; -\frac{r+l}{r-l} \\
+0 &amp; \frac{2}{t-b} &amp; 0 &amp; -\frac{t+b}{t-b} \\
+0 &amp; 0 &amp; \frac{-2}{f-n} &amp; -\frac{f+n}{f-n} \\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{pmatrix}
 \cdot
 \begin{pmatrix}
-n &amp; 0 &amp; 0 &amp; 0 \
-0 &amp; n &amp; 0 &amp; 0 \
-0 &amp; 0 &amp; n+f &amp; -nf \
+n &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; n &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; n+f &amp; -nf \\
 0 &amp; 0 &amp; -1 &amp; 0
 \end{pmatrix}
 =
 \begin{pmatrix}
-\frac{2n}{r-l} &amp; 0 &amp; \frac{r+l}{r-l} &amp; 0 \
-0 &amp; \frac{2n}{t-b} &amp; \frac{t+b}{t-b} &amp; 0 \
-0 &amp; 0 &amp; -\frac{n+f}{f-n} &amp; \frac{-2nf}{f-n} \
+\frac{2n}{r-l} &amp; 0 &amp; \frac{r+l}{r-l} &amp; 0 \\
+0 &amp; \frac{2n}{t-b} &amp; \frac{t+b}{t-b} &amp; 0 \\
+0 &amp; 0 &amp; -\frac{n+f}{f-n} &amp; \frac{-2nf}{f-n} \\
 0 &amp; 0 &amp; -1 &amp; 0
 \end{pmatrix}
-$$</p>
-<p>这就是最终的透视投影的矩阵。需要注意的是，它假设了输入的坐标的 $w=1$，如果输入的齐次坐标的 $w \ne 1$，计算结果就会有问题。在 OpenGL 中，可以用 gluPerspective() 函数得到它：</p>
-<figure>
-<p><img alt="" src="../cg_gluperspective.png" width="300" />
-  </p>
-<figcaption>透视投影矩阵（图源 <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml">gluPerspective</a>）</figcation>
-</figcaption>
+</div>
+<script type="math/tex; mode=display">
+\begin{pmatrix}
+\frac{2}{r-l} & 0 & 0 & -\frac{r+l}{r-l} \\
+0 & \frac{2}{t-b} & 0 & -\frac{t+b}{t-b} \\
+0 & 0 & \frac{-2}{f-n} & -\frac{f+n}{f-n} \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+n & 0 & 0 & 0 \\
+0 & n & 0 & 0 \\
+0 & 0 & n+f & -nf \\
+0 & 0 & -1 & 0
+\end{pmatrix}
+=
+\begin{pmatrix}
+\frac{2n}{r-l} & 0 & \frac{r+l}{r-l} & 0 \\
+0 & \frac{2n}{t-b} & \frac{t+b}{t-b} & 0 \\
+0 & 0 & -\frac{n+f}{f-n} & \frac{-2nf}{f-n} \\
+0 & 0 & -1 & 0
+\end{pmatrix}
+</script>
+</div>
+<p>这就是最终的透视投影的矩阵。需要注意的是，它假设了输入的坐标的 <span class="arithmatex"><span class="MathJax_Preview">w=1</span><script type="math/tex">w=1</script></span>，如果输入的齐次坐标的 <span class="arithmatex"><span class="MathJax_Preview">w \ne 1</span><script type="math/tex">w \ne 1</script></span>，计算结果就会有问题。在 OpenGL 中，可以用 gluPerspective() 函数得到它：</p>
+<figure markdown>
+  ![](cg_gluperspective.png){ width="300" }
+  <figcaption>透视投影矩阵（图源 <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml">gluPerspective</a>）</figcation>
 </figure>
-<p>和上面的结果看似不同，但只要设定 $r=-l, t=-b, f=\frac{n}{t}, aspect=\frac{r}{t}$，两个矩阵就是一样的。也就是说 gluPerspective 采用了透视投影的特殊情况：左右和上下对称。</p>
-<p>其中 aspect 是长宽比（x 轴除以 y 轴）；$f=cot(\frac{fovy}{2})$ 是这么推导的：y 方向上的视野角度上下对称，角度大小是 $fovy$，那么在水平线上方的角度就是 $\frac{fovy}{2}$，而这个角度在三角形中，它的对边是 $t$，邻边是 $n$，所以 $tan(\frac{fovy}{2})=\frac{t}{n}$，反过来就得到 $f=\frac{n}{t}=cot(\frac{fovy}{2})$。</p>
+
+<p>和上面的结果看似不同，但只要设定 <span class="arithmatex"><span class="MathJax_Preview">r=-l, t=-b, f=\frac{n}{t}, aspect=\frac{r}{t}</span><script type="math/tex">r=-l, t=-b, f=\frac{n}{t}, aspect=\frac{r}{t}</script></span>，两个矩阵就是一样的。也就是说 gluPerspective 采用了透视投影的特殊情况：左右和上下对称。</p>
+<p>其中 aspect 是长宽比（x 轴除以 y 轴）；<span class="arithmatex"><span class="MathJax_Preview">f=cot(\frac{fovy}{2})</span><script type="math/tex">f=cot(\frac{fovy}{2})</script></span> 是这么推导的：y 方向上的视野角度上下对称，角度大小是 <span class="arithmatex"><span class="MathJax_Preview">fovy</span><script type="math/tex">fovy</script></span>，那么在水平线上方的角度就是 <span class="arithmatex"><span class="MathJax_Preview">\frac{fovy}{2}</span><script type="math/tex">\frac{fovy}{2}</script></span>，而这个角度在三角形中，它的对边是 <span class="arithmatex"><span class="MathJax_Preview">t</span><script type="math/tex">t</script></span>，邻边是 <span class="arithmatex"><span class="MathJax_Preview">n</span><script type="math/tex">n</script></span>，所以 <span class="arithmatex"><span class="MathJax_Preview">tan(\frac{fovy}{2})=\frac{t}{n}</span><script type="math/tex">tan(\frac{fovy}{2})=\frac{t}{n}</script></span>，反过来就得到 <span class="arithmatex"><span class="MathJax_Preview">f=\frac{n}{t}=cot(\frac{fovy}{2})</span><script type="math/tex">f=\frac{n}{t}=cot(\frac{fovy}{2})</script></span>。</p>
 <p>更加通用的 OpenGL 函数是 <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glFrustum.xml">glFrustum</a>，它得到的矩阵和上面推导出来的矩阵是一样的，没考虑特殊情况。</p>
 <p>mesa 中的实现：</p>
-<pre><code class="language-c">// Source: https://github.com/Mesa3D/mesa/blob/957009978ef6d7121fc0d710d03bc20097d4d46b/src/mesa/math/m_matrix.c#L773-L797
-void
-_math_matrix_frustum( GLmatrix *mat,
-              GLfloat left, GLfloat right,
-              GLfloat bottom, GLfloat top,
-              GLfloat nearval, GLfloat farval )
-{
-   GLfloat x, y, a, b, c, d;
-   GLfloat m[16];
+<div class="highlight"><pre><span></span><code><span class="c1">// Source: https://github.com/Mesa3D/mesa/blob/957009978ef6d7121fc0d710d03bc20097d4d46b/src/mesa/math/m_matrix.c#L773-L797</span>
+<span class="kt">void</span>
+<span class="nf">_math_matrix_frustum</span><span class="p">(</span><span class="w"> </span><span class="n">GLmatrix</span><span class="w"> </span><span class="o">*</span><span class="n">mat</span><span class="p">,</span>
+<span class="w">              </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">right</span><span class="p">,</span>
+<span class="w">              </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">bottom</span><span class="p">,</span><span class="w"> </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">top</span><span class="p">,</span>
+<span class="w">              </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">nearval</span><span class="p">,</span><span class="w"> </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">farval</span><span class="w"> </span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
+<span class="w">   </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">m</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
 
-   x = (2.0F*nearval) / (right-left);
-   y = (2.0F*nearval) / (top-bottom);
-   a = (right+left) / (right-left);
-   b = (top+bottom) / (top-bottom);
-   c = -(farval+nearval) / ( farval-nearval);
-   d = -(2.0F*farval*nearval) / (farval-nearval);  /* error? */
+<span class="w">   </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mf">2.0F</span><span class="o">*</span><span class="n">nearval</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">right</span><span class="o">-</span><span class="n">left</span><span class="p">);</span>
+<span class="w">   </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mf">2.0F</span><span class="o">*</span><span class="n">nearval</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">top</span><span class="o">-</span><span class="n">bottom</span><span class="p">);</span>
+<span class="w">   </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">right</span><span class="o">+</span><span class="n">left</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">right</span><span class="o">-</span><span class="n">left</span><span class="p">);</span>
+<span class="w">   </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">top</span><span class="o">+</span><span class="n">bottom</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">top</span><span class="o">-</span><span class="n">bottom</span><span class="p">);</span>
+<span class="w">   </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="p">(</span><span class="n">farval</span><span class="o">+</span><span class="n">nearval</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">farval</span><span class="o">-</span><span class="n">nearval</span><span class="p">);</span>
+<span class="w">   </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="p">(</span><span class="mf">2.0F</span><span class="o">*</span><span class="n">farval</span><span class="o">*</span><span class="n">nearval</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">farval</span><span class="o">-</span><span class="n">nearval</span><span class="p">);</span><span class="w">  </span><span class="cm">/* error? */</span>
 
-#define M(row,col)  m[col*4+row]
-   M(0,0) = x;     M(0,1) = 0.0F;  M(0,2) = a;      M(0,3) = 0.0F;
-   M(1,0) = 0.0F;  M(1,1) = y;     M(1,2) = b;      M(1,3) = 0.0F;
-   M(2,0) = 0.0F;  M(2,1) = 0.0F;  M(2,2) = c;      M(2,3) = d;
-   M(3,0) = 0.0F;  M(3,1) = 0.0F;  M(3,2) = -1.0F;  M(3,3) = 0.0F;
-#undef M
+<span class="cp">#define M(row,col)  m[col*4+row]</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w">     </span><span class="n">M</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span><span class="w">  </span><span class="n">M</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">      </span><span class="n">M</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span><span class="w">  </span><span class="n">M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w">     </span><span class="n">M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w">      </span><span class="n">M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span><span class="w">  </span><span class="n">M</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span><span class="w">  </span><span class="n">M</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w">      </span><span class="n">M</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
+<span class="w">   </span><span class="n">M</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span><span class="w">  </span><span class="n">M</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span><span class="w">  </span><span class="n">M</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">-1.0F</span><span class="p">;</span><span class="w">  </span><span class="n">M</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0F</span><span class="p">;</span>
+<span class="cp">#undef M</span>
 
-   matrix_multf( mat, m, MAT_FLAG_PERSPECTIVE );
-}
-</code></pre>
-<h2 id="view">View 矩阵</h2>
+<span class="w">   </span><span class="n">matrix_multf</span><span class="p">(</span><span class="w"> </span><span class="n">mat</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">MAT_FLAG_PERSPECTIVE</span><span class="w"> </span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="view">View 矩阵<a class="headerlink" href="#view" title="Permanent link">&para;</a></h2>
 <p>OpenGL 中，经过 Model 和 View 矩阵映射后得到 Eye Coordinates，相机位于 (0, 0, 0)，且看向 -Z 轴的方向。计算相机 View 矩阵的 OpenGL 函数是 <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/gluLookAt.xml">gluLookAt</a>。</p>
 <p>在映射之前，相机位于世界坐标的 (eyeX, eyeY, eyeZ)，视线看向 (centerX, centerY, centerZ) 点（视野正前方），以及视野里向上的方向在 3D 里的向量 (upX, upY, upZ)（视野的上方，y 轴）。</p>
 <p>那么相机正对的向量 F=(centerX-eyeX, centerY-eyeY, centerZ-eyeZ)，这个方向在映射后的坐标系中就是 -Z 轴。令 UP=(upX, upY, upZ)，UP 最终在视野里看到的是沿 y 轴向上，但是映射以后可能会有 z 的分量，也就是 F 和 UP 不一定垂直，后面需要考虑这一点。</p>
-<figure>
-<p><img alt="" src="../cg_axis_3d.png" width="300" />
-  </p>
-<figcaption>相机的 eye，up 和 center 示意图，其中 up 在 Y-Z 平面内</figcation>
-</figcaption>
+<figure markdown>
+  ![](cg_axis_3d.png){ width="300" }
+  <figcaption>相机的 eye，up 和 center 示意图，其中 up 在 Y-Z 平面内</figcation>
 </figure>
-<figure>
-<p><img alt="" src="../cg_axis_2d.png" width="300" />
-  </p>
-<figcaption>center 和 up 对应屏幕的位置</figcation>
-</figcaption>
+
+<figure markdown>
+  ![](cg_axis_2d.png){ width="300" }
+  <figcaption>center 和 up 对应屏幕的位置</figcation>
 </figure>
-<p>对 $F$ 进行标准化，得到 $f$；对 UP 进行标准化，得到 $u$；由于 $u$ 和 $f$ 确定了 Y-Z 平面，所以求 X 方向的向量，直接计算叉积即可：$s = f \times u$，由于 $f$ 指向 -Z，$u$ 在 Y-Z 平面中 Y 为正的半平面，所以得到的 s 指向的是屏幕的右侧，不妨规定右侧是 X 正半轴（右手系）。此时再叉积，得到 Y 轴的方向：$y = s \times f$。</p>
-<figure>
-<p><img alt="" src="../cg_axis_cross.png" width="300" />
-  </p>
-<figcaption>s 和 y 向量的计算方式，图中没有体现向量的长度</figcation>
-</figcaption>
+
+<p>对 <span class="arithmatex"><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span> 进行标准化，得到 <span class="arithmatex"><span class="MathJax_Preview">f</span><script type="math/tex">f</script></span>；对 UP 进行标准化，得到 <span class="arithmatex"><span class="MathJax_Preview">u</span><script type="math/tex">u</script></span>；由于 <span class="arithmatex"><span class="MathJax_Preview">u</span><script type="math/tex">u</script></span> 和 <span class="arithmatex"><span class="MathJax_Preview">f</span><script type="math/tex">f</script></span> 确定了 Y-Z 平面，所以求 X 方向的向量，直接计算叉积即可：<span class="arithmatex"><span class="MathJax_Preview">s = f \times u</span><script type="math/tex">s = f \times u</script></span>，由于 <span class="arithmatex"><span class="MathJax_Preview">f</span><script type="math/tex">f</script></span> 指向 -Z，<span class="arithmatex"><span class="MathJax_Preview">u</span><script type="math/tex">u</script></span> 在 Y-Z 平面中 Y 为正的半平面，所以得到的 s 指向的是屏幕的右侧，不妨规定右侧是 X 正半轴（右手系）。此时再叉积，得到 Y 轴的方向：<span class="arithmatex"><span class="MathJax_Preview">y = s \times f</span><script type="math/tex">y = s \times f</script></span>。</p>
+<figure markdown>
+  ![](cg_axis_cross.png){ width="300" }
+  <figcaption>s 和 y 向量的计算方式，图中没有体现向量的长度</figcation>
 </figure>
+
 <p>此时三个轴上的向量都有了：X 轴正方向是 s，Y 轴正方向是 y，Z 轴负方向是 f。由于叉积以前已经做了标准化，所以这三个向量都是单位向量。那么坐标系的变换矩阵应该实现下面的映射：</p>
 <ul>
-<li>$Ms = M(s_x, s_y, s_z)^T = (1, 0, 0)^T$</li>
-<li>$My = M(y_x, y_y, y_z)^T = (0, 1, 0)^T$</li>
-<li>$Mz = M(f_x, f_y, f_z)^T = (0, 0, -1)^T$</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">Ms = M(s_x, s_y, s_z)^T = (1, 0, 0)^T</span><script type="math/tex">Ms = M(s_x, s_y, s_z)^T = (1, 0, 0)^T</script></span></li>
+<li><span class="arithmatex"><span class="MathJax_Preview">My = M(y_x, y_y, y_z)^T = (0, 1, 0)^T</span><script type="math/tex">My = M(y_x, y_y, y_z)^T = (0, 1, 0)^T</script></span></li>
+<li><span class="arithmatex"><span class="MathJax_Preview">Mz = M(f_x, f_y, f_z)^T = (0, 0, -1)^T</span><script type="math/tex">Mz = M(f_x, f_y, f_z)^T = (0, 0, -1)^T</script></span></li>
 </ul>
 <p>于是：</p>
-<p>$$
+<div class="arithmatex">
+<div class="MathJax_Preview">
 M=\begin{pmatrix}
-s_x &amp; s_y &amp; s_z \
-y_x &amp; y_y &amp; y_z \
--f_x &amp; -f_y &amp; -f_z \
+s_x &amp; s_y &amp; s_z \\
+y_x &amp; y_y &amp; y_z \\
+-f_x &amp; -f_y &amp; -f_z \\
 \end{pmatrix}
-$$</p>
-<p>这里依赖了三个向量 $s$ $y$ $-f$ 都是单位向量，且互相正交的性质。</p>
-<p>把齐次坐标的 w 维度加回来，就是：</p>
-<p>$$
+</div>
+<script type="math/tex; mode=display">
 M=\begin{pmatrix}
-s_x &amp; s_y &amp; s_z &amp; 0 \
-y_x &amp; y_y &amp; y_z &amp; 0 \
--f_x &amp; -f_y &amp; -f_z &amp; 0 \
+s_x & s_y & s_z \\
+y_x & y_y & y_z \\
+-f_x & -f_y & -f_z \\
+\end{pmatrix}
+</script>
+</div>
+<p>这里依赖了三个向量 <span class="arithmatex"><span class="MathJax_Preview">s</span><script type="math/tex">s</script></span> <span class="arithmatex"><span class="MathJax_Preview">y</span><script type="math/tex">y</script></span> <span class="arithmatex"><span class="MathJax_Preview">-f</span><script type="math/tex">-f</script></span> 都是单位向量，且互相正交的性质。</p>
+<p>把齐次坐标的 w 维度加回来，就是：</p>
+<div class="arithmatex">
+<div class="MathJax_Preview">
+M=\begin{pmatrix}
+s_x &amp; s_y &amp; s_z &amp; 0 \\
+y_x &amp; y_y &amp; y_z &amp; 0 \\
+-f_x &amp; -f_y &amp; -f_z &amp; 0 \\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{pmatrix}
-$$</p>
-<p>以上矩阵解决了相机坐标系的问题，剩下就是把坐标 (eyeX, eyeY, eyeZ) 挪到 (0, 0, 0) 上：</p>
-<p>$$
+</div>
+<script type="math/tex; mode=display">
 M=\begin{pmatrix}
-s_x &amp; s_y &amp; s_z &amp; 0 \
-y_x &amp; y_y &amp; y_z &amp; 0 \
--f_x &amp; -f_y &amp; -f_z &amp; 0 \
+s_x & s_y & s_z & 0 \\
+y_x & y_y & y_z & 0 \\
+-f_x & -f_y & -f_z & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+</script>
+</div>
+<p>以上矩阵解决了相机坐标系的问题，剩下就是把坐标 (eyeX, eyeY, eyeZ) 挪到 (0, 0, 0) 上：</p>
+<div class="arithmatex">
+<div class="MathJax_Preview">
+M=\begin{pmatrix}
+s_x &amp; s_y &amp; s_z &amp; 0 \\
+y_x &amp; y_y &amp; y_z &amp; 0 \\
+-f_x &amp; -f_y &amp; -f_z &amp; 0 \\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{pmatrix} \begin{pmatrix}
-1 &amp; 0 &amp; 0 &amp; -\mathrm{eyeX} \
-0 &amp; 1 &amp; 0 &amp; -\mathrm{eyeY} \
-0 &amp; 0 &amp; 1 &amp; -\mathrm{eyeZ} \
+1 &amp; 0 &amp; 0 &amp; -\mathrm{eyeX} \\
+0 &amp; 1 &amp; 0 &amp; -\mathrm{eyeY} \\
+0 &amp; 0 &amp; 1 &amp; -\mathrm{eyeZ} \\
 0 &amp; 0 &amp; 0 &amp; 1
 \end{pmatrix}
-$$</p>
+</div>
+<script type="math/tex; mode=display">
+M=\begin{pmatrix}
+s_x & s_y & s_z & 0 \\
+y_x & y_y & y_z & 0 \\
+-f_x & -f_y & -f_z & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix} \begin{pmatrix}
+1 & 0 & 0 & -\mathrm{eyeX} \\
+0 & 1 & 0 & -\mathrm{eyeY} \\
+0 & 0 & 1 & -\mathrm{eyeZ} \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+</script>
+</div>
 <p>这样就得到了完整的 View 矩阵。</p>
 <p>mesa 中的实现：</p>
-<pre><code class="language-c">// Source: https://gitlab.freedesktop.org/mesa/mesa/-/blob/c6a80dc32ef17bc972d4137ce7444ebed4d28ebb/src/glu/sgi/libutil/project.c#L108
-// Comments added
-void gluLookAt(GLdouble eyex, GLdouble eyey, GLdouble eyez, GLdouble centerx,
-    GLdouble centery, GLdouble centerz, GLdouble upx, GLdouble upy,
-    GLdouble upz)
-{
-    float forward[3], side[3], up[3];
-    GLfloat m[4][4];
+<div class="highlight"><pre><span></span><code><span class="c1">// Source: https://gitlab.freedesktop.org/mesa/mesa/-/blob/c6a80dc32ef17bc972d4137ce7444ebed4d28ebb/src/glu/sgi/libutil/project.c#L108</span>
+<span class="c1">// Comments added</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">gluLookAt</span><span class="p">(</span><span class="n">GLdouble</span><span class="w"> </span><span class="n">eyex</span><span class="p">,</span><span class="w"> </span><span class="n">GLdouble</span><span class="w"> </span><span class="n">eyey</span><span class="p">,</span><span class="w"> </span><span class="n">GLdouble</span><span class="w"> </span><span class="n">eyez</span><span class="p">,</span><span class="w"> </span><span class="n">GLdouble</span><span class="w"> </span><span class="n">centerx</span><span class="p">,</span>
+<span class="w">    </span><span class="n">GLdouble</span><span class="w"> </span><span class="n">centery</span><span class="p">,</span><span class="w"> </span><span class="n">GLdouble</span><span class="w"> </span><span class="n">centerz</span><span class="p">,</span><span class="w"> </span><span class="n">GLdouble</span><span class="w"> </span><span class="n">upx</span><span class="p">,</span><span class="w"> </span><span class="n">GLdouble</span><span class="w"> </span><span class="n">upy</span><span class="p">,</span>
+<span class="w">    </span><span class="n">GLdouble</span><span class="w"> </span><span class="n">upz</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">forward</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="n">side</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="n">up</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="w">    </span><span class="n">GLfloat</span><span class="w"> </span><span class="n">m</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">4</span><span class="p">];</span>
 
-    /* Compute f = center - eye */
-    forward[0] = centerx - eyex;
-    forward[1] = centery - eyey;
-    forward[2] = centerz - eyez;
+<span class="w">    </span><span class="cm">/* Compute f = center - eye */</span>
+<span class="w">    </span><span class="n">forward</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">centerx</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">eyex</span><span class="p">;</span>
+<span class="w">    </span><span class="n">forward</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">centery</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">eyey</span><span class="p">;</span>
+<span class="w">    </span><span class="n">forward</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">centerz</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">eyez</span><span class="p">;</span>
 
-    up[0] = upx;
-    up[1] = upy;
-    up[2] = upz;
+<span class="w">    </span><span class="n">up</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">upx</span><span class="p">;</span>
+<span class="w">    </span><span class="n">up</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">upy</span><span class="p">;</span>
+<span class="w">    </span><span class="n">up</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">upz</span><span class="p">;</span>
 
-    normalize(forward);
+<span class="w">    </span><span class="n">normalize</span><span class="p">(</span><span class="n">forward</span><span class="p">);</span>
 
-    /* Side = forward x up */
-    cross(forward, up, side);
-    normalize(side);
+<span class="w">    </span><span class="cm">/* Side = forward x up */</span>
+<span class="w">    </span><span class="n">cross</span><span class="p">(</span><span class="n">forward</span><span class="p">,</span><span class="w"> </span><span class="n">up</span><span class="p">,</span><span class="w"> </span><span class="n">side</span><span class="p">);</span>
+<span class="w">    </span><span class="n">normalize</span><span class="p">(</span><span class="n">side</span><span class="p">);</span>
 
-    /* Recompute up as: up = side x forward */
-    cross(side, forward, up);
+<span class="w">    </span><span class="cm">/* Recompute up as: up = side x forward */</span>
+<span class="w">    </span><span class="n">cross</span><span class="p">(</span><span class="n">side</span><span class="p">,</span><span class="w"> </span><span class="n">forward</span><span class="p">,</span><span class="w"> </span><span class="n">up</span><span class="p">);</span>
 
-    __gluMakeIdentityf(&amp;m[0][0]);
+<span class="w">    </span><span class="n">__gluMakeIdentityf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
 
-    /* s_x s_y s_z */
-    m[0][0] = side[0];
-    m[1][0] = side[1];
-    m[2][0] = side[2];
+<span class="w">    </span><span class="cm">/* s_x s_y s_z */</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">side</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">side</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">side</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 
-    /* y_x y_y y_z */
-    m[0][1] = up[0];
-    m[1][1] = up[1];
-    m[2][1] = up[2];
+<span class="w">    </span><span class="cm">/* y_x y_y y_z */</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">up</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">up</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">up</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 
-    /* -f_x -f_y -f_z */
-    m[0][2] = -forward[0];
-    m[1][2] = -forward[1];
-    m[2][2] = -forward[2];
+<span class="w">    </span><span class="cm">/* -f_x -f_y -f_z */</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">forward</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">forward</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">    </span><span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">forward</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 
-    /* Update view matrix */
-    glMultMatrixf(&amp;m[0][0]);
-    glTranslated(-eyex, -eyey, -eyez);
-}
-</code></pre>
-<h2 id="_6">光线追踪</h2>
+<span class="w">    </span><span class="cm">/* Update view matrix */</span>
+<span class="w">    </span><span class="n">glMultMatrixf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span><span class="n">glTranslated</span><span class="p">(</span><span class="o">-</span><span class="n">eyex</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">eyey</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">eyez</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="_6">光线追踪<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
 <p>Whitted-style ray-tracing 是一种典型的光线追踪算法，它的实现思路是：</p>
 <ol>
 <li>对于要绘制在屏幕上的点，计算它在 3 维空间中的对应的位置，与相机的原点构成一个射线</li>
@@ -2027,35 +2142,40 @@ void gluLookAt(GLdouble eyex, GLdouble eyey, GLdouble eyez, GLdouble centerx,
 </li>
 </ol>
 <p>可以看到，所有的光线在递归终止的时候，要么是在漫反射表面上，要么就是没有找到相交的表面。</p>
-<h2 id="_7">辐射度量学</h2>
+<h2 id="_7">辐射度量学<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <p>参考 <a href="https://zhuanlan.zhihu.com/p/370162390">路径追踪（Path Tracing）与渲染方程 (Render Equation)</a> 和 <a href="https://sites.cs.ucsb.edu/~lingqi/teaching/resources/GAMES101_Lecture_15.pdf">GAMES101 Lecture 15</a>：</p>
 <ul>
 <li>Radiant energy Q：光源向空间中辐射的能量，单位是 J</li>
-<li>Radiant flux(power) $\Phi$：光源在单位时间内向空间中辐射的能量，单位是 W</li>
-<li>Solid angle $\omega$：立体角，单位是 steradian/square radian 球面度，简写 sr；是在球面上一个小平面的面积除以半径的平方，即 $\omega=A/r^2$</li>
+<li>Radiant flux(power) <span class="arithmatex"><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>：光源在单位时间内向空间中辐射的能量，单位是 W</li>
+<li>Solid angle <span class="arithmatex"><span class="MathJax_Preview">\omega</span><script type="math/tex">\omega</script></span>：立体角，单位是 steradian/square radian 球面度，简写 sr；是在球面上一个小平面的面积除以半径的平方，即 <span class="arithmatex"><span class="MathJax_Preview">\omega=A/r^2</span><script type="math/tex">\omega=A/r^2</script></span></li>
 <li>Radiant intensity I：光源在单位立体角内的 Radiant flux，单位是 W/sr</li>
-<li>Irradiance E：单位面积接受到的 Radiant flux，即 $E=\Phi/A$，单位是 $W/m^2$</li>
-<li>Radiance L：单位面积下，接收到来自单位立体角的 Radiant flux，单位是 $W/sr \cdot m^2$</li>
+<li>Irradiance E：单位面积接受到的 Radiant flux，即 <span class="arithmatex"><span class="MathJax_Preview">E=\Phi/A</span><script type="math/tex">E=\Phi/A</script></span>，单位是 <span class="arithmatex"><span class="MathJax_Preview">W/m^2</span><script type="math/tex">W/m^2</script></span></li>
+<li>Radiance L：单位面积下，接收到来自单位立体角的 Radiant flux，单位是 <span class="arithmatex"><span class="MathJax_Preview">W/sr \cdot m^2</span><script type="math/tex">W/sr \cdot m^2</script></span></li>
 </ul>
-<h2 id="rendering-equation">Rendering equation</h2>
+<h2 id="rendering-equation">Rendering equation<a class="headerlink" href="#rendering-equation" title="Permanent link">&para;</a></h2>
 <p>参考 <a href="https://sites.cs.ucsb.edu/~lingqi/teaching/resources/GAMES101_Lecture_15.pdf">GAMES101 Lecture 15</a>：</p>
-<p>$$
+<div class="arithmatex">
+<div class="MathJax_Preview">
 L_o(p, \omega_o) = L_e(p, \omega_o) + \int_{\Omega} L_i(p, \omega_i) f_r(p, \omega_i, \omega_o) (n \cdot \omega_i) \mathrm{d} \omega_i
-$$</p>
-<p>含义：从平面上的 $p$ 点出发，向 $\omega_r$ 发射的 Radiance 包括两部分：</p>
+</div>
+<script type="math/tex; mode=display">
+L_o(p, \omega_o) = L_e(p, \omega_o) + \int_{\Omega} L_i(p, \omega_i) f_r(p, \omega_i, \omega_o) (n \cdot \omega_i) \mathrm{d} \omega_i
+</script>
+</div>
+<p>含义：从平面上的 <span class="arithmatex"><span class="MathJax_Preview">p</span><script type="math/tex">p</script></span> 点出发，向 <span class="arithmatex"><span class="MathJax_Preview">\omega_r</span><script type="math/tex">\omega_r</script></span> 发射的 Radiance 包括两部分：</p>
 <ol>
-<li>$L_e(p, \omega_o)$：这个点本身发的光，例如光源</li>
-<li>$\int_{\Omega} L_i(p, \omega_i) f_r(p, \omega_i, \omega_o) (n \cdot \omega_i) \mathrm{d} \omega_i$：考虑半球面上的任意一个入射方向 $\omega_i$，这个方向上入射到 $p$ 点的 Radiance 是 $L_i(p, \omega_i)$，其中有一定比例会反射到 $\omega_o$ 方向上，这个比例就是 BRDF $f_r(p, \omega_i, \omega_o)$，最后由于入射方向和平面的法方向有一个夹角 $\theta$，根据 Lambert's Cosine Law，需要乘上 $\cos \theta = n \cdot \omega_i$ 项。</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">L_e(p, \omega_o)</span><script type="math/tex">L_e(p, \omega_o)</script></span>：这个点本身发的光，例如光源</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">\int_{\Omega} L_i(p, \omega_i) f_r(p, \omega_i, \omega_o) (n \cdot \omega_i) \mathrm{d} \omega_i</span><script type="math/tex">\int_{\Omega} L_i(p, \omega_i) f_r(p, \omega_i, \omega_o) (n \cdot \omega_i) \mathrm{d} \omega_i</script></span>：考虑半球面上的任意一个入射方向 <span class="arithmatex"><span class="MathJax_Preview">\omega_i</span><script type="math/tex">\omega_i</script></span>，这个方向上入射到 <span class="arithmatex"><span class="MathJax_Preview">p</span><script type="math/tex">p</script></span> 点的 Radiance 是 <span class="arithmatex"><span class="MathJax_Preview">L_i(p, \omega_i)</span><script type="math/tex">L_i(p, \omega_i)</script></span>，其中有一定比例会反射到 <span class="arithmatex"><span class="MathJax_Preview">\omega_o</span><script type="math/tex">\omega_o</script></span> 方向上，这个比例就是 BRDF <span class="arithmatex"><span class="MathJax_Preview">f_r(p, \omega_i, \omega_o)</span><script type="math/tex">f_r(p, \omega_i, \omega_o)</script></span>，最后由于入射方向和平面的法方向有一个夹角 <span class="arithmatex"><span class="MathJax_Preview">\theta</span><script type="math/tex">\theta</script></span>，根据 Lambert's Cosine Law，需要乘上 <span class="arithmatex"><span class="MathJax_Preview">\cos \theta = n \cdot \omega_i</span><script type="math/tex">\cos \theta = n \cdot \omega_i</script></span> 项。</li>
 </ol>
-<h2 id="bidirectional-reflectance-distribution-function">Bidirectional reflectance distribution function</h2>
-<p>BRDF（Bidirectional reflectance distribution function）指的是在一个表面上，特定角度（$\omega_i$）的入射光有多大比例会被反射到特定角度（$\omega_o$）的出射光。</p>
+<h2 id="bidirectional-reflectance-distribution-function">Bidirectional reflectance distribution function<a class="headerlink" href="#bidirectional-reflectance-distribution-function" title="Permanent link">&para;</a></h2>
+<p>BRDF（Bidirectional reflectance distribution function）指的是在一个表面上，特定角度（<span class="arithmatex"><span class="MathJax_Preview">\omega_i</span><script type="math/tex">\omega_i</script></span>）的入射光有多大比例会被反射到特定角度（<span class="arithmatex"><span class="MathJax_Preview">\omega_o</span><script type="math/tex">\omega_o</script></span>）的出射光。</p>
 <p>常见的 BRDF 有：</p>
 <ul>
-<li><a href="https://en.wikipedia.org/wiki/Lambertian_reflectance">Lambertian</a>：一般用于漫反射表面，光均匀反射到各个角度，因此和出射角度无关：$f=c/\pi$，其中 $c$ 是表面的颜色，除以 $\pi$ 是为了满足能量守恒，计算过程见 <a href="https://sakibsaikia.github.io/graphics/2019/09/10/Deriving-Lambertian-BRDF-From-First-Principles.html">Deriving Lambertian BRDF from first principles</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Lambertian_reflectance">Lambertian</a>：一般用于漫反射表面，光均匀反射到各个角度，因此和出射角度无关：<span class="arithmatex"><span class="MathJax_Preview">f=c/\pi</span><script type="math/tex">f=c/\pi</script></span>，其中 <span class="arithmatex"><span class="MathJax_Preview">c</span><script type="math/tex">c</script></span> 是表面的颜色，除以 <span class="arithmatex"><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span> 是为了满足能量守恒，计算过程见 <a href="https://sakibsaikia.github.io/graphics/2019/09/10/Deriving-Lambertian-BRDF-From-First-Principles.html">Deriving Lambertian BRDF from first principles</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> 和 <a href="https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model">Blinn-Phong</a>：用于 OpenGL Fixed-function pipeline</li>
-<li><a href="https://en.wikipedia.org/wiki/Specular_highlight#Cook%E2%80%93Torrance_model">Cook-Torrance</a>：$f=k_d\frac{c}{\pi} + k_s\frac{DFG}{4(n \cdot \omega_i)(n \cdot \omega_o)}$，前面的 $k_d\frac{c}{\pi}$ 和 Lambertian 一样，后面的 $DFG$ 表示三个函数的乘积，分别是 Normal Distribution Function，Fresnel Function 和 Geometric Attenuation Function，详见 <a href="https://graphicscompendium.com/gamedev/15-pbr">Physically-Based Rendering Cook-Torrance Reflectance Model</a> 和 <a href="https://learnopengl-cn.github.io/07%20PBR/01%20Theory/">LearnOpenGL CN - Theory</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Specular_highlight#Cook%E2%80%93Torrance_model">Cook-Torrance</a>：<span class="arithmatex"><span class="MathJax_Preview">f=k_d\frac{c}{\pi} + k_s\frac{DFG}{4(n \cdot \omega_i)(n \cdot \omega_o)}</span><script type="math/tex">f=k_d\frac{c}{\pi} + k_s\frac{DFG}{4(n \cdot \omega_i)(n \cdot \omega_o)}</script></span>，前面的 <span class="arithmatex"><span class="MathJax_Preview">k_d\frac{c}{\pi}</span><script type="math/tex">k_d\frac{c}{\pi}</script></span> 和 Lambertian 一样，后面的 <span class="arithmatex"><span class="MathJax_Preview">DFG</span><script type="math/tex">DFG</script></span> 表示三个函数的乘积，分别是 Normal Distribution Function，Fresnel Function 和 Geometric Attenuation Function，详见 <a href="https://graphicscompendium.com/gamedev/15-pbr">Physically-Based Rendering Cook-Torrance Reflectance Model</a> 和 <a href="https://learnopengl-cn.github.io/07%20PBR/01%20Theory/">LearnOpenGL CN - Theory</a></li>
 </ul>
-<h2 id="api">图形 API 对比</h2>
+<h2 id="api">图形 API 对比<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
 <p>下面给出不同图形 API 或者库在约定上的不同：</p>
 <table>
 <thead>

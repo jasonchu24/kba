@@ -1698,8 +1698,8 @@
   
 
 
-<h1 id="_1">总线协议</h1>
-<h2 id="_2">功能</h2>
+<h1 id="_1">总线协议<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">功能<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>总线通常用于连接 CPU 和外设（包括内存），为了更好的兼容性和可复用性，能否设计一个统一的协议，其中 CPU 实现的是发起请求的一方（又称为 master），外设实现的是接收请求的一方（又称为 slave），那么如果要添加外设、或者替换 CPU 实现，都会变得比较简单，减少了许多适配的工作量。</p>
 <p>一个总线协议需要包括哪些内容？对于 CPU 来说，程序会读写内存，读写内存就需要将以下几个信号传输到内存：</p>
 <ol>
@@ -1709,7 +1709,7 @@
 <li>字节有效（<code>be</code>）：例如为了实现单字节写，虽然 <code>w_data</code> 可能是 32 位宽，但是实际写入的是其中的一个字节</li>
 </ol>
 <p>除了请求的内容以外，为了表示 CPU 想要发送请求，还需要添加 <code>valid</code> 信号：高表示发送请求，低表示不发送请求。很多时候，外设的速度比较慢，可能无法保证每个周期都可以处理请求，因此外设可以提供一个 <code>ready</code> 信号：当 <code>valid=1 &amp;&amp; ready=1</code> 的时候，发送并处理请求；当 <code>valid=1 &amp;&amp; ready=0</code> 的时候，表示外设还没有准备好，此时 CPU 需要一直保持 <code>valid=1</code> 不变，等到外设准备好后，<code>valid=1 &amp;&amp; ready=1</code> 请求生效。</p>
-<h2 id="_3">简易总线协议</h2>
+<h2 id="_3">简易总线协议<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <p>结合上文，可以设计一个简易总线协议，分别得到 master 和 slave 端的信号列表。约定在命名的时候用 <code>_o</code> 表示输出、<code>_i</code> 表示输入，那么 master 端（CPU 端）的信号：</p>
 <ol>
 <li><code>clock_i</code>：时钟输入</li>
@@ -1733,8 +1733,8 @@
 <li><code>data_o</code>：slave 提供给 master 的读取的数据</li>
 </ol>
 <p>以上面的总线协议为例，绘制出一个可能的波形图（以 master 的信号为例）：</p>
-<figure>
-<pre><code class="language-wavedrom">{
+<figure markdown>
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;clock&quot;, wave: &quot;p.........&quot;, node: &quot;.abcdefgh&quot;},
@@ -1747,10 +1747,10 @@
       { name: &quot;data_i&quot;, wave: &quot;xxxx=xx=xx&quot;, data: [&quot;0x34&quot;, &quot;0x12&quot;]},
     ]
 }
-</code></pre>
+</code></pre></div>
 <figcaption>简易总线协议的波形图</caption>
-</figcaption>
 </figure>
+
 <ul>
 <li><code>a</code> 周期：此时 <code>valid_o=1 &amp;&amp; ready_i=1</code> 说明有请求发生，此时 <code>we_o=1</code> 说明是一个写操作，并且写入地址是 <code>addr_o=0x01</code>，写入的数据是 <code>data_o=0x12</code></li>
 <li><code>b</code> 周期：此时 <code>valid_o=0 &amp;&amp; ready_i=0</code> 说明无事发生</li>
@@ -1769,9 +1769,9 @@
 <li>可以连续多个周期发生请求，即 <code>valid_o=1 &amp;&amp; ready_i=1</code> 连续多个周期等于一，此时是理想情况，可以达到总线最高的传输速度</li>
 </ol>
 <p>这样就实现了一个简易的总线协议。</p>
-<h2 id="wishbone">Wishbone</h2>
+<h2 id="wishbone">Wishbone<a class="headerlink" href="#wishbone" title="Permanent link">&para;</a></h2>
 <p>Wishbone 是一个在开源社区广泛使用的总线协议，其分为多个版本，下面介绍其中的 Wishbone Classic Standard 和 Wishbone Classic Pipelined。</p>
-<h3 id="wishbone-classic-standard">Wishbone Classic Standard</h3>
+<h3 id="wishbone-classic-standard">Wishbone Classic Standard<a class="headerlink" href="#wishbone-classic-standard" title="Permanent link">&para;</a></h3>
 <p>最简单的 Wishbone 版本叫做 Wishbone Classic Standard，其设计思路和上面的简易总线协议非常相似，下面将两者进行一个对比。Wishbone Classic Standard 协议的 master 端（CPU 端）的信号：</p>
 <ol>
 <li><code>CLK_I</code>: 时钟输入，即简易总线协议中的 <code>clock_i</code></li>
@@ -1790,8 +1790,8 @@
 <li>简化 interconnect 的实现</li>
 </ol>
 <p>把上面简易总线协议的波形图改成 Wishbone Classic Standard，就可以得到：</p>
-<figure>
-<pre><code class="language-wavedrom">{
+<figure markdown>
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;CLK_I&quot;, wave: &quot;p.........&quot;, node: &quot;.abcdefgh&quot;},
@@ -1805,14 +1805,14 @@
       { name: &quot;DAT_I&quot;, wave: &quot;xxxx=xx=xx&quot;, data: [&quot;0x34&quot;, &quot;0x12&quot;]},
     ]
 }
-</code></pre>
+</code></pre></div>
 <figcaption>Wishbone Classic Standard 的波形图</caption>
-</figcaption>
 </figure>
-<h3 id="wishbone-classic-pipelined">Wishbone Classic Pipelined</h3>
+
+<h3 id="wishbone-classic-pipelined">Wishbone Classic Pipelined<a class="headerlink" href="#wishbone-classic-pipelined" title="Permanent link">&para;</a></h3>
 <p>Wishbone Classic Standard 协议非常简单，但是会遇到一个问题：假设实现的是一个 SRAM 控制器，它的读操作有一个周期的延迟，也就是说，在这个周期给出地址，需要在下一个周期才可以得到结果。在 Wishbone Classic Standard 中，就会出现下面的波形：</p>
-<figure>
-<pre><code class="language-wavedrom">{
+<figure markdown>
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;CLK_I&quot;, wave: &quot;p.....&quot;, node: &quot;.abcd&quot;},
@@ -1826,10 +1826,10 @@
       { name: &quot;DAT_I&quot;, wave: &quot;xx=x=x&quot;, data: [&quot;0x12&quot;, &quot;0x34&quot;]},
     ]
 }
-</code></pre>
+</code></pre></div>
 <figcaption>Wishbone Classic Standard 实现 SRAM 控制器的波形图</caption>
-</figcaption>
 </figure>
+
 <ul>
 <li><code>a</code> 周期：master 给出读地址 0x01，此时 SRAM 控制器开始读取，但是此时数据还没有读取回来，所以 <code>ACK_I=0</code></li>
 <li><code>b</code> 周期：此时 SRAM 完成了读取，把读取的数据 0x12 放在 <code>DAT_I</code> 并设置 <code>ACK_I=1</code></li>
@@ -1843,8 +1843,8 @@
 <li>修改 <code>ACK_I</code> 信号含义：<code>CYC_O=1 &amp;&amp; STB_O=1 &amp;&amp; ACK_I=1</code> 表示一次读响应</li>
 </ul>
 <p>进行如上修改，就得到了 Wishbone Classic Pipelined 总线协议。上面的两次连续读操作波形如下：</p>
-<figure>
-<pre><code class="language-wavedrom">{
+<figure markdown>
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;CLK_I&quot;, wave: &quot;p....&quot;, node: &quot;.abcd&quot;},
@@ -1859,10 +1859,10 @@
       { name: &quot;DAT_I&quot;, wave: &quot;xx==x&quot;, data: [&quot;0x12&quot;, &quot;0x34&quot;]},
     ]
 }
-</code></pre>
+</code></pre></div>
 <figcaption>Wishbone Classic Pipelined 实现 SRAM 控制器的波形图</caption>
-</figcaption>
 </figure>
+
 <ul>
 <li><code>a</code> 周期：master 请求读地址 0x01，slave 接收读请求（<code>STALL_O=0</code>）</li>
 <li><code>b</code> 周期：slave 返回读请求结果 0x12，并设置 <code>ACK_I=1</code>；同时 master 请求读地址 0x02，slave 接收读请求（<code>STALL_O=0</code>）</li>
@@ -1870,7 +1870,7 @@
 <li><code>d</code> 周期：所有请求完成，master 设置 <code>CYC_O=0</code></li>
 </ul>
 <p>这样就利用 Wishbone Classic Pipelined 协议实现了一个每周期进行一次读操作的 slave。</p>
-<h2 id="axi">AXI</h2>
+<h2 id="axi">AXI<a class="headerlink" href="#axi" title="Permanent link">&para;</a></h2>
 <p>AXI 总线协议是 ARM 公司提出的总线协议，在 ARM 处理器以及 Xilinx FPGA 内使用的比较广泛。</p>
 <p>AXI 的信号分成五个 Channel：</p>
 <ol>
@@ -1895,7 +1895,7 @@
 </ol>
 <p>由于 AXI 上可以同时进行多个请求，为了让 Master 可以区分出 B 和 R Channel 上的响应与请求的对应关系，每个请求和响应都附带了一个 ID，那么 Master 在请求中附带了什么 ID，Slave 在响应的时候，也要附带相同的 ID。对于同一个 ID 的请求，其顺序是受保证的。</p>
 <p>AXI 有支持缓存一致性协议的扩展：ACE，其内容在 <a href="../cache_coherence_protocol/">一致性协议</a> 中介绍。</p>
-<h2 id="tilelink">TileLink</h2>
+<h2 id="tilelink">TileLink<a class="headerlink" href="#tilelink" title="Permanent link">&para;</a></h2>
 <p>TileLink 总线协议是 SiFive 公司提出的总线协议，在 Rocket Chip 相关的项目中使用比较广泛。根据 <a href="https://github.com/chipsalliance/omnixtend/blob/master/OmniXtend-1.0.3/spec/TileLink-1.8.0.pdf">TileLink Spec 1.8.0</a>，TileLink 分为以下三种：</p>
 <ul>
 <li>TL-UL: 只支持读写，不支持 burst，类比 AXI-Lite</li>
@@ -1903,7 +1903,7 @@
 <li>TL-C：在 TL-UH 基础上支持缓存一致性协议，类比 AXI+ACE/CHI</li>
 </ul>
 <p>本文主要讨论前两种，TL-C 的内容在 <a href="../cache_coherence_protocol/">一致性协议</a> 中介绍。</p>
-<h3 id="_4">接口</h3>
+<h3 id="_4">接口<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <p>TileLink Uncached(TL-UL 和 TL-UH) 包括了两个 channel：</p>
 <ul>
 <li>A channel: M-&gt;S 发送请求，类比 AXI 的 AR/AW/W</li>
@@ -1917,53 +1917,53 @@
 <li>原子操作：M-&gt;S 在 A channel 上发送 ArithmeticData/LogicalData，S-&gt;M 在 D channel 上发送 AccessAckData</li>
 <li>预取操作：M-&gt;S 在 A channel 上发送 Intent，S-&gt;M 在 D channel 上发送 AccessAck</li>
 </ul>
-<h3 id="axi_1">和 AXI 的对比</h3>
+<h3 id="axi_1">和 AXI 的对比<a class="headerlink" href="#axi_1" title="Permanent link">&para;</a></h3>
 <p>和 AXI 对比，TileLink 把读和写进行了合并，所有的读写请求都通过 A channel 发送，所有的响应都通过 D channel 回复。这样做简化了硬件的实现，但如果 CPU 希望同时进行大量的读写，可能 AXI 可以实现更高的性能。</p>
 <p>下面分析 TileLink 和 AXI 协议的桥接模块的实现方法。</p>
 <p>首先针对 <a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/amba/axi4/ToTL.scala#L59">AXI4ToTL</a> 模块的例子，来分析一下如何把一个 AXI4 Master 转换为 TileLink。</p>
 <p>针对 AXI4 和 TileLink 的区别进行设计：一个是读写 channel 合并了，所以这里需要一个 Arbiter；其次 AXI4 中 AW 和 W 是分开的，这里也需要进行合并。这个模块并不考虑 Burst 的情况，而是由 <a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/amba/axi4/Fragmenter.scala#L14=">AXI4Fragmenter</a> 来进行拆分，即添加若干个 AW beat，和 W 进行配对。</p>
 <p>具体到代码实现上，首先把 AR channel <a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/amba/axi4/ToTL.scala#L86=">对应到</a> 到 A channel 上：</p>
-<pre><code class="language-scala">val r_out = Wire(out.a)
-r_out.valid := in.ar.valid
-r_out.bits :&lt;= edgeOut.Get(r_id, r_addr, r_size)._2
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">r_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Wire</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">a</span><span class="p">)</span>
+<span class="n">r_out</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">ar</span><span class="p">.</span><span class="n">valid</span>
+<span class="n">r_out</span><span class="p">.</span><span class="n">bits</span><span class="w"> </span><span class="o">:&lt;=</span><span class="w"> </span><span class="n">edgeOut</span><span class="p">.</span><span class="nc">Get</span><span class="p">(</span><span class="n">r_id</span><span class="p">,</span><span class="w"> </span><span class="n">r_addr</span><span class="p">,</span><span class="w"> </span><span class="n">r_size</span><span class="p">).</span><span class="n">_2</span>
+</code></pre></div>
 <p>然后 AW+W channel 也<a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/amba/axi4/ToTL.scala#L119=">连接</a> 到 A channel，由于不用考虑 burst 的情况，这里在 aw 和 w 同时 valid 的时候才认为有请求。</p>
-<pre><code class="language-scala">val w_out = Wire(out.a)
-in.aw.ready := w_out.ready &amp;&amp; in.w.valid &amp;&amp; in.w.bits.last
-in.w.ready  := w_out.ready &amp;&amp; in.aw.valid
-w_out.valid := in.aw.valid &amp;&amp; in.w.valid
-w_out.bits :&lt;= edgeOut.Put(w_id, w_addr, w_size, in.w.bits.data, in.w.bits.strb)._2
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">w_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Wire</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">a</span><span class="p">)</span>
+<span class="n">in</span><span class="p">.</span><span class="n">aw</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">w_out</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">w</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">w</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">last</span>
+<span class="n">in</span><span class="p">.</span><span class="n">w</span><span class="p">.</span><span class="n">ready</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="n">w_out</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">aw</span><span class="p">.</span><span class="n">valid</span>
+<span class="n">w_out</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">aw</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">w</span><span class="p">.</span><span class="n">valid</span>
+<span class="n">w_out</span><span class="p">.</span><span class="n">bits</span><span class="w"> </span><span class="o">:&lt;=</span><span class="w"> </span><span class="n">edgeOut</span><span class="p">.</span><span class="nc">Put</span><span class="p">(</span><span class="n">w_id</span><span class="p">,</span><span class="w"> </span><span class="n">w_addr</span><span class="p">,</span><span class="w"> </span><span class="n">w_size</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">w</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">w</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">strb</span><span class="p">).</span><span class="n">_2</span>
+</code></pre></div>
 <p>为了区分请求的类型，读写的 id 增加了若干位，最低位 0 表示读，1 表示写，剩下几位是请求编号，这样发出去的是不同 id 的多个请求。</p>
 <p>然后，把读和写的 A channel <a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/amba/axi4/ToTL.scala#L155=">连接</a>到 Arbiter 上：</p>
-<pre><code class="language-scala">TLArbiter(TLArbiter.roundRobin)(out.a, (UInt(0), r_out), (in.aw.bits.len, w_out))
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nc">TLArbiter</span><span class="p">(</span><span class="nc">TLArbiter</span><span class="p">.</span><span class="n">roundRobin</span><span class="p">)(</span><span class="n">out</span><span class="p">.</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nc">UInt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">r_out</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">aw</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">w_out</span><span class="p">))</span>
+</code></pre></div>
 <p>其余的部分则是对 D channel 进行判断，有数据的转给 R channel，没有数据的转给 B channel：</p>
-<pre><code class="language-scala">out.d.ready := Mux(d_hasData, ok_r.ready, ok_b.ready)
-ok_r.valid := out.d.valid &amp;&amp; d_hasData
-ok_b.valid := out.d.valid &amp;&amp; !d_hasData
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">d_hasData</span><span class="p">,</span><span class="w"> </span><span class="n">ok_r</span><span class="p">.</span><span class="n">ready</span><span class="p">,</span><span class="w"> </span><span class="n">ok_b</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">ok_r</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">d_hasData</span>
+<span class="n">ok_b</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">d_hasData</span>
+</code></pre></div>
 <p>最后处理了一下 TileLink 和 AXI4 对写请求返回确认的区别：TileLink 中，可以在第一个 burst beat 就返回确认，而 AXI4 需要在最后一个 burst beat 之后返回确认。</p>
 <p>再来看一下反过来的转换，即从 TileLink Master 到 AXI。由于 TileLink 同时只能进行读或者写，所以它首先做了一个虚构的 arw channel，可以理解为合并了 ar 和 aw channel 的 AXI4，这个设计在 SpinalHDL 的代码中也能看到。然后再根据是否是写入，分别<a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/tilelink/ToAXI4.scala#L153=">连接</a>到 ar 和 aw channel：</p>
-<pre><code class="language-scala">val queue_arw = Queue.irrevocable(out_arw, entries=depth, flow=combinational)
-out.ar.bits := queue_arw.bits
-out.aw.bits := queue_arw.bits
-out.ar.valid := queue_arw.valid &amp;&amp; !queue_arw.bits.wen
-out.aw.valid := queue_arw.valid &amp;&amp;  queue_arw.bits.wen
-queue_arw.ready := Mux(queue_arw.bits.wen, out.aw.ready, out.ar.ready)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">queue_arw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Queue</span><span class="p">.</span><span class="n">irrevocable</span><span class="p">(</span><span class="n">out_arw</span><span class="p">,</span><span class="w"> </span><span class="n">entries</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span><span class="w"> </span><span class="n">flow</span><span class="o">=</span><span class="n">combinational</span><span class="p">)</span>
+<span class="n">out</span><span class="p">.</span><span class="n">ar</span><span class="p">.</span><span class="n">bits</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">queue_arw</span><span class="p">.</span><span class="n">bits</span>
+<span class="n">out</span><span class="p">.</span><span class="n">aw</span><span class="p">.</span><span class="n">bits</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">queue_arw</span><span class="p">.</span><span class="n">bits</span>
+<span class="n">out</span><span class="p">.</span><span class="n">ar</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">queue_arw</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">queue_arw</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">wen</span>
+<span class="n">out</span><span class="p">.</span><span class="n">aw</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">queue_arw</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">  </span><span class="n">queue_arw</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">wen</span>
+<span class="n">queue_arw</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">queue_arw</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">wen</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">aw</span><span class="p">.</span><span class="n">ready</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">ar</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span>
+</code></pre></div>
 <p><a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/tilelink/ToAXI4.scala#L197=">这里</a>处理了 aw 和 w 的 valid 信号：</p>
-<pre><code class="language-scala">in.a.ready := !stall &amp;&amp; Mux(a_isPut, (doneAW || out_arw.ready) &amp;&amp; out_w.ready, out_arw.ready)
-out_arw.valid := !stall &amp;&amp; in.a.valid &amp;&amp; Mux(a_isPut, !doneAW &amp;&amp; out_w.ready, Bool(true))
-out_w.valid := !stall &amp;&amp; in.a.valid &amp;&amp; a_isPut &amp;&amp; (doneAW || out_arw.ready)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">in</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">!</span><span class="n">stall</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">a_isPut</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">doneAW</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">out_arw</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">out_w</span><span class="p">.</span><span class="n">ready</span><span class="p">,</span><span class="w"> </span><span class="n">out_arw</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">out_arw</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">!</span><span class="n">stall</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">a_isPut</span><span class="p">,</span><span class="w"> </span><span class="o">!</span><span class="n">doneAW</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">out_w</span><span class="p">.</span><span class="n">ready</span><span class="p">,</span><span class="w"> </span><span class="nc">Bool</span><span class="p">(</span><span class="kc">true</span><span class="p">))</span>
+<span class="n">out_w</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">!</span><span class="n">stall</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">a_isPut</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">doneAW</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">out_arw</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span>
+</code></pre></div>
 <p>这样做的原因是，在 TileLink 中，每个 burst 都是一个 a channel 上的请求，而 AXI4 中，只有第一个 burst 有 aw 请求，所有 burst 都有 w 请求，因此这里用 doneAW 信号来进行区分。</p>
 <p>接着，要把 b 和 r channel 上的结果连接到 d channel，根据上面的经验，<a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/tilelink/ToAXI4.scala#L205=">这里</a> 又是一个 arbitration：</p>
-<pre><code class="language-scala">val r_wins = (out.r.valid &amp;&amp; b_delay =/= UInt(7)) || r_holds_d
-out.r.ready := in.d.ready &amp;&amp; r_wins
-out.b.ready := in.d.ready &amp;&amp; !r_wins
-in.d.valid := Mux(r_wins, out.r.valid, out.b.valid)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">r_wins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">r</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">b_delay</span><span class="w"> </span><span class="o">=/=</span><span class="w"> </span><span class="nc">UInt</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">r_holds_d</span>
+<span class="n">out</span><span class="p">.</span><span class="n">r</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">r_wins</span>
+<span class="n">out</span><span class="p">.</span><span class="n">b</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">r_wins</span>
+<span class="n">in</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">r_wins</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">r</span><span class="p">.</span><span class="n">valid</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">b</span><span class="p">.</span><span class="n">valid</span><span class="p">)</span>
+</code></pre></div>
 <p>最后还处理了一下请求和结果顺序的问题。</p>
 
 

@@ -1593,31 +1593,31 @@
   
 
 
-<h1 id="dijkstra">Dijkstra 算法</h1>
+<h1 id="dijkstra">Dijkstra 算法<a class="headerlink" href="#dijkstra" title="Permanent link">&para;</a></h1>
 <p>Dijkstra 解决的是图上的单源最短路径问题（Single Source Shortest Path，SSSP）。</p>
 <p>实现大致代码如下：</p>
-<pre><code class="language-python">def dijkstra(graph, source):
-    Q = priority_queue()
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">dijkstra</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">priority_queue</span><span class="p">()</span>
 
-    # initialize dist and Q
-    dist[source] = 0
-    for v in graph.vertices:
-        if v != source:
-            dist[v] = INF
+    <span class="c1"># initialize dist and Q</span>
+    <span class="n">dist</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">source</span><span class="p">:</span>
+            <span class="n">dist</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">INF</span>
 
-        Q.add_with_priority(v, dist[v])
+        <span class="n">Q</span><span class="o">.</span><span class="n">add_with_priority</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dist</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
 
-    while not Q.empty:
-        # find min dist and relax edge
-        u = Q.extract_min()
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">Q</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="c1"># find min dist and relax edge</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">extract_min</span><span class="p">()</span>
 
-        for v in u.neighbors():
-            # relax
-            new_dist = dist[u] + u.dist_to(v)
-            if new_dist &lt; dist[v]:
-                dist[v] = new_dist
-                Q.decrease_priority(v, new_dist)
-</code></pre>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">neighbors</span><span class="p">():</span>
+            <span class="c1"># relax</span>
+            <span class="n">new_dist</span> <span class="o">=</span> <span class="n">dist</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="o">.</span><span class="n">dist_to</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_dist</span> <span class="o">&lt;</span> <span class="n">dist</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="n">dist</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_dist</span>
+                <span class="n">Q</span><span class="o">.</span><span class="n">decrease_priority</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">new_dist</span><span class="p">)</span>
+</code></pre></div>
 <p>Q 是一个优先队列，队列每个元素都有优先级，支持如下操作：</p>
 <ol>
 <li><code>add_with_priority(element, priority)</code>：插入新元素</li>
@@ -1625,14 +1625,14 @@
 <li><code>extract_min()</code>：从队列中删除优先级最低的元素并返回该元素</li>
 <li><code>decrease_priority()</code>：修改队列中特定元素的优先级，保证队列中没有重复元素</li>
 </ol>
-<p>算法的时间复杂度是 $O(|E|T_{dp}+|V|T_{em})$，其中 $E$ 是边的集合，$V$ 是顶点的集合，$T_{dp}$ 是 <code>decrease_priority()</code> 的时间复杂度，$T_{em}$ 是 <code>extract_min()</code> 的时间复杂度。</p>
+<p>算法的时间复杂度是 <span class="arithmatex"><span class="MathJax_Preview">O(|E|T_{dp}+|V|T_{em})</span><script type="math/tex">O(|E|T_{dp}+|V|T_{em})</script></span>，其中 <span class="arithmatex"><span class="MathJax_Preview">E</span><script type="math/tex">E</script></span> 是边的集合，<span class="arithmatex"><span class="MathJax_Preview">V</span><script type="math/tex">V</script></span> 是顶点的集合，<span class="arithmatex"><span class="MathJax_Preview">T_{dp}</span><script type="math/tex">T_{dp}</script></span> 是 <code>decrease_priority()</code> 的时间复杂度，<span class="arithmatex"><span class="MathJax_Preview">T_{em}</span><script type="math/tex">T_{em}</script></span> 是 <code>extract_min()</code> 的时间复杂度。</p>
 <p>根据优先队列的不同实现，得到不同的时间复杂度：</p>
 <ol>
-<li>用数组实现优先队列，则 $T_{dp}=O(1), T_{em}=O(|V|)$，因此时间复杂度是 $O(|E|+|V|^2)=O(|V|^2)$</li>
-<li>用平衡树或者堆实现优先队列，则 $T_{dp}=O(\log{|V|}), T_{em}=O(\log{|V|})$，算法总时间复杂度为 $O((|E|+|V|)\log{|V|})$</li>
-<li>用 Fibonacci 堆实现优先队列，则 $T_{dp}=O(1), T_{em}=O(\log{|V|})$，算法总时间复杂度为 $O(|E|+|V|\log{|V|})$</li>
+<li>用数组实现优先队列，则 <span class="arithmatex"><span class="MathJax_Preview">T_{dp}=O(1), T_{em}=O(|V|)</span><script type="math/tex">T_{dp}=O(1), T_{em}=O(|V|)</script></span>，因此时间复杂度是 <span class="arithmatex"><span class="MathJax_Preview">O(|E|+|V|^2)=O(|V|^2)</span><script type="math/tex">O(|E|+|V|^2)=O(|V|^2)</script></span></li>
+<li>用平衡树或者堆实现优先队列，则 <span class="arithmatex"><span class="MathJax_Preview">T_{dp}=O(\log{|V|}), T_{em}=O(\log{|V|})</span><script type="math/tex">T_{dp}=O(\log{|V|}), T_{em}=O(\log{|V|})</script></span>，算法总时间复杂度为 <span class="arithmatex"><span class="MathJax_Preview">O((|E|+|V|)\log{|V|})</span><script type="math/tex">O((|E|+|V|)\log{|V|})</script></span></li>
+<li>用 Fibonacci 堆实现优先队列，则 <span class="arithmatex"><span class="MathJax_Preview">T_{dp}=O(1), T_{em}=O(\log{|V|})</span><script type="math/tex">T_{dp}=O(1), T_{em}=O(\log{|V|})</script></span>，算法总时间复杂度为 <span class="arithmatex"><span class="MathJax_Preview">O(|E|+|V|\log{|V|})</span><script type="math/tex">O(|E|+|V|\log{|V|})</script></span></li>
 </ol>
-<p>最近一篇论文 <a href="https://arxiv.org/pdf/2307.04139.pdf">A Randomized Algorithm for Single-Source Shortest Path on Undirected Real-Weighted Graphs</a> 提出了 $O(|E|\sqrt{\log{|V|}\log{\log{|V|}}})$ 的 Dijkstra 变种算法。</p>
+<p>最近一篇论文 <a href="https://arxiv.org/pdf/2307.04139.pdf">A Randomized Algorithm for Single-Source Shortest Path on Undirected Real-Weighted Graphs</a> 提出了 <span class="arithmatex"><span class="MathJax_Preview">O(|E|\sqrt{\log{|V|}\log{\log{|V|}}})</span><script type="math/tex">O(|E|\sqrt{\log{|V|}\log{\log{|V|}}})</script></span> 的 Dijkstra 变种算法。</p>
 <p>参考了 <a href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>。</p>
 
 

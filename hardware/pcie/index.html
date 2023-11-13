@@ -1813,21 +1813,21 @@
   
 
 
-<h1 id="pcie">PCIe</h1>
-<h2 id="_1">分层</h2>
+<h1 id="pcie">PCIe<a class="headerlink" href="#pcie" title="Permanent link">&para;</a></h1>
+<h2 id="_1">分层<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <p>PCIe 定义了三个层：Transaction Layer，Data Link Layer，Physical Layer，和 TCP/IP 四层模型很像。PCIe 也是基于 Packet 传输的。</p>
-<figure>
-<p><img alt="" src="../pcie_layer.png" width="600" />
-  </p>
-<figcaption>PCIe 分层（图源 PCIe 3.0 标准）</figcaption>
+<figure markdown>
+  ![](pcie_layer.png){ width="600" }
+  <figcaption>PCIe 分层（图源 PCIe 3.0 标准）</figcaption>
 </figure>
-<h3 id="transaction-layer">Transaction Layer</h3>
+
+<h3 id="transaction-layer">Transaction Layer<a class="headerlink" href="#transaction-layer" title="Permanent link">&para;</a></h3>
 <p>Transaction Layer 的核心是 Transaction Layer Packet(TLP)。TLP 格式：</p>
-<figure>
-<p><img alt="" src="../pcie_tlp.png" width="600" />
-  </p>
-<figcaption>PCIe TLP 格式（图源 PCIe 3.0 标准）</figcaption>
+<figure markdown>
+  ![](pcie_tlp.png){ width="600" }
+  <figcaption>PCIe TLP 格式（图源 PCIe 3.0 标准）</figcaption>
 </figure>
+
 <p>即可选的若干个 Prefix，一个 Header，可选的 Data Payload，可选的 Digest。</p>
 <p>Prefix 和 Header 开头的一个字节是 <code>Fmt[2:0]</code> 和 <code>Type[4:0]</code> 字段。Fmt 决定了 header 的长度，有无数据，或者这是一个 Prefix。</p>
 <p>它支持几类 Packet：</p>
@@ -1870,13 +1870,13 @@
 </ul>
 </li>
 </ul>
-<h3 id="data-link-layer">Data Link Layer</h3>
+<h3 id="data-link-layer">Data Link Layer<a class="headerlink" href="#data-link-layer" title="Permanent link">&para;</a></h3>
 <p>Data Link Layer 的主要功能是进行 TLP 的可靠传输。它在传输 TLP 的时候，会在开头加上一个两字节的 Sequence Number，最后加上一个四字节的 LCRC（Link CRC）。</p>
-<figure>
-<p><img alt="" src="../pcie_tlp_link.png" width="600" />
-  </p>
-<figcaption>PCIe TLP Data Link Layer 格式（图源 PCIe 3.0 标准）</figcaption>
+<figure markdown>
+  ![](pcie_tlp_link.png){ width="600" }
+  <figcaption>PCIe TLP Data Link Layer 格式（图源 PCIe 3.0 标准）</figcaption>
 </figure>
+
 <p>除了传输 TLP，Data Link Layer 还会传输 Data Link Layer Packet(DLLP)，类型包括：</p>
 <ul>
 <li>Ack DLLP: 告诉对方自己已经成功收到了 TLP</li>
@@ -1887,9 +1887,9 @@
 <p>Data Link Layer 收到上层要发送 TLP 时候，首先拼接 Sequence Number 和 LCRC，然后会保存在 retry buffer 中，通过 Physical Layer 发送。从 Physical Layer 收到新的 TLP/DLLP 时，会检查它的完整性（CRC），如果正确，就向发送方发送一个 Ack DLLP，并把 TLP 提交给 Transaction Layer；如果不正确，就向发送方发送一个 Nak DLLP。如果收到了 Ack DLLP，就可以把相应的 TLP 从 retry buffer 中删掉；如果收到了 Nak DLLP，则要重传。这样就实现了 TLP 的可靠传输。</p>
 <p>需要注意的是，TLP 和 DLLP 的区别：TLP 就像 IP，目的地址可能会跨越多跳；而 DLLP 是点对点地工作，所以一个 TLP 在转发的每一跳中，接受方都会发送一次 Ack DLLP。</p>
 <p>Data Link Layer 的流量是 Credit-based 的：接受方会告诉发送方自己的 Buffer 还有多少空间（Credit），然后发送方根据 Credit 来控制是否继续发送 TLP。</p>
-<h2 id="_2">配置</h2>
+<h2 id="_2">配置<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>接触 PCIe 的时候可能会有一个疑惑，就是这些 Bus Device Function 都是怎么分配的，分配完之后，访问请求又是怎么路由的。</p>
-<h3 id="_3">路由</h3>
+<h3 id="_3">路由<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>首先回顾一下，上面提到了 TLP 的 Memory 和 IO 是根据地址路由，Configuration 是根据 Bus Device Function 路由，而 PCIe 大概是一个树形的结构，叶子结点就是 PCIe 设备，非叶子结点是桥或者交换机。回想一下，IP 的路由是按照最长前缀匹配，如果在 PCIe 中还这样做的话，又太过于复杂了，毕竟 PCIe 可以人为地设定每个设备的地址，让地址满足一定的连续性和局部性，这样路由选择就非常简单了。</p>
 <p>观察 PCIe 标准中 7.3.3 Configuration Request Routing Rules，结合 MindShare 的书，看 Root Ports，Switches 和 Bridges 的要求，就知道 Configuration 请求是如何路由的：</p>
 <ul>
@@ -1903,26 +1903,26 @@
 </ul>
 <p>如果类比一下 IP，那么分组在中途路由器转发的时候就是 Type1，Type0 就是最后一跳。路由就是直接按照几个不重合的 Bus Number 区间进行判断，没有复杂的最长前缀匹配。但是又有一个问题，如果按照 Bus 路由，那同一个 Bus 下不同的 Device 咋办？这就像是以太网，最后一跳的时候，如果同一个链路上有多个设备，那么多个设备都能收到，每个设备根据自己的 Device 号判断是否是发给自己的。PCI（注意不是 PCIe）总线也类似。随着速度越来越高，通过交换机，以太网已经变成了点对点，所以很少见到一个链路上同时有多个设备的情况了。PCIe 也一样，所以根据 Bus 路由就足够了。至于 lspci 看到的那些 Device 不等于 0 的设备，要么是兼容 PCI 设备的，要么是虚拟的，在设备内部进行路由的，并不是真的有一个 PCIe link 连了多个物理设备。</p>
 <p>所以简单理解一下，PCI 总线确实是一条总线，一条总线上很多设备。而 PCIe 实际上是一个网络，可以看作是很多个 PCI 总线连接在一起，可以把 Root Complex 或者 Switch 内部看成一个虚拟的有很多设备的 PCI 总线，而 PCIe Link 可以看成是只有一个设备的 PCI 总线。这样 PCIe 交换机可以看成若干个 PCI-PCI Bridge：</p>
-<figure>
-<p><img alt="" src="../pcie_bridge.png" width="600" />
-  </p>
-<figcaption>PCIe 交换机和 Root Complex 内部图解（图源 PCIe 3.0 标准）</figcaption>
+<figure markdown>
+  ![](pcie_bridge.png){ width="600" }
+  <figcaption>PCIe 交换机和 Root Complex 内部图解（图源 PCIe 3.0 标准）</figcaption>
 </figure>
+
 <p>还有 MindShare 书中的图 3-5:</p>
-<figure>
-<p><img alt="" src="../pcie_system.png" width="600" />
-  </p>
-<figcaption>PCIe 完整拓扑（图源 MineShare PCIe 3.0 书）</figcaption>
+<figure markdown>
+  ![](pcie_system.png){ width="600" }
+  <figcaption>PCIe 完整拓扑（图源 MineShare PCIe 3.0 书）</figcaption>
 </figure>
-<p>可以看到，这里的每一个 Bus 就是一个 PCI 总线，既有内部的虚拟 PCI 总线（Bus 0/2/6），也有 PCIe Link 充当的 PCI 总线（Bus 1/3/4/5/7/8/9）。在虚拟的 PCI 总线里，比如 PCIe Switch，一个 Device 对应一个 Downstream Port；而 PCIe Link 对应的 PCI 总线上就只有一个 Device。然后 PCIe Switch 的每个 Upstream Port 和 Downstream Port 里会记录三个 Bus Number：Primary(Pri)，Secondary(Sec) 和 Subordinate(Sub)。Primary 指的就是它上游直接连接的 PCI 总线编号，Sec 指的是下游直接连接的 PCI 总线编号，Sub 指的是它下游的最大 PCI 总线编号。</p>
+
+<p>可以看到，这里的每一个 Bus 就是一个 PCI 总线，既有内部的虚拟 PCI 总线（Bus 0/2/6），也有 PCIe Link 充当的 PCI 总线（Bus &#8531;/&#8536;/&#8542;/9）。在虚拟的 PCI 总线里，比如 PCIe Switch，一个 Device 对应一个 Downstream Port；而 PCIe Link 对应的 PCI 总线上就只有一个 Device。然后 PCIe Switch 的每个 Upstream Port 和 Downstream Port 里会记录三个 Bus Number：Primary(Pri)，Secondary(Sec) 和 Subordinate(Sub)。Primary 指的就是它上游直接连接的 PCI 总线编号，Sec 指的是下游直接连接的 PCI 总线编号，Sub 指的是它下游的最大 PCI 总线编号。</p>
 <p>这样，收到 Type1 的时候，Switch 按照各个 Downstream Port 的 Sec 和 Sub 进行判断，如果目标 Bus Number 等于 Sec，就转换为 Type0 发出去；如果大于 Sec，但是小于或等于 Sub，就原样发出去。可以看到，从 Host Bridge 到每个设备都可以通过这样的方式一路转发。</p>
 <p>既然 BDF 是把 Bus 划分为多个区间来路由的，那么 Memory 和 IO 请求也类似地可以对地址进行划分，变成多个区间，然后用类似的方法进行路由。</p>
 <p>这些用于路由的区间上下界，可以在各个端口的 Type1 Configuration Space 中找到：</p>
-<figure>
-<p><img alt="" src="../pcie_type1.png" width="600" />
-  </p>
-<figcaption>PCIe Type1 Configuration Space（图源 PCIe 3.0 标准）</figcaption>
+<figure markdown>
+  ![](pcie_type1.png){ width="600" }
+  <figcaption>PCIe Type1 Configuration Space（图源 PCIe 3.0 标准）</figcaption>
 </figure>
+
 <ul>
 <li>路由 Type1 Configuration Request：Primary Bus Number, Secondary Bus Number, Subordinate Bus Number<ul>
 <li><code>Request Bus Number == Secondary Bus Number</code>: Type1 -&gt; Type0</li>
@@ -1934,132 +1934,132 @@
 <li>路由 Non-Prefetchable Memory Request：<code>Memory Base &lt;= Memory Address &lt;= Memory Limit</code></li>
 </ul>
 <p>而具体到每一个设备上，设备会提供若干个 BAR（Base Address Register），在枚举设备的时候，会给 BAR 分配地址，然后把设备的地址进行合并，记录到 Switch 上的 Base 和 Limit，然后一直递归，一路更新到 Root Complex。这样，就完成了地址分配，以及请求的路由。</p>
-<h3 id="_4">分配</h3>
+<h3 id="_4">分配<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <p>既然知道了 BDF 是如何路由的，那么接下来的问题是，怎么枚举设备和交换机，分配 Bus Number。这个事情在系统启动的时候会做（例如 UEFI），Linux 中也有相关的代码。下面就来对着 <a href="https://github.com/tianocore/edk2">edk2</a> 的源代码来看看它是怎么做的。</p>
 <p>在 edk2 中，分配 Bus Number 的核心代码是 <code>PciScanBus</code> 函数：</p>
-<pre><code class="language-cpp">/**
-  Scan pci bus and assign bus number to the given PCI bus system.
+<div class="highlight"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm">  Scan pci bus and assign bus number to the given PCI bus system.</span>
 
-  @param  Bridge           Bridge device instance.
-  @param  StartBusNumber   start point.
-  @param  SubBusNumber     Point to sub bus number.
-  @param  PaddedBusRange   Customized bus number.
+<span class="cm">  @param  Bridge           Bridge device instance.</span>
+<span class="cm">  @param  StartBusNumber   start point.</span>
+<span class="cm">  @param  SubBusNumber     Point to sub bus number.</span>
+<span class="cm">  @param  PaddedBusRange   Customized bus number.</span>
 
-  @retval EFI_SUCCESS      Successfully scanned and assigned bus number.
-  @retval other            Some error occurred when scanning pci bus.
+<span class="cm">  @retval EFI_SUCCESS      Successfully scanned and assigned bus number.</span>
+<span class="cm">  @retval other            Some error occurred when scanning pci bus.</span>
 
-  @note   Feature flag PcdPciBusHotplugDeviceSupport determine whether need support hotplug.
+<span class="cm">  @note   Feature flag PcdPciBusHotplugDeviceSupport determine whether need support hotplug.</span>
 
-**/
-EFI_STATUS
-PciScanBus (
-  IN PCI_IO_DEVICE  *Bridge,
-  IN UINT8          StartBusNumber,
-  OUT UINT8         *SubBusNumber,
-  OUT UINT8         *PaddedBusRange
-  );
-</code></pre>
+<span class="cm">**/</span>
+<span class="n">EFI_STATUS</span>
+<span class="nf">PciScanBus</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">IN</span><span class="w"> </span><span class="n">PCI_IO_DEVICE</span><span class="w">  </span><span class="o">*</span><span class="n">Bridge</span><span class="p">,</span>
+<span class="w">  </span><span class="n">IN</span><span class="w"> </span><span class="n">UINT8</span><span class="w">          </span><span class="n">StartBusNumber</span><span class="p">,</span>
+<span class="w">  </span><span class="n">OUT</span><span class="w"> </span><span class="n">UINT8</span><span class="w">         </span><span class="o">*</span><span class="n">SubBusNumber</span><span class="p">,</span>
+<span class="w">  </span><span class="n">OUT</span><span class="w"> </span><span class="n">UINT8</span><span class="w">         </span><span class="o">*</span><span class="n">PaddedBusRange</span>
+<span class="w">  </span><span class="p">);</span>
+</code></pre></div>
 <p>输入一个桥设备和初始的 Bus Number，输出 Subordinate Bus Number，也就是分配的最大的 Bus Number，以及 Padded Bus Range，例如如果要考虑热插拔的话，就需要预留一些 Bus Number。它在 <code>PciRootBridgeEnumerator</code> 函数中被调用，传入的是 RootBridgeDev。你可能也猜到了，这个函数可以递归调用，从 Root Bridge 开始往下，遇到新的桥设备的时候，就继续递归，然后根据下一层分配的 Bus Number 来计算上一层的 Subordinate Bus Number。</p>
 <p><code>PciScanBus</code> 首先枚举当前桥设备下的所有 Device 和 Function，因为当前的桥设备已经被分配了 Bus Number，所以是可以访问它下面的 Device 和 Function 的。</p>
-<pre><code class="language-cpp">for (Device = 0; Device &lt;= PCI_MAX_DEVICE; Device++) {
-  TempReservedBusNum = 0;
-  for (Func = 0; Func &lt;= PCI_MAX_FUNC; Func++) {
-    //
-    // Check to see whether a pci device is present
-    //
-    Status =
-        PciDevicePresent(PciRootBridgeIo, &amp;Pci, StartBusNumber, Device, Func);
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">PCI_MAX_DEVICE</span><span class="p">;</span><span class="w"> </span><span class="n">Device</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">TempReservedBusNum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Func</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">Func</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">PCI_MAX_FUNC</span><span class="p">;</span><span class="w"> </span><span class="n">Func</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// Check to see whether a pci device is present</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">PciDevicePresent</span><span class="p">(</span><span class="n">PciRootBridgeIo</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Pci</span><span class="p">,</span><span class="w"> </span><span class="n">StartBusNumber</span><span class="p">,</span><span class="w"> </span><span class="n">Device</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="p">);</span>
 
-    if (EFI_ERROR(Status) &amp;&amp; (Func == 0)) {
-      //
-      // go to next device if there is no Function 0
-      //
-      break;
-    }
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">Func</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="c1">// go to next device if there is no Function 0</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    if (EFI_ERROR(Status)) {
-      continue;
-    }
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    //
-    // Get the PCI device information
-    //
-    Status =
-        PciSearchDevice(Bridge, &amp;Pci, StartBusNumber, Device, Func, &amp;PciDevice);
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// Get the PCI device information</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">PciSearchDevice</span><span class="p">(</span><span class="n">Bridge</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Pci</span><span class="p">,</span><span class="w"> </span><span class="n">StartBusNumber</span><span class="p">,</span><span class="w"> </span><span class="n">Device</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">PciDevice</span><span class="p">);</span>
 
-    if (EFI_ERROR(Status)) {
-      continue;
-    }
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    PciAddress = EFI_PCI_ADDRESS(StartBusNumber, Device, Func, 0);
+<span class="w">    </span><span class="n">PciAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EFI_PCI_ADDRESS</span><span class="p">(</span><span class="n">StartBusNumber</span><span class="p">,</span><span class="w"> </span><span class="n">Device</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 
-    if (IS_PCI_BRIDGE(&amp;Pci) || IS_CARDBUS_BRIDGE(&amp;Pci)) {
-      //
-      // For PPB
-      //
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">IS_PCI_BRIDGE</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Pci</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">IS_CARDBUS_BRIDGE</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Pci</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="c1">// For PPB</span>
+<span class="w">      </span><span class="c1">//</span>
 
-      Status = PciAllocateBusNumber(Bridge, *SubBusNumber, 1, SubBusNumber);
-      if (EFI_ERROR(Status)) {
-        return Status;
-      }
+<span class="w">      </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciAllocateBusNumber</span><span class="p">(</span><span class="n">Bridge</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">SubBusNumber</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">SubBusNumber</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Status</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
 
-      SecondBus = *SubBusNumber;
+<span class="w">      </span><span class="n">SecondBus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">SubBusNumber</span><span class="p">;</span>
 
-      Register = (UINT16)((SecondBus &lt;&lt; 8) | (UINT16)StartBusNumber);
-      Address = EFI_PCI_ADDRESS(StartBusNumber, Device, Func,
-                                PCI_BRIDGE_PRIMARY_BUS_REGISTER_OFFSET);
+<span class="w">      </span><span class="n">Register</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">UINT16</span><span class="p">)((</span><span class="n">SecondBus</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">UINT16</span><span class="p">)</span><span class="n">StartBusNumber</span><span class="p">);</span>
+<span class="w">      </span><span class="n">Address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EFI_PCI_ADDRESS</span><span class="p">(</span><span class="n">StartBusNumber</span><span class="p">,</span><span class="w"> </span><span class="n">Device</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="p">,</span>
+<span class="w">                                </span><span class="n">PCI_BRIDGE_PRIMARY_BUS_REGISTER_OFFSET</span><span class="p">);</span>
 
-      Status = PciRootBridgeIo-&gt;Pci.Write(PciRootBridgeIo, EfiPciWidthUint16,
-                                          Address, 1, &amp;Register);
+<span class="w">      </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciRootBridgeIo</span><span class="o">-&gt;</span><span class="n">Pci</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">PciRootBridgeIo</span><span class="p">,</span><span class="w"> </span><span class="n">EfiPciWidthUint16</span><span class="p">,</span>
+<span class="w">                                          </span><span class="n">Address</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Register</span><span class="p">);</span>
 
-      //
-      // If it is PPB, recursively search down this bridge
-      //
-      if (IS_PCI_BRIDGE(&amp;Pci)) {
-        //
-        // Temporarily initialize SubBusNumber to maximum bus number to ensure
-        // the PCI configuration transaction to go through any PPB
-        //
-        Register = PciGetMaxBusNumber(Bridge);
-        Address = EFI_PCI_ADDRESS(StartBusNumber, Device, Func,
-                                  PCI_BRIDGE_SUBORDINATE_BUS_REGISTER_OFFSET);
-        Status = PciRootBridgeIo-&gt;Pci.Write(PciRootBridgeIo, EfiPciWidthUint8,
-                                            Address, 1, &amp;Register);
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="c1">// If it is PPB, recursively search down this bridge</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">IS_PCI_BRIDGE</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Pci</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">//</span>
+<span class="w">        </span><span class="c1">// Temporarily initialize SubBusNumber to maximum bus number to ensure</span>
+<span class="w">        </span><span class="c1">// the PCI configuration transaction to go through any PPB</span>
+<span class="w">        </span><span class="c1">//</span>
+<span class="w">        </span><span class="n">Register</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciGetMaxBusNumber</span><span class="p">(</span><span class="n">Bridge</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EFI_PCI_ADDRESS</span><span class="p">(</span><span class="n">StartBusNumber</span><span class="p">,</span><span class="w"> </span><span class="n">Device</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="p">,</span>
+<span class="w">                                  </span><span class="n">PCI_BRIDGE_SUBORDINATE_BUS_REGISTER_OFFSET</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciRootBridgeIo</span><span class="o">-&gt;</span><span class="n">Pci</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">PciRootBridgeIo</span><span class="p">,</span><span class="w"> </span><span class="n">EfiPciWidthUint8</span><span class="p">,</span>
+<span class="w">                                            </span><span class="n">Address</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Register</span><span class="p">);</span>
 
-        Status = PciScanBus(PciDevice, SecondBus, SubBusNumber, PaddedBusRange);
-        if (EFI_ERROR(Status)) {
-          return Status;
-        }
-      }
+<span class="w">        </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciScanBus</span><span class="p">(</span><span class="n">PciDevice</span><span class="p">,</span><span class="w"> </span><span class="n">SecondBus</span><span class="p">,</span><span class="w"> </span><span class="n">SubBusNumber</span><span class="p">,</span><span class="w"> </span><span class="n">PaddedBusRange</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">Status</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
 
-      //
-      // Set the current maximum bus number under the PPB
-      //
-      Address = EFI_PCI_ADDRESS(StartBusNumber, Device, Func,
-                                PCI_BRIDGE_SUBORDINATE_BUS_REGISTER_OFFSET);
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="c1">// Set the current maximum bus number under the PPB</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="n">Address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EFI_PCI_ADDRESS</span><span class="p">(</span><span class="n">StartBusNumber</span><span class="p">,</span><span class="w"> </span><span class="n">Device</span><span class="p">,</span><span class="w"> </span><span class="n">Func</span><span class="p">,</span>
+<span class="w">                                </span><span class="n">PCI_BRIDGE_SUBORDINATE_BUS_REGISTER_OFFSET</span><span class="p">);</span>
 
-      Status = PciRootBridgeIo-&gt;Pci.Write(PciRootBridgeIo, EfiPciWidthUint8,
-                                          Address, 1, SubBusNumber);
-    } else {
-      //
-      // It is device. Check PCI IOV for Bus reservation
-      // Go through each function, just reserve the MAX ReservedBusNum for one
-      // device
-      //
+<span class="w">      </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciRootBridgeIo</span><span class="o">-&gt;</span><span class="n">Pci</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">PciRootBridgeIo</span><span class="p">,</span><span class="w"> </span><span class="n">EfiPciWidthUint8</span><span class="p">,</span>
+<span class="w">                                          </span><span class="n">Address</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">SubBusNumber</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="c1">// It is device. Check PCI IOV for Bus reservation</span>
+<span class="w">      </span><span class="c1">// Go through each function, just reserve the MAX ReservedBusNum for one</span>
+<span class="w">      </span><span class="c1">// device</span>
+<span class="w">      </span><span class="c1">//</span>
 
-      // OMITTED
-    }
+<span class="w">      </span><span class="c1">// OMITTED</span>
+<span class="w">    </span><span class="p">}</span>
 
-    if ((Func == 0) &amp;&amp; !IS_PCI_MULTI_FUNC(&amp;Pci)) {
-      //
-      // Skip sub functions, this is not a multi function device
-      //
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">Func</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">IS_PCI_MULTI_FUNC</span><span class="p">(</span><span class="o">&amp;</span><span class="n">Pci</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="c1">// Skip sub functions, this is not a multi function device</span>
+<span class="w">      </span><span class="c1">//</span>
 
-      Func = PCI_MAX_FUNC;
-    }
-  }
-}
-</code></pre>
+<span class="w">      </span><span class="n">Func</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PCI_MAX_FUNC</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>从代码中去掉了一些热插拔相关的代码，简单来说，它的思路如下：</p>
 <ol>
 <li>枚举当前设备下的 Device 和 Function</li>
@@ -2074,101 +2074,101 @@ PciScanBus (
 </ol>
 <p>这样整理出来一看，其实很清楚，这就是一个 DFS 算法，在搜索过程中，为了保证当前的结点可达，保证从 Root Bridge 到当前的结点路径上的 Bus Number 范围都是 <code>[Secondary Bus Number, Max Bus Number]</code>；当结点搜索完以后，再回溯，回溯的时候就知道了实际分配到多大的 Bus Number，这时候再填回 Subordinate Bus Number，最后保证这个树上每一层的 <code>[Secondary Bus Number, Subordinate Bus Number]</code> 区间不重合，且每个子结点的区间都包含于父结点的区间。</p>
 <p>最后的结果，类似 MindShare 书中的这个图：</p>
-<figure>
-<p><img alt="" src="../pcie_enum.png" width="600" />
-  </p>
-<figcaption>PCIe 枚举结果（图源 MineShare PCIe 3.0 书）</figcaption>
+<figure markdown>
+  ![](pcie_enum.png){ width="600" }
+  <figcaption>PCIe 枚举结果（图源 MineShare PCIe 3.0 书）</figcaption>
 </figure>
+
 <p>为了支持 PCIe 热插拔，或者可能会动态产生新设备的 SR-IOV，代码中做了相应的预留：</p>
-<pre><code class="language-cpp">if (FeaturePcdGet(PcdPciBusHotplugDeviceSupport)) {
-  //
-  // If Hot Plug is supported,
-  // Get the bridge information
-  //
-  BusPadding = FALSE;
-  if (gPciHotPlugInit != NULL) {
-    if (IsPciHotPlugBus(PciDevice)) {
-      //
-      // If it is initialized, get the padded bus range
-      //
-      Status = gPciHotPlugInit-&gt;GetResourcePadding(
-          gPciHotPlugInit, PciDevice-&gt;DevicePath, PciAddress, &amp;State,
-          (VOID **)&amp;Descriptors, &amp;Attributes);
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">FeaturePcdGet</span><span class="p">(</span><span class="n">PcdPciBusHotplugDeviceSupport</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">//</span>
+<span class="w">  </span><span class="c1">// If Hot Plug is supported,</span>
+<span class="w">  </span><span class="c1">// Get the bridge information</span>
+<span class="w">  </span><span class="c1">//</span>
+<span class="w">  </span><span class="n">BusPadding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FALSE</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gPciHotPlugInit</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">IsPciHotPlugBus</span><span class="p">(</span><span class="n">PciDevice</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="c1">// If it is initialized, get the padded bus range</span>
+<span class="w">      </span><span class="c1">//</span>
+<span class="w">      </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gPciHotPlugInit</span><span class="o">-&gt;</span><span class="n">GetResourcePadding</span><span class="p">(</span>
+<span class="w">          </span><span class="n">gPciHotPlugInit</span><span class="p">,</span><span class="w"> </span><span class="n">PciDevice</span><span class="o">-&gt;</span><span class="n">DevicePath</span><span class="p">,</span><span class="w"> </span><span class="n">PciAddress</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">State</span><span class="p">,</span>
+<span class="w">          </span><span class="p">(</span><span class="n">VOID</span><span class="w"> </span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">Descriptors</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Attributes</span><span class="p">);</span>
 
-      if (EFI_ERROR(Status)) {
-        return Status;
-      }
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Status</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
 
-      BusRange = 0;
-      NextDescriptors = Descriptors;
-      Status = PciGetBusRange(&amp;NextDescriptors, NULL, NULL, &amp;BusRange);
+<span class="w">      </span><span class="n">BusRange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">      </span><span class="n">NextDescriptors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Descriptors</span><span class="p">;</span>
+<span class="w">      </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciGetBusRange</span><span class="p">(</span><span class="o">&amp;</span><span class="n">NextDescriptors</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">BusRange</span><span class="p">);</span>
 
-      FreePool(Descriptors);
+<span class="w">      </span><span class="n">FreePool</span><span class="p">(</span><span class="n">Descriptors</span><span class="p">);</span>
 
-      if (!EFI_ERROR(Status)) {
-        BusPadding = TRUE;
-      } else if (Status != EFI_NOT_FOUND) {
-        //
-        // EFI_NOT_FOUND is not a real error. It indicates no bus number padding
-        // requested.
-        //
-        return Status;
-      }
-    }
-  }
-}
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">BusPadding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TRUE</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">EFI_NOT_FOUND</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">//</span>
+<span class="w">        </span><span class="c1">// EFI_NOT_FOUND is not a real error. It indicates no bus number padding</span>
+<span class="w">        </span><span class="c1">// requested.</span>
+<span class="w">        </span><span class="c1">//</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Status</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-if (FeaturePcdGet(PcdPciBusHotplugDeviceSupport) &amp;&amp; BusPadding) {
-  //
-  // Ensure the device is enabled and initialized
-  //
-  if ((Attributes == EfiPaddingPciRootBridge) &amp;&amp;
-      ((State &amp; EFI_HPC_STATE_ENABLED) != 0) &amp;&amp;
-      ((State &amp; EFI_HPC_STATE_INITIALIZED) != 0)) {
-    *PaddedBusRange = (UINT8)((UINT8)(BusRange) + *PaddedBusRange);
-  } else {
-    //
-    // Reserve the larger one between the actual occupied bus number and padded
-    // bus number
-    //
-    Status = PciAllocateBusNumber(PciDevice, SecondBus, (UINT8)(BusRange),
-                                  &amp;PaddedSubBus);
-    if (EFI_ERROR(Status)) {
-      return Status;
-    }
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">FeaturePcdGet</span><span class="p">(</span><span class="n">PcdPciBusHotplugDeviceSupport</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">BusPadding</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">//</span>
+<span class="w">  </span><span class="c1">// Ensure the device is enabled and initialized</span>
+<span class="w">  </span><span class="c1">//</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">Attributes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EfiPaddingPciRootBridge</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">      </span><span class="p">((</span><span class="n">State</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">EFI_HPC_STATE_ENABLED</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">      </span><span class="p">((</span><span class="n">State</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">EFI_HPC_STATE_INITIALIZED</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">*</span><span class="n">PaddedBusRange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">UINT8</span><span class="p">)((</span><span class="n">UINT8</span><span class="p">)(</span><span class="n">BusRange</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">*</span><span class="n">PaddedBusRange</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="c1">// Reserve the larger one between the actual occupied bus number and padded</span>
+<span class="w">    </span><span class="c1">// bus number</span>
+<span class="w">    </span><span class="c1">//</span>
+<span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciAllocateBusNumber</span><span class="p">(</span><span class="n">PciDevice</span><span class="p">,</span><span class="w"> </span><span class="n">SecondBus</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">UINT8</span><span class="p">)(</span><span class="n">BusRange</span><span class="p">),</span>
+<span class="w">                                  </span><span class="o">&amp;</span><span class="n">PaddedSubBus</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">Status</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    *SubBusNumber = MAX(PaddedSubBus, *SubBusNumber);
-  }
-}
-</code></pre>
+<span class="w">    </span><span class="o">*</span><span class="n">SubBusNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MAX</span><span class="p">(</span><span class="n">PaddedSubBus</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">SubBusNumber</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>SR-IOV:</p>
-<pre><code class="language-cpp">//
-// It is device. Check PCI IOV for Bus reservation
-// Go through each function, just reserve the MAX ReservedBusNum for one device
-//
-if (PcdGetBool(PcdSrIovSupport) &amp;&amp; (PciDevice-&gt;SrIovCapabilityOffset != 0)) {
-  if (TempReservedBusNum &lt; PciDevice-&gt;ReservedBusNum) {
-    Status = PciAllocateBusNumber(
-        PciDevice, *SubBusNumber,
-        (UINT8)(PciDevice-&gt;ReservedBusNum - TempReservedBusNum), SubBusNumber);
-    if (EFI_ERROR(Status)) {
-      return Status;
-    }
+<div class="highlight"><pre><span></span><code><span class="c1">//</span>
+<span class="c1">// It is device. Check PCI IOV for Bus reservation</span>
+<span class="c1">// Go through each function, just reserve the MAX ReservedBusNum for one device</span>
+<span class="c1">//</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">PcdGetBool</span><span class="p">(</span><span class="n">PcdSrIovSupport</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">PciDevice</span><span class="o">-&gt;</span><span class="n">SrIovCapabilityOffset</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">TempReservedBusNum</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">PciDevice</span><span class="o">-&gt;</span><span class="n">ReservedBusNum</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciAllocateBusNumber</span><span class="p">(</span>
+<span class="w">        </span><span class="n">PciDevice</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">SubBusNumber</span><span class="p">,</span>
+<span class="w">        </span><span class="p">(</span><span class="n">UINT8</span><span class="p">)(</span><span class="n">PciDevice</span><span class="o">-&gt;</span><span class="n">ReservedBusNum</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">TempReservedBusNum</span><span class="p">),</span><span class="w"> </span><span class="n">SubBusNumber</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EFI_ERROR</span><span class="p">(</span><span class="n">Status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">Status</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    TempReservedBusNum = PciDevice-&gt;ReservedBusNum;
+<span class="w">    </span><span class="n">TempReservedBusNum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PciDevice</span><span class="o">-&gt;</span><span class="n">ReservedBusNum</span><span class="p">;</span>
 
-    if (Func == 0) {
-      DEBUG((DEBUG_INFO, &quot;PCI-IOV ScanBus - SubBusNumber - 0x%x\n&quot;,
-             *SubBusNumber));
-    } else {
-      DEBUG((DEBUG_INFO, &quot;PCI-IOV ScanBus - SubBusNumber - 0x%x (Update)\n&quot;,
-             *SubBusNumber));
-    }
-  }
-}
-</code></pre>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Func</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">DEBUG</span><span class="p">((</span><span class="n">DEBUG_INFO</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;PCI-IOV ScanBus - SubBusNumber - 0x%x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">             </span><span class="o">*</span><span class="n">SubBusNumber</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">DEBUG</span><span class="p">((</span><span class="n">DEBUG_INFO</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;PCI-IOV ScanBus - SubBusNumber - 0x%x (Update)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">             </span><span class="o">*</span><span class="n">SubBusNumber</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>分配好 Bus 以后，就可以对所有设备进行 Configuration Request 了，后续的 Memory 和 IO 地址的分配和路由，也是类似地递归地进行分配，然后回溯的时候合并地址区间即可。</p>
-<h2 id="_5">物理层</h2>
+<h2 id="_5">物理层<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <p>物理层编码上，PCIe 1.0 和 2.0 采用的是 NRZ 8b/10b，PCIe 3.0 到 5.0 用的是 NRZ 128b/130b，最新的 PCIe 6.0 和 7.0 则换成了 PAM4 FLIT。可以计算出每一代 x16 Lane 情况下的最大数据带宽：</p>
 <ul>
 <li>PCIe 1.0: <code>2.5 * 8 / 10 * 16 = 32 Gb/s</code></li>
@@ -2179,9 +2179,9 @@ if (PcdGetBool(PcdSrIovSupport) &amp;&amp; (PciDevice-&gt;SrIovCapabilityOffset 
 <li>PCIe 6.0: <code>64.0 * 16 = 1024 Gb/s</code>，如果考虑 FLIT 引入的开销，则是 <code>64.0 * 242 / 256 * 16 = 968 Gb/s</code></li>
 <li>PCIe 7.0: <code>128.0 * 16 = 2048 Gb/s</code>，如果考虑 FLIT 引入的开销，则是 <code>128.0 * 242 / 256 * 16 = 1936 Gb/s</code></li>
 </ul>
-<h2 id="pcie-60">PCIe 6.0</h2>
+<h2 id="pcie-60">PCIe 6.0<a class="headerlink" href="#pcie-60" title="Permanent link">&para;</a></h2>
 <p>PCIe 6.0 引入了 PAM4 来替代原来的 NRZ，实现了波特率不变的情况下速度翻倍，并且不再使用 128b/130b，为了解决 PAM4 带来的更高的错误率，引入了 FEC，CRC 还有格雷码，以及新的 FLIT。</p>
-<p>网上可以搜到关于 PCIe 的 PPT：https://pcisig.com/sites/default/files/files/PCIe%206.0%20Webinar_Final_.pdf 和 https://www.openfabrics.org/wp-content/uploads/2022-workshop/2022-workshop-presentations/206_DDasSharma.pdf，以及关于 FLIT 的博客：https://pcisig.com/blog/pcie%C2%AE-60-specification-webinar-qa-deeper-dive-flit-mode-pam4-and-forward-error-correction-fec</p>
+<p>网上可以搜到关于 PCIe 的 PPT：<a href="https://pcisig.com/sites/default/files/files/PCIe%206.0%20Webinar_Final_.pdf">https://pcisig.com/sites/default/files/files/PCIe%206.0%20Webinar_Final_.pdf</a> 和 <a href="https://www.openfabrics.org/wp-content/uploads/2022-workshop/2022-workshop-presentations/206_DDasSharma.pdf">https://www.openfabrics.org/wp-content/uploads/2022-workshop/2022-workshop-presentations/206_DDasSharma.pdf</a>，以及关于 FLIT 的博客：<a href="https://pcisig.com/blog/pcie%C2%AE-60-specification-webinar-qa-deeper-dive-flit-mode-pam4-and-forward-error-correction-fec">https://pcisig.com/blog/pcie%C2%AE-60-specification-webinar-qa-deeper-dive-flit-mode-pam4-and-forward-error-correction-fec</a></p>
 <p>总结 FLIT 的要点：</p>
 <ol>
 <li>每个 FLIT 固定长度 256 字节，其中 236 字节传输 TLP，6 字节传输 DLLP，8 字节传输 CRC，6 字节传输 FEC。</li>
@@ -2189,14 +2189,14 @@ if (PcdGetBool(PcdSrIovSupport) &amp;&amp; (PciDevice-&gt;SrIovCapabilityOffset 
 <li>一个 TLP 可能跨越多个 FLIT，一个 FLIT 可能包括多个 TLP，根据 TLP 大小而定。TLP 不需要对齐到 FLIT 的开头或者结尾。</li>
 </ol>
 <p>可以发现，FLIT 的 CRC 用了 8 个字节，不再需要原来 TLP 和 DLLP 中的 ECRC 和 LCRC。在之前的 PCIe 版本，TLP 的可选 Digest 是 4 个字节的 ECRC，TLP+DLLP 的 LCRC 是 4 字节。具体采用多少字节的 CRC，和目标的错误率，以及传输的字节数相关。</p>
-<h2 id="ats">ATS</h2>
-<p>ATS（Address Translation Service）是在 PCIe 上给外设提供查询页表的方式，从而可以使用虚拟地址。标准可以在 https://composter.com.ua/documents/ats_r1.1_26Jan09.pdf 处下载，以及关于 ATS 的 PPT：https://composter.com.ua/documents/Address_Translation_Services.pdf。</p>
+<h2 id="ats">ATS<a class="headerlink" href="#ats" title="Permanent link">&para;</a></h2>
+<p>ATS（Address Translation Service）是在 PCIe 上给外设提供查询页表的方式，从而可以使用虚拟地址。标准可以在 <a href="https://composter.com.ua/documents/ats_r1.1_26Jan09.pdf">https://composter.com.ua/documents/ats_r1.1_26Jan09.pdf</a> 处下载，以及关于 ATS 的 PPT：<a href="https://composter.com.ua/documents/Address_Translation_Services.pdf">https://composter.com.ua/documents/Address_Translation_Services.pdf</a>。</p>
 <p>它的整体工作方式如图：</p>
-<figure>
-<p><img alt="" src="../pcie_ats.png" width="600" />
-  </p>
-<figcaption>PCIe ATS 工作方式（图源 PCIe ATS 标准）</figcaption>
+<figure markdown>
+  ![](pcie_ats.png){ width="600" }
+  <figcaption>PCIe ATS 工作方式（图源 PCIe ATS 标准）</figcaption>
 </figure>
+
 <p>就是在 Root Complex 和 Memory 之间设置一个 Translation Agent，负责查表，也就是 Page Table Walker。它会接收来自 PCIe 设备的地址翻译请求，然后它获取到页表地址后，根据虚拟地址去查内存中的页表。TLB（在标准中叫做 Address Translation Cache，ATC）是实现在 PCIe 设备侧的，而不是统一的 TLB，也不是 CPU 核心的 TLB。</p>
 <p>为了支持 ATS，需要支持如下的操作：</p>
 <ol>
@@ -2204,10 +2204,10 @@ if (PcdGetBool(PcdSrIovSupport) &amp;&amp; (PciDevice-&gt;SrIovCapabilityOffset 
 <li>当页表出现变化的时候，需要通知 PCIe 设备端的 TLB，因此需要向 PCIe 设备发送 Invalidate Request Message；PCIe 设备完成 TLB 刷新后，回复一个 Invalidate Complete Message。</li>
 </ol>
 <p>ATS 标准还定义了一个可选功能，就是 Page Request Interface（PRI），其实就是缺页的时候，设备可以去发送 Page Request，要求操作系统去分配一个物理页。这就像用户程序里 mmap 一个匿名的页，一开始是没有分配的，直到第一次访问的时候，出现缺页异常，然后 OS 分配一个物理页，再更新页表。这样的好处是用于 DMA 的物理页也可以 Swap 或者延迟分配。</p>
-<h2 id="bifurcation">Bifurcation</h2>
+<h2 id="bifurcation">Bifurcation<a class="headerlink" href="#bifurcation" title="Permanent link">&para;</a></h2>
 <p>PCIe Bifurcation 的目的是让 PCIe 有更好的灵活性。从 CPU 出来的几路 PCIe，它的宽度一般是确定的，比如有一个 x16，但是实际使用的时候，想要接多个设备，例如把 x16 当成两个 x8 来用，这就是 PCIe Bifurcation。这需要 PCIe 两端的支持，CPU 端需要可配置 PCIe Bifurcation，不然只能从一个 x16 降级到一个 x8，剩下的 8x 就没法利用了；设备端需要拆分卡，把 x16 的信号分成两路，然后提供两个 PCIe 插槽以及使用 Clock Buffer 来提供下游设备的时钟，有时则是主板设计时就做了拆分，不需要额外的拆分卡。</p>
 <p>下面分别从桌面平台和服务器平台，研究 PCIe Bifurcation 是如何配置的。</p>
-<h3 id="_6">桌面平台</h3>
+<h3 id="_6">桌面平台<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <p>在桌面平台上，Intel CPU 会根据启动时 CFG 引脚的值来决定 PCIe Bifurcation 设置。CFG 的值与 PCIe Bifurcation 的对应关系可以从 Datasheet 中找到。</p>
 <p>实际找一个主板来研究一下。型号是 ASRock Fatal1ty Z97X Killer，从主板的描述中，可以看到：<code>3 x PCI Express 3.0 x16 Slots (PCIE2/PCIE4/PCIE6: single at x16 (PCIE2); dual at x8 (PCIE2) / x8 (PCIE4); triple at x8 (PCIE2) / x4 (PCIE4) / x4 (PCIE6)</code>，说明它是支持 PCIe Bifurcation 的，涉及到三个 PCIe Slot，支持三种模式：</p>
 <ul>
@@ -2235,25 +2235,25 @@ if (PcdGetBool(PcdSrIovSupport) &amp;&amp; (PciDevice-&gt;SrIovCapabilityOffset 
 </ol>
 <p>而主板设计者就是要把这个逻辑转化为电路，用 BAT54C 和 CBTL04083BBS 芯片来实现逻辑运算。</p>
 <p>顺便一提，这里的 PCIE2/4/6 物理尺寸都是 x16，只不过实际分配到的宽度不一定与物理尺寸一致。</p>
-<h3 id="_7">服务器平台</h3>
+<h3 id="_7">服务器平台<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
 <p>在服务器平台上，Intel CPU 的 Bifurcation 变成运行时可配置的，例如在 <a href="https://cdrdv2-public.intel.com/333810/xeon-e5-v4-datasheet-vol-2.pdf">Xeon E5 v4 Datasheet Volume 2</a> 中，可以找到寄存器 <code>pcie_iou_bif_ctrl</code> 寄存器的定义：</p>
-<figure>
-<p><img alt="" src="../pcie_bifurcation.png" width="600" />
-  </p>
-<figcaption>PCIe Bifurcation 配置方式（图源 Xeon E5 v4 Datasheet Volume 2）</figcaption>
+<figure markdown>
+  ![](pcie_bifurcation.png){ width="600" }
+  <figcaption>PCIe Bifurcation 配置方式（图源 Xeon E5 v4 Datasheet Volume 2）</figcaption>
 </figure>
+
 <p>这个寄存器在 PCIe 配置空间中，可以通过 <code>setpci</code> 命令来读取或写入：</p>
-<pre><code class="language-shell">$ setpci -s 00:00.0 190.B
-00
-$ setpci -s 00:01.0 190.B
-01 # x8
-$ setpci -s 00:02.0 190.B
-04 # x16
-$ setpci -s 00:03.0 190.B
-03 # x8x8
-$ setpci -s 80:02.0 190.B
-04 # x16
-</code></pre>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>setpci<span class="w"> </span>-s<span class="w"> </span><span class="m">00</span>:00.0<span class="w"> </span><span class="m">190</span>.B
+<span class="m">00</span>
+$<span class="w"> </span>setpci<span class="w"> </span>-s<span class="w"> </span><span class="m">00</span>:01.0<span class="w"> </span><span class="m">190</span>.B
+<span class="m">01</span><span class="w"> </span><span class="c1"># x8</span>
+$<span class="w"> </span>setpci<span class="w"> </span>-s<span class="w"> </span><span class="m">00</span>:02.0<span class="w"> </span><span class="m">190</span>.B
+<span class="m">04</span><span class="w"> </span><span class="c1"># x16</span>
+$<span class="w"> </span>setpci<span class="w"> </span>-s<span class="w"> </span><span class="m">00</span>:03.0<span class="w"> </span><span class="m">190</span>.B
+<span class="m">03</span><span class="w"> </span><span class="c1"># x8x8</span>
+$<span class="w"> </span>setpci<span class="w"> </span>-s<span class="w"> </span><span class="m">80</span>:02.0<span class="w"> </span><span class="m">190</span>.B
+<span class="m">04</span><span class="w"> </span><span class="c1"># x16</span>
+</code></pre></div>
 <p>通过 <code>lspci -bPP</code> 命令以及 <code>lspci -vvv</code>，可以看到在这几个 PCIe Root Port 下的设备以及速度：</p>
 <ul>
 <li>00:01.0(x8)/02:00.0 RAID 控制器 PCIe 3.0 x8</li>
@@ -2264,10 +2264,10 @@ $ setpci -s 80:02.0 190.B
 <p>其中前三个设备连接到 CPU1，后三个设备连接到 CPU2</p>
 <p>在 BIOS 设置中，进入 Integrated Devices -&gt; Slot Bifurcation 可以看到设置，可选项有：</p>
 <ul>
-<li>Slot 1/2/3/5: Default Bifurcation, x4+x4 Bifurcation</li>
+<li>Slot &frac12;/&#8535;: Default Bifurcation, x4+x4 Bifurcation</li>
 <li>Slot 4/6: Default Bifurcation, x4+x4+x4+x4 Bifurcation, x8+x8 Bifurcation</li>
 </ul>
-<p>阅读 R730 文档，可以发现它最多可以有 7 个 Slot，其中 Slot 1/2/3/5/7 是 PCIe 3.0x8，Slot 4 是 PCIe 3.0 x16，Slot 6 根据不同的 Riser 可以提供 PCIe 3.0 x8 或 x16，对应关系如下：</p>
+<p>阅读 R730 文档，可以发现它最多可以有 7 个 Slot，其中 Slot &frac12;/&#8535;/7 是 PCIe 3.0x8，Slot 4 是 PCIe 3.0 x16，Slot 6 根据不同的 Riser 可以提供 PCIe 3.0 x8 或 x16，对应关系如下：</p>
 <ul>
 <li>PCIe Slot 1: x8, CPU2</li>
 <li>PCIe Slot 2: x8, CPU2</li>
@@ -2279,12 +2279,12 @@ $ setpci -s 80:02.0 190.B
 </ul>
 <p>阅读 E5 v4 CPU 文档，可以发现它有三个 PCIe Port，一共有 40 PCIe lanes（x8+x16+x16）。由此可知，其中一个 x16 连接到 Slot4/6 上，另一个 x16 拆分成 x8+x8，连接到其余的 Slot。有些奇怪的是 CPU1 少了一个 x8 不知去向，怀疑是连接到了 RAID 卡或者网卡上。由于缺少主板的原理图，无法继续深入研究。</p>
 <p>遗憾的是，这个寄存器的 <code>iou_start_bifurcation</code> 字段只能写入一次 1 来初始化 Bifurcation，而这一般是由 BIOS 完成的。如果 BIOS 没有做，或许可以后面再写入一次；如果 BIOS 已经写入了，但是没有提供可选项，那么可以考虑逆向 BIOS，使用 UEFITool 查看是否有隐藏的配置，如果有，则可以尝试绕过 BIOS 设置去修改隐藏的配置，如果没有，可以考虑修改 BIOS 的指令。</p>
-<h3 id="_8">小结</h3>
+<h3 id="_8">小结<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
 <p>简单总结一下，PCIe Bifurcation 的目的是保证总 lane 数不变的情况下，连接更多设备的较低成本的方法。它需要 CPU 一侧和设备一侧的支持。桌面级别的 CPU 通过 CFG 信号来配置，服务器端的 CPU 通过 PCIe 配置空间来配置。设备一侧，可以由主板进行拆分，此时主板上会有多余的 PCIe 接口，根据插在主板上的设备的情况，主板自适应出一个 PCIe Bifurcation 配置；主板也可以什么都不做，直接把 CPU 的 PCIe 接到 Slot 上，此时需要用户自己购买 PCIe 拆分卡。淘宝上可以搜到不少 <a href="https://www.taobao.com/list/product/pcie%E6%8B%86%E5%88%86%E5%8D%A1.htm">PCIe 拆分卡</a>，其中用于 NVMe 的较多，毕竟 M.2 接口面积小，而且只需要 PCIe x4。</p>
 <p>另一种方案是 PCIe 交换机（如 <a href="https://docs.broadcom.com/doc/12351854">PEX 8747</a>），缺点是成本较高，增加了延迟，好处是灵活性很强，不需要 CPU 额外配置，可以外接更多设备，并且设备空闲时可以让出带宽。例如一个 x16 使用 Bifurcation 方法可以拆成两个 x8，也可以使用 PCIe 交换机连接两个 x16，类似网络，这两个 x16 共享带宽，下游的两个设备之间也可以直接通信，这个在 HPC 场景下会比较常见，例如使用 PCIe 交换机连接显卡和 IB 网卡。</p>
-<h2 id="cxl">CXL</h2>
-<p>CXL 的标准是公开下载的：https://www.computeexpresslink.org/download-the-specification，下文参考的是 2022 年 8 月 1 日的 CXL 3.0 版本。</p>
-<h3 id="cxl_1">CXL 设备类型</h3>
+<h2 id="cxl">CXL<a class="headerlink" href="#cxl" title="Permanent link">&para;</a></h2>
+<p>CXL 的标准是公开下载的：<a href="https://www.computeexpresslink.org/download-the-specification">https://www.computeexpresslink.org/download-the-specification</a>，下文参考的是 2022 年 8 月 1 日的 CXL 3.0 版本。</p>
+<h3 id="cxl_1">CXL 设备类型<a class="headerlink" href="#cxl_1" title="Permanent link">&para;</a></h3>
 <p>CXL 对 PCIe 的重要的扩展，一是在于让设备可以和 CPU 实现缓存一致性（CXL.cache），二是可以做远程的内存（CXL.mem）。</p>
 <p>具体下来，CXL 标准主要定义了三类设备：</p>
 <ul>
@@ -2292,10 +2292,10 @@ $ setpci -s 80:02.0 190.B
 <li>CXL Type 2: 设备带有自己的内存和与 CPU 一致的缓存，实现 CXL.io，CXL.cache 和 CXL.mem</li>
 <li>CXL Type 3: 设备带有自己的内存，实现 CXL.io 和 CXL.mem</li>
 </ul>
-<h3 id="cxl_2">CXL 传输层</h3>
-<h4 id="cxlio">CXL.io</h4>
+<h3 id="cxl_2">CXL 传输层<a class="headerlink" href="#cxl_2" title="Permanent link">&para;</a></h3>
+<h4 id="cxlio">CXL.io<a class="headerlink" href="#cxlio" title="Permanent link">&para;</a></h4>
 <p>CXL.io 基本上就是 PCIe 协议：</p>
-<pre><code>CXL.io provides a non-coherent load/store interface for I/O devices. Figure
+<div class="codehilite"><pre><span></span><code>CXL.io provides a non-coherent load/store interface for I/O devices. Figure
 3-1 shows where the CXL.io transaction layer exists in the Flex Bus layered
 hierarchy. Transaction types, transaction packet formatting, credit-based
 flow control, virtual channel management, and transaction ordering rules
@@ -2303,9 +2303,10 @@ follow the PCIe* definition; please refer to the “Transaction Layer
 Specification” chapter of PCIe Base Specification for details. This chapter
 highlights notable PCIe operational modes or features that are used for
 CXL.io.
-</code></pre>
+</code></pre></div>
+
 <p>CXL 3.0 速度是 64.0 GT/s，使用 PAM4 编码，对应的是 PCIe 6.0。</p>
-<h4 id="cxlcache">CXL.cache</h4>
+<h4 id="cxlcache">CXL.cache<a class="headerlink" href="#cxlcache" title="Permanent link">&para;</a></h4>
 <p>CXL.cache 每个方向上有三个 channel：请求，响应和数据。考虑到 Host 和 Device 的传输方向，就是六个 channel：D2H Req，D2H Resp，D2H Data，H2D Req，H2D Resp，H2D Data。在 Data channel 上传输的缓存行大小是 64 字节。</p>
 <p>CXL.cache 的缓存行状态采用的是 MESI。</p>
 <p>CXL.cache 传输有三种模式：68B Flit，256B Flit 和 PBR Flit。</p>
@@ -2365,7 +2366,7 @@ CXL.io.
 <li>CacheID: Only in 256B Flit</li>
 <li>DPID: Only in PBR Flit</li>
 </ul>
-<h5 id="_9">请求类型</h5>
+<h5 id="_9">请求类型<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h5>
 <p>首先考虑 Host 会发送的请求。</p>
 <p>第一种是 SnpData，例如在 Host 在读取的时候出现缺失，此时需要向 Device 发送 Snoop，获取最新的 Dirty 的 Data，或者让 Device 的缓存行降级为 Shared 状态。</p>
 <p>Device 收到 SnpData 后，如果发现缓存行不在缓存中（状态是 I），会回复一个 RspIHitI；如果缓存行在缓存中且数据没有修改（状态是 S 或者 E），降级到 S，会回复一个 RspSHitSE；如果缓存行是 dirty（状态是 M），可以选择降级到 S，然后回复 RspSFwdM 以及缓存行的数据，也可以选择变成 Invalid，回复 RspIFwdM 以及缓存行的数据。</p>
@@ -2398,7 +2399,7 @@ CXL.io.
 <li>WOWrInvF(Write)，Weakly Ordered 版本的 WrInv，写入 64 字节的数据。Host 响应 ExtCmp/FastGO_WritePull/GO_ERR_WritePull。</li>
 <li>CacheFlushed(Read0)，告诉 Host 自己的缓存都被清空了，所有缓存行都在 I 状态。Host 响应 GO-I。</li>
 </ol>
-<h5 id="_10">和其他协议的对比</h5>
+<h5 id="_10">和其他协议的对比<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h5>
 <p>在 <a href="../cache_coherence_protocol/">缓存一致性协议</a> 中分析过 TileLink 的缓存一致性实现方法，如果某一个缓存（Master A）出现了缺失，需要经过如下的过程：</p>
 <ul>
 <li>Master A -&gt; Slave: Acquire</li>
@@ -2417,7 +2418,7 @@ CXL.io.
 <li>Host -&gt; Device: GO-S</li>
 </ul>
 <p>可以看到，整体的流程也是差不多的。</p>
-<h4 id="cxlmem">CXL.mem</h4>
+<h4 id="cxlmem">CXL.mem<a class="headerlink" href="#cxlmem" title="Permanent link">&para;</a></h4>
 <p>CXL.mem 用于扩展内存，根据类型的不同，它可能单独使用，也可能和 CXL.cache 配合使用。具体来说，有三种一致性模型：</p>
 <ol>
 <li>HDM-H(Host-only Coherent)：仅 Type 3 设备，也就是无 CXL.cache</li>
@@ -2440,7 +2441,7 @@ CXL.io.
 <p>其中比较特别的是 Back-Invalidation，这个的目的是让 Device 可以通过 Snoop 修改 Host 中缓存了 Device 内存中的数据的缓存行。</p>
 <p>对于 Type 3 的设备（无 CXL.cache）来说，Device 就是一个扩展的内存，比较简单，只需要支持读写内存就可以了。Host 发送 <code>MemRd*</code>，Device 响应 MemData；Host 发送 <code>MemWr*</code>，Device 响应 Cmp。</p>
 <p>对于 Type 2 的设备（有 CXL.cache）来说，Device 既有自己的缓存，又有自己的内存，所以这时候就比较复杂了。例如 Host 在读取数据的时候（MemRd，SnpData/SnpInv/SnpCur），还需要对 Device Cache 进行 Snoop（SnpData/SnpInv/SnpCur），保证缓存的一致性。Host 想要写入数据到 Device Memory 的时候，如果此时 Device Cache 中有 Dirty 数据，需要进行写合并，再把合并后的数据写入到 Device Memory。当 Device 想要从自己的缓存读取数据，又缺失的时候，首先需要判断数据在 Host 端的缓存中，还是在 Device Memory 中，不同的偏置（Bias）模式决定了数据应该放在 Host 还是 Device 的缓存上。Device 要写入数据的时候，如果 Host 中缓存了该缓存行，则需要 Back-Invalidation。为了支持这些场景，CXL.cache 和 CXL.mem 会比较复杂。</p>
-<h2 id="_11">推荐阅读</h2>
+<h2 id="_11">推荐阅读<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="https://zhuanlan.zhihu.com/p/447134701">LogicJitterGibbs 资料整理：可以学习 1W 小时的 PCIe</a></li>
 <li><a href="https://www.bilibili.com/read/cv15596863">intel 部分桌面级 CPU 的 pcie 通道拆分另类低成本实现</a></li>

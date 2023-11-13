@@ -1774,17 +1774,17 @@
   
 
 
-<h1 id="_1">缓存一致性协议</h1>
+<h1 id="_1">缓存一致性协议<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>缓存一致性协议的场景是，多核 CPU 中，每个核心都有自己的缓存，为了保证这些缓存的数据一致，设计了缓存一致性协议。</p>
-<h2 id="_2">理论分析</h2>
+<h2 id="_2">理论分析<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>首先从理论的角度，分析如何设计一个缓存一致性协议。</p>
-<h3 id="write-invalidate-write-update">Write-invalidate 和 Write-update</h3>
+<h3 id="write-invalidate-write-update">Write-invalidate 和 Write-update<a class="headerlink" href="#write-invalidate-write-update" title="Permanent link">&para;</a></h3>
 <p>最基础的缓存一致性思想有两种：</p>
 <ol>
 <li>Write-invalidate：写入数据的时候，将其他 Cache 中这条 Cache Line 设为 Invalid</li>
 <li>Write-update：写入数据的时候，把新的结果写入到有这条 Cache Line 的其他 Cache</li>
 </ol>
-<h3 id="write-once">Write-once 协议</h3>
+<h3 id="write-once">Write-once 协议<a class="headerlink" href="#write-once" title="Permanent link">&para;</a></h3>
 <p>Write-once 协议定义了四个状态：</p>
 <ol>
 <li>Invalid：表示这个块不合法</li>
@@ -1795,32 +1795,36 @@
 <p>可见，当一个缓存状态在 R 或者 D，其他缓存只能是 I；而缓存状态是 V 的时候，可以有多个缓存在 V 状态。</p>
 <p>Write-once 协议的特点是，第一次写的时候，会写入到内存（类似 Write-through），连续写入则只写到缓存中，类似 Write-back。</p>
 <p>当 Read hit 的时候，状态不变。</p>
-<pre><code>Read hit: The information is supplied by the current cache. No state
+<div class="codehilite"><pre><span></span><code>Read hit: The information is supplied by the current cache. No state
 change.
-</code></pre>
+</code></pre></div>
+
 <p>当 Read miss 的时候，会查看所有缓存，如果有其他缓存处于 Valid/Reserved/Dirty 状态，就从其他缓存处读取数据，然后设为 Valid，其他缓存也设为 Valid。如果其他缓存处于 Dirty 状态，还要把数据写入内存。</p>
-<pre><code>Read miss: The data is read from main memory. The read is snooped by
+<div class="codehilite"><pre><span></span><code>Read miss: The data is read from main memory. The read is snooped by
 other caches; if any of them have the line in the Dirty state, the read
 is interrupted long enough to write the data back to memory before it is
 allowed to continue. Any copies in the Dirty or Reserved states are set
 to the Valid state.
-</code></pre>
+</code></pre></div>
+
 <p>当 Write hit 的时候，如果是 Valid 状态，首先写入内存，把其他 Cache 都设为 Invalid，进入 Reserved 状态，这意味着第一次写是 Write-through。如果是 Reserved/Dirty 状态，则不修改内存，进入 Dirty 状态，这表示后续的写入都是 Write-back。</p>
-<pre><code>Write hit: If the information in the cache is in Dirty or Reserved
+<div class="codehilite"><pre><span></span><code>Write hit: If the information in the cache is in Dirty or Reserved
 state, the cache line is updated in place and its state is set to Dirty
 without updating memory. If the information is in Valid state, a
 write-through operation is executed updating the block and the memory
 and the block state is changed to Reserved. Other caches snoop the write
 and set their copies to Invalid.
-</code></pre>
+</code></pre></div>
+
 <p>当 Write miss 的时候，这个行为 Wikipedia 上和上课讲的不一样。按照 Wikipedia 的说法，首先按照 Read miss 处理，再按照 Write hit 处理，类似于 Write Allocate 的思路。如果是这样的话，那么首先从其他缓存或者内存读取数据，然后把其他缓存都设为 Invalid，把更新后的数据写入内存，进入 Reserved 状态。相当于 Write miss 的时候，也是按照 Write-through 实现。</p>
-<pre><code>Write miss: A partial cache line write is handled as a read miss (if
+<div class="codehilite"><pre><span></span><code>Write miss: A partial cache line write is handled as a read miss (if
 necessary to fetch the unwritten portion of the cache line) followed by
 a write hit. This leaves all other caches in the Invalid state, and the
 current cache in the Reserved state.
-</code></pre>
+</code></pre></div>
+
 <p>教材上则是 Write miss 的时候按照 Write-back 处理。如果其他缓存都是 Invalid 时，从内存里读取数据，然后写入到缓存中，进入 Dirty 状态。如果其他缓存是 Valid/Reserved/Dirty 状态，就从其他缓存里读取数据，让其他缓存都进入 Invalid 状态，然后更新自己的数据，进入 Dirty 状态。</p>
-<h3 id="msi">MSI 协议</h3>
+<h3 id="msi">MSI 协议<a class="headerlink" href="#msi" title="Permanent link">&para;</a></h3>
 <p>MSI 协议比较简单，它定义了三个状态：</p>
 <ol>
 <li>Modified：表示数据已经修改，和内存里不一致</li>
@@ -1831,7 +1835,7 @@ current cache in the Reserved state.
 <p>当 Read miss 的时候，检查其他缓存的状态，如果都是 Invalid，就从内存里读取，然后进入 Shared 状态。如果有 Shared，就从其他缓存处读取。如果有 Dirty，那就要把其他缓存的数据写入内存和本地缓存，然后进入 Shared 状态。</p>
 <p>当 Write hit 的时候，如果现在是 Shared 状态，则要让其他的 Shared 缓存进入 Invalid 状态，然后更新数据，进入 Modified 状态。如果是 Modified 状态，那就修改数据，状态保持不变。</p>
 <p>当 Write miss 的时候，如果有其他缓存处于 Modified/Shared 状态，那就从其他缓存处读取数据，并让其他缓存进入 Invalid 状态，然后修改本地数据，进入 Modified 状态。如果所有缓存都是 Invalid 状态，那就从内存读入，然后修改缓存数据，进入 Modified 状态。</p>
-<h3 id="mesi">MESI 协议</h3>
+<h3 id="mesi">MESI 协议<a class="headerlink" href="#mesi" title="Permanent link">&para;</a></h3>
 <p>MESI 协议定义了四种状态：</p>
 <ol>
 <li>Modified：数据与内存不一致，并且只有一个缓存有数据</li>
@@ -1844,7 +1848,7 @@ current cache in the Reserved state.
 <p>当 Write hit 的时候，进入 Modified 状态，同时让其他缓存进入 Invalid 状态。</p>
 <p>当 Write miss 的时候，检查其他缓存的状态，如果有数据，就从其他缓存读取，否则从内存读取。然后，其他缓存都进入 Invalid 状态，本地缓存更新数据，进入 Modified 状态。</p>
 <p>值得一提的是，Shared 状态不一定表示只有一个缓存有数据：比如本来有两个缓存都是 Shared 状态，然后其中一个因为缓存替换变成了 Invalid，那么另一个是不会受到通知变成 Exclusive 的。Exclusive 的设置是为了减少一些总线请求，比如当数据只有一个核心访问的时候，只有第一次 Read miss 会发送总线请求，之后一直在 Exclusive/Modified 状态中，不需要发送总线请求。</p>
-<h3 id="moesi">MOESI 协议</h3>
+<h3 id="moesi">MOESI 协议<a class="headerlink" href="#moesi" title="Permanent link">&para;</a></h3>
 <p>MOESI 定义了五个状态：</p>
 <ol>
 <li>Modified：数据经过修改，并且只有一个缓存有这个数据</li>
@@ -1864,7 +1868,7 @@ current cache in the Reserved state.
 <li>Invalid: Invalid</li>
 </ol>
 <p>需要注意的是，SharedClean 并不代表它的数据和内存一致，比如说和 SharedDirty 缓存一致，它只是说缓存替换的时候，不需要写回内存。</p>
-<h3 id="mesif">MESIF 协议</h3>
+<h3 id="mesif">MESIF 协议<a class="headerlink" href="#mesif" title="Permanent link">&para;</a></h3>
 <p>MESIF 定义了五个状态：</p>
 <ol>
 <li>Modified：数据经过修改，并且只有一个缓存有这个数据</li>
@@ -1875,7 +1879,7 @@ current cache in the Reserved state.
 </ol>
 <p>MESIF 相比 MESI 的区别是，添加了 Forward 状态：Forward 其实是特殊的 Shared，主要是考虑到有多个缓存处于 Shared 状态的时候，如果来了一个读请求，那么哪个 Shared 缓存负责响应是不确定的。MESIF 协议中，Forward 就是负责响应的那一个 Shared，所以 Forward 最多只有一个，其他 Shared 都不会响应。这样的好处是简化了在片上网络的传输。</p>
 <p>如果多个 Cache 属于 Shared 状态，没有 Forward，那么新的 Cache 请求就会发送到内存里，由于 Shared 的数据没有经过修改，所以内存中的数据和 Shared 是一致的。同时，这个新的 Cache 会进入 Forward 状态。</p>
-<h3 id="dragon">Dragon 协议</h3>
+<h3 id="dragon">Dragon 协议<a class="headerlink" href="#dragon" title="Permanent link">&para;</a></h3>
 <p>Dragon 协议是一个基于更新的协议，意味着写入缓存的时候，会把更新的数据同步到拥有这个缓存行的其他核心。它定义了四个状态：</p>
 <ol>
 <li>Exclusive clean(E)：独占，并且数据和内存一致</li>
@@ -1888,15 +1892,15 @@ current cache in the Reserved state.
 <p>当 Write miss 的时候，同样检查其他缓存的状态，如果是第一个访问的，就从内存读取，更新数据，然后转到 Modify 状态；如果不是第一个访问的，就进入 Shared modified 状态，并且让原来 Shared modified 的缓存进入 Shared clean 状态。</p>
 <p>当 Write hit 的时候，如果状态是 Shared modified，这时候需要通知其他缓存更新数据；如果状态是 Shared clean，则要通知其他缓存更新数据的同时，让原来 Shared modified 的缓存进入 Shared clean 状态；如果状态是 Exclusive clean，则进入 Modify 状态。</p>
 <p>在这里，Shared modified 的缓存负责在换出的时候，写入数据到内存中。</p>
-<h3 id="_3">基于目录的缓存一致性</h3>
+<h3 id="_3">基于目录的缓存一致性<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>上面的缓存一致性协议中，经常有这么一个操作：向所有有这个缓存行的缓存发送/接受消息。简单的方法是直接广播，然后接受端自己判断是否处理。但是这个方法在核心很多的时候会导致广播流量太大，因此需要先保存下来哪些缓存会有这个缓存的信息，然后对这些缓存点对点地发送。这样就可以节省一些网络流量。</p>
-<p>怎么记录这个信息呢？一个简单的办法（Full bit vector format）是，有一个全局的表，对每个缓存行，都记录一个大小为 N（N 为核心数）的位向量，1 表示对应的核心中有这个缓存行。但这个方法保存数据量太大：缓存行数正比于 N，还要再乘以一次 N，总容量是 $O(N^2)$ 的。</p>
+<p>怎么记录这个信息呢？一个简单的办法（Full bit vector format）是，有一个全局的表，对每个缓存行，都记录一个大小为 N（N 为核心数）的位向量，1 表示对应的核心中有这个缓存行。但这个方法保存数据量太大：缓存行数正比于 N，还要再乘以一次 N，总容量是 <span class="arithmatex"><span class="MathJax_Preview">O(N^2)</span><script type="math/tex">O(N^2)</script></span> 的。</p>
 <p>一个稍微好一些的方法（Coarse bit vector format）是，我把核心分组，比如按照 NUMA 节点进行划分，此时每个缓存行都保存一个大小为 M（M 为 NUMA 数量）的位向量，只要这个 NUMA 节点里有这个缓存行，对应位就取 1。这样相当于是以牺牲一部分流量为代价（NUMA 节点内部广播），来节省一些目录的存储空间。</p>
-<p>但实际上，通常情况下，一个缓存行通常只会在很少的核心中保存，所以这里有很大的优化空间。比如说，可以设置一个缓存行同时出现的缓存数量上限（Limited pointer format），然后保存核心的下标而不是位向量，这样的存储空间就是 $O(N\log_2N)$。但是呢，这样限制了缓存行同时出现的次数，如果超过了上限，需要替换掉已有的缓存，可能在一些场景下性能会降低。</p>
-<p>还有一种方式，就是链表 (Chained directory format)。目录中保存最后一次访问的核心编号，然后每个核心的缓存里，保存了下一个保存了这个缓存行的核心编号，或者表示链表终止。这样存储空间也是 $O(N\log_2N)$，不过发送消息的延迟更长，因为要串行遍历一遍，而不能同时发送。类似地，可以用二叉树（Number-balanced binary tree format）来组织：每个缓存保存两个指针，指向左子树和右子树，然后分别遍历，目的还是加快遍历的速度，可以同时发送消息给多个核心。</p>
-<h2 id="_4">协议分析</h2>
+<p>但实际上，通常情况下，一个缓存行通常只会在很少的核心中保存，所以这里有很大的优化空间。比如说，可以设置一个缓存行同时出现的缓存数量上限（Limited pointer format），然后保存核心的下标而不是位向量，这样的存储空间就是 <span class="arithmatex"><span class="MathJax_Preview">O(N\log_2N)</span><script type="math/tex">O(N\log_2N)</script></span>。但是呢，这样限制了缓存行同时出现的次数，如果超过了上限，需要替换掉已有的缓存，可能在一些场景下性能会降低。</p>
+<p>还有一种方式，就是链表 (Chained directory format)。目录中保存最后一次访问的核心编号，然后每个核心的缓存里，保存了下一个保存了这个缓存行的核心编号，或者表示链表终止。这样存储空间也是 <span class="arithmatex"><span class="MathJax_Preview">O(N\log_2N)</span><script type="math/tex">O(N\log_2N)</script></span>，不过发送消息的延迟更长，因为要串行遍历一遍，而不能同时发送。类似地，可以用二叉树（Number-balanced binary tree format）来组织：每个缓存保存两个指针，指向左子树和右子树，然后分别遍历，目的还是加快遍历的速度，可以同时发送消息给多个核心。</p>
+<h2 id="_4">协议分析<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <p>下文结合实际的协议，分析缓存一致性协议是如何在硬件中实现的。</p>
-<h3 id="tilelink">TileLink 协议</h3>
+<h3 id="tilelink">TileLink 协议<a class="headerlink" href="#tilelink" title="Permanent link">&para;</a></h3>
 <p>TileLink 为了实现缓存一致性，在已有的 A 和 D channel 以外，它引入了三个 channel：B、C 和 E，支持三种操作：</p>
 <ul>
 <li>Acquire：M-&gt;S 在 A channel 上发送 Acquire，S-&gt;M 在 D channel 上发送 Grant，然后 M-&gt;S 在 E channel 上发送 GrantAck；功能是获取一个 copy，可以看到这个和 Get 是类似的，都是在 A channel 上发送请求，在 D channel 上接受响应，只不过额外需要在 E channel 上发送 GrantAck。</li>
@@ -1917,41 +1921,41 @@ current cache in the Reserved state.
 <p>此外，标准还说可以在 B 和 C channel 上进行 TL-UH 的操作。标准这么设计的意图是可以让 Slave 转发操作到拥有缓存数据的 Master 上。比如 Master A 在 A channel 上发送 Put 请求，那么 Slave 向 Master B 的 B channel 上发送 Put 请求，Master B 在 C channel 上发送 AccessAck 响应，Slave 再把响应转回 Master A 的 D channel。这就像是一个片上的网络，Slave 负责在 Master 之间路由请求。</p>
 <p>接下来看 Rocket Chip 自带的基于广播的缓存一致性协议实现。核心实现是 <a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/tilelink/Broadcast.scala">TLBroadcast</a>，核心的逻辑就是，如果一个 Master A 发送了 Acquire，那么 TLBroadcast 需要发送 Probe 到其他的 Master，当其他的 Master 都响应了 ProbeAck 后，再返回 Grant 到 Master A。</p>
 <p>首先来看 B channel 上的 Probe <a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/tilelink/Broadcast.scala#L214=">逻辑</a>。它记录了一个 todo bitmask，表示哪些 Master 需要发送 Probe，这里采用了 Probe Filter 来减少发送 Probe 的次数，因为只需要向拥有这个缓存行的 Master 发送 Probe：</p>
-<pre><code class="language-scala">val probe_todo = RegInit(0.U(max(1, caches.size).W))
-val probe_line = Reg(UInt())
-val probe_perms = Reg(UInt(2.W))
-val probe_next = probe_todo &amp; ~(leftOR(probe_todo) &lt;&lt; 1)
-val probe_busy = probe_todo.orR()
-val probe_target = if (caches.size == 0) 0.U else Mux1H(probe_next, cache_targets)
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">probe_todo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">RegInit</span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="nc">U</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">caches</span><span class="p">.</span><span class="n">size</span><span class="p">).</span><span class="nc">W</span><span class="p">))</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">probe_line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reg</span><span class="p">(</span><span class="nc">UInt</span><span class="p">())</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">probe_perms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reg</span><span class="p">(</span><span class="nc">UInt</span><span class="p">(</span><span class="mi">2</span><span class="p">.</span><span class="nc">W</span><span class="p">))</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">probe_next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probe_todo</span><span class="w"> </span><span class="n">&amp;</span><span class="w"> </span><span class="o">~</span><span class="p">(</span><span class="n">leftOR</span><span class="p">(</span><span class="n">probe_todo</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">probe_busy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">probe_todo</span><span class="p">.</span><span class="n">orR</span><span class="p">()</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">probe_target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">caches</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="nc">U</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="nc">Mux1H</span><span class="p">(</span><span class="n">probe_next</span><span class="p">,</span><span class="w"> </span><span class="n">cache_targets</span><span class="p">)</span>
 
-// Probe whatever the FSM wants to do next
-in.b.valid := probe_busy
-if (caches.size != 0) {
-    in.b.bits := edgeIn.Probe(probe_line &lt;&lt; lineShift, probe_target, lineShift.U, probe_perms)._2
-}
-when (in.b.fire()) { probe_todo := probe_todo &amp; ~probe_next }
-</code></pre>
+<span class="c1">// Probe whatever the FSM wants to do next</span>
+<span class="n">in</span><span class="p">.</span><span class="n">b</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">probe_busy</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">caches</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">in</span><span class="p">.</span><span class="n">b</span><span class="p">.</span><span class="n">bits</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">edgeIn</span><span class="p">.</span><span class="nc">Probe</span><span class="p">(</span><span class="n">probe_line</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">lineShift</span><span class="p">,</span><span class="w"> </span><span class="n">probe_target</span><span class="p">,</span><span class="w"> </span><span class="n">lineShift</span><span class="p">.</span><span class="nc">U</span><span class="p">,</span><span class="w"> </span><span class="n">probe_perms</span><span class="p">).</span><span class="n">_2</span>
+<span class="p">}</span>
+<span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">b</span><span class="p">.</span><span class="n">fire</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">probe_todo</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">probe_todo</span><span class="w"> </span><span class="n">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">probe_next</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
 <p>这里 <code>probe_next</code> 就是被 probe 的那个 Master 对应的 bitmask，<code>probe_target</code> 就是 Master 的 Id。这个 Probe FSM 的输入就是 Probe Filter，它会<a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/tilelink/Broadcast.scala#L256=">给出</a>哪些 Cache 拥有当前的缓存行的信息：</p>
-<pre><code class="language-scala">val leaveB = !filter.io.response.bits.needT &amp;&amp; !filter.io.response.bits.gaveT
-val others = filter.io.response.bits.cacheOH &amp; ~filter.io.response.bits.allocOH
-val todo = Mux(leaveB, 0.U, others)
-filter.io.response.ready := !probe_busy
-when (filter.io.response.fire()) {
-    probe_todo  := todo
-    probe_line  := filter.io.response.bits.address &gt;&gt; lineShift
-    probe_perms := Mux(filter.io.response.bits.needT, TLPermissions.toN, TLPermissions.toB)
-}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">leaveB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">!</span><span class="n">filter</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">needT</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">filter</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">gaveT</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">others</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filter</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">cacheOH</span><span class="w"> </span><span class="n">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">filter</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">allocOH</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">todo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">leaveB</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="nc">U</span><span class="p">,</span><span class="w"> </span><span class="n">others</span><span class="p">)</span>
+<span class="n">filter</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">ready</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">!</span><span class="n">probe_busy</span>
+<span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">filter</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">fire</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">probe_todo</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="n">todo</span>
+<span class="w">    </span><span class="n">probe_line</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="n">filter</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">address</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">lineShift</span>
+<span class="w">    </span><span class="n">probe_perms</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">filter</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">needT</span><span class="p">,</span><span class="w"> </span><span class="nc">TLPermissions</span><span class="p">.</span><span class="n">toN</span><span class="p">,</span><span class="w"> </span><span class="nc">TLPermissions</span><span class="p">.</span><span class="n">toB</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>这里又区分两种情况：如果 Acquire 需要进入 Trunk 状态（比如是个写入操作），意味着其他 Master 需要进入 None 状态，所以这里要发送 toN；如果 Acquire 不需要进入 Trunk 状态（比如是个读取操作），那么只需要其他 Master 进入 Branch 状态，所以这里要发送 toB。</p>
 <p>在 B channel 发送 Probe 的同时，也要<a href="https://github.com/chipsalliance/rocket-chip/blob/850e1d5d56989f031fe3e7939a15afa1ec165d64/src/main/scala/tilelink/Broadcast.scala#L152=">处理</a> C channel 上的 ProbeAck 和 ProbeAckData：</p>
-<pre><code class="language-scala">// Incoming C can be:
-// ProbeAck     =&gt; decrement tracker, drop 
-// ProbeAckData =&gt; decrement tracker, send out A as PutFull(DROP)
-// ReleaseData  =&gt;                    send out A as PutFull(TRANSFORM)
-// Release      =&gt; send out D as ReleaseAck
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1">// Incoming C can be:</span>
+<span class="c1">// ProbeAck     =&gt; decrement tracker, drop </span>
+<span class="c1">// ProbeAckData =&gt; decrement tracker, send out A as PutFull(DROP)</span>
+<span class="c1">// ReleaseData  =&gt;                    send out A as PutFull(TRANSFORM)</span>
+<span class="c1">// Release      =&gt; send out D as ReleaseAck</span>
+</code></pre></div>
 <p>由于这里采用的是 invalidation based，所以如果某个 Master 之前处于 Dirty 状态，那么它会发送 ProbeAckData，此时需要把数据写回，所以需要用 PutFull 把数据写出去。</p>
-<h3 id="ace">ACE 协议</h3>
+<h3 id="ace">ACE 协议<a class="headerlink" href="#ace" title="Permanent link">&para;</a></h3>
 <p>ACE 在 AXI 协议的基础上，实现了缓存一致性协议。首先列出 ACE 的缓存状态模型，它定义了这么五种状态，其实就是 MOESI 的不同说法：</p>
 <ol>
 <li>UniqueDirty: Modified</li>
@@ -2001,11 +2005,11 @@ when (filter.io.response.fire()) {
 <li>RACK/WACK</li>
 </ol>
 <p>ACE 协议还设计了一个 ACE-Lite 版本：ACE-Lite 只在已有 Channel 上添加了新信号，没有添加新的 Channel。因此它内部不能有 Cache，但是可以访问一致的缓存内容。</p>
-<h3 id="chi">CHI 协议</h3>
-<h4 id="_5">介绍</h4>
+<h3 id="chi">CHI 协议<a class="headerlink" href="#chi" title="Permanent link">&para;</a></h3>
+<h4 id="_5">介绍<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
 <p>CHI 协议是 AMBA 5 标准中的缓存一致性协议，前身是 ACE 协议。最新的 CHI 标准可以从 <a href="https://developer.arm.com/documentation/ihi0050/latest">AMBA 5 CHI Architecture Specification</a> 处下载。</p>
 <p>相比 AXI，CHI 更加复杂，进行了分层：协议层，物理层和链路层。因此，CHI 适用于片上网络，支持根据 Node ID 进行路由，而不像 AXI 那样只按照物理地址进行路由。CHI 的地位就相当于 Intel 的环形总线。CHI 也可以桥接到 CCIX 上，用 CCIX 连接 SMP 的的多个 Socket，或者连接支持 CCIX 的显卡等等。</p>
-<h4 id="_6">缓存行状态</h4>
+<h4 id="_6">缓存行状态<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
 <p>首先回顾 ACE 的缓存行状态，共有五种，与 MOESI 相对应：</p>
 <ol>
 <li>UniqueDirty: Modified</li>
@@ -2025,7 +2029,7 @@ when (filter.io.response.fire()) {
 <li>Invalid: Invalid</li>
 </ol>
 <p>可以看到，比较特别的就是 UniqueDirtyPartial 和 UniqueCleanEmpty。CHI 标准在 4.1.1 章节给出了使用场景：如果一个 CPU 即将要写入一片内存，那么可以先转换到 UniqueCleanEmpty 状态中，把其他缓存中的数据都清空，这样后续写入的时候，不需要询问其他缓存，性能比较好。但此时因为数据还没写进去，所以就是 Empty，只更新状态，不占用缓存的空间。另一方面，如果 CPU 只写了缓存行的一部分字节，其他部分没有碰，那么引入 UniqueDirtyPartial 以后，可以把合并新旧缓存行数据这一步，下放到比较靠近内存的层级上，减少了数据搬运的次数。</p>
-<h4 id="chi_1">CHI 网络节点</h4>
+<h4 id="chi_1">CHI 网络节点<a class="headerlink" href="#chi_1" title="Permanent link">&para;</a></h4>
 <p>CHI 的节点组织成一个网络，可能是片上网络，也可能是片间的连接。CHI 的节点分成三种类型：</p>
 <ol>
 <li>Request Node：发起 CHI 请求的节点，对应 CPU 的缓存，或者是网卡等外设</li>
@@ -2033,27 +2037,27 @@ when (filter.io.response.fire()) {
 <li>Subordinate Node：处理 Home Node 来的请求，对应内存或者显存等有内存的外设</li>
 </ol>
 <p>在这种设计下，Node 之间可以互相通信，因此方便做一些新的优化。例如传统的缓存层次里，请求是一级一级下去，响应再一级一级上来。但是 CHI 可能是 Request Node 发给 Home Node 的请求，响应直接由 Subordinate Node 发送回 Request Node 了。</p>
-<h4 id="_7">读请求</h4>
+<h4 id="_7">读请求<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
 <p>CHI 提供了复杂性的同时，也带来了很多的灵活性，也意味着潜在的性能优化的可能。例如在 CHI 中实现一个读操作，可能有很多种过程（CHI 标准第 2.3.1 章节）：</p>
 <p>第一种是 Home Node 直接提供了数据（Combined response from home）：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     Requester-&gt;&gt;Home: Read*
     Home-&gt;&gt;Requester: CompData
     Requester-&gt;&gt;Home: CompAck
-</code></pre>
+</code></pre></div>
 <p>第二种是 Home Node 把响应拆成两份，一份表示读取结果，一份携带读取的数据（Separate data and response from Home）：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     Requester-&gt;&gt;Home: Read*
     Home-&gt;&gt;Requester: RespSepData
     Home-&gt;&gt;Requester: DataSepResp
     Requester-&gt;&gt;Home: CompAck
-</code></pre>
+</code></pre></div>
 <p>第三种是 Home Node 没有数据，转而询问 Subordinate，Subordinate 把结果直接发回给了 Requester（Combined response from Subordinate）：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     participant Subordinate
@@ -2061,9 +2065,9 @@ when (filter.io.response.fire()) {
     Home-&gt;&gt;Subordinate: ReadNoSnp
     Subordinate-&gt;&gt;Requester: CompData
     Requester-&gt;&gt;Home: CompAck
-</code></pre>
+</code></pre></div>
 <p>第四种是 Home Node 没有数据，转而询问 Subordinate，但这次提前告诉 Requester 读取的结果，最后 Subordinate 把结果发回给了 Requester（Response from Home, Data from Subordinate）：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     participant Subordinate
@@ -2073,9 +2077,9 @@ when (filter.io.response.fire()) {
     Subordinate-&gt;&gt;Home: ReadReceipt
     Subordinate-&gt;&gt;Requester: DataSepResp
     Requester-&gt;&gt;Home: CompAck
-</code></pre>
+</code></pre></div>
 <p>第五种是数据在其他的 Requester Node 中，此时 Home 负责 Snoop（Forwarding snoop）：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     participant Snoopee
@@ -2084,19 +2088,19 @@ when (filter.io.response.fire()) {
     Snoopee-&gt;&gt;Requester: CompData
     Snoopee-&gt;&gt;Home: SnpRespFwded
     Requester-&gt;&gt;Home: CompAck
-</code></pre>
+</code></pre></div>
 <p>第六种是 MakeReadUnique，此时只更新权限，不涉及数据的传输（MakeReadUnique only）：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     Requester-&gt;&gt;Home: MakeReadUnique
     Home-&gt;&gt;Requester: Comp
     Requester-&gt;&gt;Home: CompAck
-</code></pre>
-<h4 id="_8">写请求</h4>
+</code></pre></div>
+<h4 id="_8">写请求<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
 <p>CHI 标准第 2.3.2 描述了写请求的流程。和读请求一样，写请求也有很多类型，下面进行介绍。与读请求不同的点在于，写入的时候，并不是直接把写入的地址和数据等一次性发送过去，而是先发一个写消息，对方回复可以发送数据了（DBIDResp），再把实际的数据传输过去（NCBWrData）。当然了，也可以中途反悔（WriteDataCancel）。</p>
 <p>第一种是 Direct Write-data Transfer，意思是数据要从 Requester 直接传到 Subordinate 上：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     participant Subordinate
@@ -2106,25 +2110,25 @@ when (filter.io.response.fire()) {
     Requester-&gt;&gt;Subordinate: NCBWrData/WriteDataCancel
     Subordinate-&gt;&gt;Home: Comp
     Home-&gt;&gt;Requester: Comp
-</code></pre>
+</code></pre></div>
 <p>第二种比较常规，就是把数据写给 Home Node，其中 Comp 表示读取结果，DBIDResp 表示可以发写入的内容了：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     Requester-&gt;&gt;Home: Write*
     Home-&gt;&gt;Requester: DBIDResp/DBIDRespOrd
     Home-&gt;&gt;Requester: Comp
     Requester-&gt;&gt;Home: NCBWrData/WriteDataCancel
-</code></pre>
+</code></pre></div>
 <p>第三种是把第二种的 DBIDResp 和 Comp 合并成一个响应：</p>
-<pre><code class="language-mermaid">sequenceDiagram
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     participant Requester
     participant Home
     Requester-&gt;&gt;Home: Write*
     Home-&gt;&gt;Requester: CompDBIDResp
     Requester-&gt;&gt;Home: NCBWrData/WriteDataCancel
-</code></pre>
-<h2 id="_9">参考文档</h2>
+</code></pre></div>
+<h2 id="_9">参考文档<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Cache_coherence">Cache coherence</a></li>
 <li><a href="https://en.wikipedia.org/wiki/MSI_protocol">MSI protocol</a></li>

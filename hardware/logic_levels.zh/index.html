@@ -1665,61 +1665,61 @@
   
 
 
-<h1 id="_1">逻辑电平标准</h1>
+<h1 id="_1">逻辑电平标准<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>逻辑电平标准定义了不同芯片之间，如何把数字信号 0 或者 1 转化为高低电平，以及如何把高低电平转换回 0 或者 1。</p>
 <p>首先是输出，要把 0 或者 1 转化为高低电平，于是就要定义范围：</p>
 <ul>
-<li>输出 0：电压最高是 $V_{OL}$，Output Low Voltage</li>
-<li>输出 1：电压最低是 $V_{OH}$，Output High Voltage</li>
+<li>输出 0：电压最高是 <span class="arithmatex"><span class="MathJax_Preview">V_{OL}</span><script type="math/tex">V_{OL}</script></span>，Output Low Voltage</li>
+<li>输出 1：电压最低是 <span class="arithmatex"><span class="MathJax_Preview">V_{OH}</span><script type="math/tex">V_{OH}</script></span>，Output High Voltage</li>
 </ul>
 <p>反过来，要把电平转换到 0 或者 1 的时候，也要定义范围：</p>
 <ul>
-<li>如果电压高于 $V_{IH}$，就认为是 1</li>
-<li>如果电压低于 $V_{IL}$，就认为是 0</li>
+<li>如果电压高于 <span class="arithmatex"><span class="MathJax_Preview">V_{IH}</span><script type="math/tex">V_{IH}</script></span>，就认为是 1</li>
+<li>如果电压低于 <span class="arithmatex"><span class="MathJax_Preview">V_{IL}</span><script type="math/tex">V_{IL}</script></span>，就认为是 0</li>
 </ul>
-<p>通常，上面四项满足 $V_{OL} &lt; V_{IL} &lt; V_{IH} &lt; V_{OH}$，也就是说输入会比输出的范围更大，更加宽容，提供一定的容错。</p>
-<h2 id="ttl">TTL 电平</h2>
+<p>通常，上面四项满足 <span class="arithmatex"><span class="MathJax_Preview">V_{OL} &lt; V_{IL} &lt; V_{IH} &lt; V_{OH}</span><script type="math/tex">V_{OL} < V_{IL} < V_{IH} < V_{OH}</script></span>，也就是说输入会比输出的范围更大，更加宽容，提供一定的容错。</p>
+<h2 id="ttl">TTL 电平<a class="headerlink" href="#ttl" title="Permanent link">&para;</a></h2>
 <p>常见的 5V TTL 电平，以 <a href="https://learn.sparkfun.com/tutorials/logic-levels/all">https://learn.sparkfun.com/tutorials/logic-levels/ttl-logic-levels</a> 的数据为例子，它的电平范围是：</p>
 <ul>
-<li>输出 0: $V_{OL}=0.4$, $[0, 0.4]\mathrm{V}$</li>
-<li>输出 1: $V_{OH}=2.7$, $[2.7, 5]\mathrm{V}$</li>
-<li>输入 0: $V_{IL}=0.8$, $[0, 0.8]\mathrm{V}$</li>
-<li>输入 1: $V_{IH}=2.0$, $[2, 5]\mathrm{V}$</li>
+<li>输出 0: <span class="arithmatex"><span class="MathJax_Preview">V_{OL}=0.4</span><script type="math/tex">V_{OL}=0.4</script></span>, <span class="arithmatex"><span class="MathJax_Preview">[0, 0.4]\mathrm{V}</span><script type="math/tex">[0, 0.4]\mathrm{V}</script></span></li>
+<li>输出 1: <span class="arithmatex"><span class="MathJax_Preview">V_{OH}=2.7</span><script type="math/tex">V_{OH}=2.7</script></span>, <span class="arithmatex"><span class="MathJax_Preview">[2.7, 5]\mathrm{V}</span><script type="math/tex">[2.7, 5]\mathrm{V}</script></span></li>
+<li>输入 0: <span class="arithmatex"><span class="MathJax_Preview">V_{IL}=0.8</span><script type="math/tex">V_{IL}=0.8</script></span>, <span class="arithmatex"><span class="MathJax_Preview">[0, 0.8]\mathrm{V}</span><script type="math/tex">[0, 0.8]\mathrm{V}</script></span></li>
+<li>输入 1: <span class="arithmatex"><span class="MathJax_Preview">V_{IH}=2.0</span><script type="math/tex">V_{IH}=2.0</script></span>, <span class="arithmatex"><span class="MathJax_Preview">[2, 5]\mathrm{V}</span><script type="math/tex">[2, 5]\mathrm{V}</script></span></li>
 </ul>
-<p><a href="https://en.wikipedia.org/wiki/Transistor%E2%80%93transistor_logic#Interfacing_considerations">Wikipedia</a> 上的数据中 $V_{OH}=2.4$。</p>
+<p><a href="https://en.wikipedia.org/wiki/Transistor%E2%80%93transistor_logic#Interfacing_considerations">Wikipedia</a> 上的数据中 <span class="arithmatex"><span class="MathJax_Preview">V_{OH}=2.4</span><script type="math/tex">V_{OH}=2.4</script></span>。</p>
 <p><a href="https://www.ftdichip.com/old2020/Support/Documents/DataSheets/ICs/DS_FT232H.pdf">FT232H</a> 芯片支持 TTL，参数如下：</p>
 <ul>
-<li>$V_{OL}=0.4$, $V_{OH}=2.4$</li>
-<li>$V_{IL}=0.8$, $V_{OL}=2.0$</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">V_{OL}=0.4</span><script type="math/tex">V_{OL}=0.4</script></span>, <span class="arithmatex"><span class="MathJax_Preview">V_{OH}=2.4</span><script type="math/tex">V_{OH}=2.4</script></span></li>
+<li><span class="arithmatex"><span class="MathJax_Preview">V_{IL}=0.8</span><script type="math/tex">V_{IL}=0.8</script></span>, <span class="arithmatex"><span class="MathJax_Preview">V_{OL}=2.0</span><script type="math/tex">V_{OL}=2.0</script></span></li>
 </ul>
-<h2 id="cmos">CMOS 电平</h2>
+<h2 id="cmos">CMOS 电平<a class="headerlink" href="#cmos" title="Permanent link">&para;</a></h2>
 <p>现在比较常见的是 CMOS 电平。以 <a href="https://docs.xilinx.com/v/u/en-US/ds181_Artix_7_Data_Sheet">Artix-7 FPGAs</a> 为例，它支持多种 CMOS 电平标准：</p>
 <ul>
-<li>LVCMOS12: $V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}$</li>
-<li>LVCMOS15: $V_{OL}=0.25V_{CCO}, V_{OH}=0.75V_{CCO}, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}$</li>
-<li>LVCMOS18: $V_{OL}=0.45, V_{OH}=V_{CCO}-0.45, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}$</li>
-<li>LVCMOS25: $V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.7, V_{IH}=1.7$</li>
-<li>LVCMOS33: $V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.8, V_{IH}=2.0$</li>
+<li>LVCMOS12: <span class="arithmatex"><span class="MathJax_Preview">V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}</span><script type="math/tex">V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}</script></span></li>
+<li>LVCMOS15: <span class="arithmatex"><span class="MathJax_Preview">V_{OL}=0.25V_{CCO}, V_{OH}=0.75V_{CCO}, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}</span><script type="math/tex">V_{OL}=0.25V_{CCO}, V_{OH}=0.75V_{CCO}, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}</script></span></li>
+<li>LVCMOS18: <span class="arithmatex"><span class="MathJax_Preview">V_{OL}=0.45, V_{OH}=V_{CCO}-0.45, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}</span><script type="math/tex">V_{OL}=0.45, V_{OH}=V_{CCO}-0.45, V_{IL}=0.35V_{CCO}, V_{IH}=0.65V_{CCO}</script></span></li>
+<li>LVCMOS25: <span class="arithmatex"><span class="MathJax_Preview">V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.7, V_{IH}=1.7</span><script type="math/tex">V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.7, V_{IH}=1.7</script></span></li>
+<li>LVCMOS33: <span class="arithmatex"><span class="MathJax_Preview">V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.8, V_{IH}=2.0</span><script type="math/tex">V_{OL}=0.4, V_{OH}=V_{CCO}-0.4, V_{IL}=0.8, V_{IH}=2.0</script></span></li>
 </ul>
-<p>其中 $V_{CCO}$ 是外部输入的电压，与 LVCMOS 后面的两位数字匹配，LVCMOS33 就对应 3.3 V。每个 Bank 都有相同的 $V_{CCO}$ 电压，这就是为什么在约束文件里要写 IOSTANDARD，并且经常连续的信号都使用同样的电平标准。</p>
+<p>其中 <span class="arithmatex"><span class="MathJax_Preview">V_{CCO}</span><script type="math/tex">V_{CCO}</script></span> 是外部输入的电压，与 LVCMOS 后面的两位数字匹配，LVCMOS33 就对应 3.3 V。每个 Bank 都有相同的 <span class="arithmatex"><span class="MathJax_Preview">V_{CCO}</span><script type="math/tex">V_{CCO}</script></span> 电压，这就是为什么在约束文件里要写 IOSTANDARD，并且经常连续的信号都使用同样的电平标准。</p>
 <p>一些情况下，TTL 电平标准和 CMOS 电平标准是可以兼容的，只要它们的电压范围满足要求，并且可以接受较高的输入电压。详见 <a href="https://knowledge.ni.com/KnowledgeArticleDetails?id=kA03q000001Dn19CAC&amp;l=en-US">Can I Use 3.3V TTL to Trigger a 3.3V CMOS Device</a> 和 <a href="https://www.ti.com/lit/sg/sdyu001ab/sdyu001ab.pdf">Logic Guide - Texas Instruments</a>：</p>
-<figure>
-<p><img alt="" src="../logic_levels_compatible.png" width="400" />
-  </p>
-<figcaption>不同 TTL 和 CMOS 电平的兼容性（图源 <a href="https://www.ti.com/lit/sg/sdyu001ab/sdyu001ab.pdf">Logic Guide - Texas Instruments</a>）</figcaption>
+<figure markdown>
+  ![](logic_levels_compatible.png){ width=400 }
+  <figcaption>不同 TTL 和 CMOS 电平的兼容性（图源 <a href="https://www.ti.com/lit/sg/sdyu001ab/sdyu001ab.pdf">Logic Guide - Texas Instruments</a>）</figcaption>
 </figure>
-<h2 id="rs232">RS232</h2>
+
+<h2 id="rs232">RS232<a class="headerlink" href="#rs232" title="Permanent link">&para;</a></h2>
 <p>RS232 比较特别，它的电平有正有负：</p>
 <ul>
-<li>输出 0: $[-15, -5] \mathrm{V}$</li>
-<li>输出 1: $[5, 15] \mathrm{V}$</li>
-<li>输入 0: $[-15, -3] \mathrm{V}$</li>
-<li>输入 1: $[3, 15] \mathrm{V}$</li>
+<li>输出 0: <span class="arithmatex"><span class="MathJax_Preview">[-15, -5] \mathrm{V}</span><script type="math/tex">[-15, -5] \mathrm{V}</script></span></li>
+<li>输出 1: <span class="arithmatex"><span class="MathJax_Preview">[5, 15] \mathrm{V}</span><script type="math/tex">[5, 15] \mathrm{V}</script></span></li>
+<li>输入 0: <span class="arithmatex"><span class="MathJax_Preview">[-15, -3] \mathrm{V}</span><script type="math/tex">[-15, -3] \mathrm{V}</script></span></li>
+<li>输入 1: <span class="arithmatex"><span class="MathJax_Preview">[3, 15] \mathrm{V}</span><script type="math/tex">[3, 15] \mathrm{V}</script></span></li>
 </ul>
 <p>因此如果想要接 RS232 外设到 FPGA 上，通常需要进行电平转换（例如 <a href="https://www.ti.com/lit/ds/symlink/max3232.pdf">MAX3232 3-V to 5.5-V Multichannel RS-232 Line Driver and Receiver With ±15-kV ESD Protection</a>），否则无法正常工作。</p>
-<h2 id="rs485">RS485</h2>
-<p>RS485 通过差分信号来传输，也就是用一对数据信号，以二者的差值来表示数字信号的 0 或者 1。它要求，数字 1 对应差分电压 $V_{a} - V_{b} \le -200 \mathrm{mV}$，数字 0 对应差分电压 $V_{a} - V_{b} \ge +200 \mathrm{mV}$，波形如下：</p>
-<pre><code class="language-wavedrom">{
+<h2 id="rs485">RS485<a class="headerlink" href="#rs485" title="Permanent link">&para;</a></h2>
+<p>RS485 通过差分信号来传输，也就是用一对数据信号，以二者的差值来表示数字信号的 0 或者 1。它要求，数字 1 对应差分电压 <span class="arithmatex"><span class="MathJax_Preview">V_{a} - V_{b} \le -200 \mathrm{mV}</span><script type="math/tex">V_{a} - V_{b} \le -200 \mathrm{mV}</script></span>，数字 0 对应差分电压 <span class="arithmatex"><span class="MathJax_Preview">V_{a} - V_{b} \ge +200 \mathrm{mV}</span><script type="math/tex">V_{a} - V_{b} \ge +200 \mathrm{mV}</script></span>，波形如下：</p>
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;rs485_a&quot;, wave: &quot;01010.1.&quot;},
@@ -1727,18 +1727,18 @@
       { name: &quot;data&quot;, wave: &quot;10101.0.&quot;},
     ]
 }
-</code></pre>
-<h2 id="sstl">SSTL</h2>
+</code></pre></div>
+<h2 id="sstl">SSTL<a class="headerlink" href="#sstl" title="Permanent link">&para;</a></h2>
 <p>SSTL(Stub Series Terminated Logic) 是 SDRAM 所采用的电平标准，有不同的版本：</p>
 <ul>
 <li>SSTL_15</li>
-<li><a href="https://www.jedec.org/sites/default/files/docs/JESD8-15A.pdf">SSTL_18</a>: $V_{DDQ} = 1.8 \mathrm{V}$, $V_{REF} = 0.9 \mathrm{V}$</li>
-<li><a href="https://www.jedec.org/sites/default/files/docs/JESD8-9B.pdf">SSTL_2</a>: $V_{DDQ} = 2.5 \mathrm{V}$, $V_{REF} = 1.25 \mathrm{V}$</li>
-<li><a href="https://www.jedec.org/system/files/docs/jesd8-8.pdf">SSTL_3</a>: $V_{DDQ} = 3.3 \mathrm{V}, $V_{REF} = 1.5 \mathrm{V}$</li>
+<li><a href="https://www.jedec.org/sites/default/files/docs/JESD8-15A.pdf">SSTL_18</a>: <span class="arithmatex"><span class="MathJax_Preview">V_{DDQ} = 1.8 \mathrm{V}</span><script type="math/tex">V_{DDQ} = 1.8 \mathrm{V}</script></span>, <span class="arithmatex"><span class="MathJax_Preview">V_{REF} = 0.9 \mathrm{V}</span><script type="math/tex">V_{REF} = 0.9 \mathrm{V}</script></span></li>
+<li><a href="https://www.jedec.org/sites/default/files/docs/JESD8-9B.pdf">SSTL_2</a>: <span class="arithmatex"><span class="MathJax_Preview">V_{DDQ} = 2.5 \mathrm{V}</span><script type="math/tex">V_{DDQ} = 2.5 \mathrm{V}</script></span>, <span class="arithmatex"><span class="MathJax_Preview">V_{REF} = 1.25 \mathrm{V}</span><script type="math/tex">V_{REF} = 1.25 \mathrm{V}</script></span></li>
+<li><a href="https://www.jedec.org/system/files/docs/jesd8-8.pdf">SSTL_3</a>: $V_{DDQ} = 3.3 \mathrm{V}, <span class="arithmatex"><span class="MathJax_Preview">V_{REF} = 1.5 \mathrm{V}</span><script type="math/tex">V_{REF} = 1.5 \mathrm{V}</script></span></li>
 </ul>
 <p>SSTL 还有差分版本，用于传输 CK、DQS 等差分信号。</p>
-<h2 id="lvds">LVDS</h2>
-<p>LVDS(Low Voltage Differential Signaling) 也是一个常见的差分信号电平标准。由于是差分传输，就有共模电压和差模电压。例如 LVDS_25 的共模电压是 $1.2 \mathrm{V}$，差模电压是 $0.45 \mathrm{V}$，意味着两个数据信号上的电压会分别在 $1.2-0.45/2 = 0.975 \mathrm{V}$ 和 $1.2+0.45/2 = 1.425 \mathrm{V}$ 上下。</p>
+<h2 id="lvds">LVDS<a class="headerlink" href="#lvds" title="Permanent link">&para;</a></h2>
+<p>LVDS(Low Voltage Differential Signaling) 也是一个常见的差分信号电平标准。由于是差分传输，就有共模电压和差模电压。例如 LVDS_25 的共模电压是 <span class="arithmatex"><span class="MathJax_Preview">1.2 \mathrm{V}</span><script type="math/tex">1.2 \mathrm{V}</script></span>，差模电压是 <span class="arithmatex"><span class="MathJax_Preview">0.45 \mathrm{V}</span><script type="math/tex">0.45 \mathrm{V}</script></span>，意味着两个数据信号上的电压会分别在 <span class="arithmatex"><span class="MathJax_Preview">1.2-0.45/2 = 0.975 \mathrm{V}</span><script type="math/tex">1.2-0.45/2 = 0.975 \mathrm{V}</script></span> 和 <span class="arithmatex"><span class="MathJax_Preview">1.2+0.45/2 = 1.425 \mathrm{V}</span><script type="math/tex">1.2+0.45/2 = 1.425 \mathrm{V}</script></span> 上下。</p>
 <p>TMDS 和 LVDS 类似，但是电压不一样。TMDS 经常用于 DVI 和 HDMI 的信号传输。</p>
 
 

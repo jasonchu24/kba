@@ -1692,22 +1692,22 @@
   
 
 
-<h1 id="asynchronous-sram">Asynchronous SRAM</h1>
-<h2 id="features">Features</h2>
+<h1 id="asynchronous-sram">Asynchronous SRAM<a class="headerlink" href="#asynchronous-sram" title="Permanent link">&para;</a></h1>
+<h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <p>Features of asynchronous SRAM:</p>
 <ol>
 <li>Simple interface: the controller gives the address and control signals, and the data is available after a fixed delay, no calibration is required</li>
 <li>MB level RAM available: single chip can provide KB to MB level RAM, larger capacity can be obtained by connecting multiple SRAMs in parallel</li>
 <li>High-speed asynchronous SRAM with latency in the 10ns range</li>
 </ol>
-<h2 id="structure">Structure</h2>
-<p>The asynchronous SRAM holds data internally as an array. For example, a 2048K x 16 asynchronous SRAM has 2048K rows, each row holds 16 bits of data, for a total of $2048\mathrm{K} * 16\mathrm{b} = 32 \mathrm{Mb}$ of data.</p>
-<p>The structure of the asynchronous SRAM is shown in Figure 1. When the controller accesses the asynchronous SRAM, it gives a row address and the asynchronous SRAM reads a row of data. Since there are 2048K rows, the number of bits needed for the address is $\log_2(2048\mathrm{K})=21$, which corresponds to <code>A0-A20</code> in the figure below. The address is passed to <code>DECODER</code>, which takes the data to be accessed from the array and puts it in <code>COLUMN IO</code>.</p>
-<figure>
-<p><img alt="Async SRAM Diagram" src="../async_sram_diagram.png" width="400" />
-  </p>
-<figcaption>Asynchronous SRAM Diagram (Source <a href="https://www.issi.com/WW/pdf/61-64WV204816ALL_BLL.pdf">ISSI Datasheet</a>)</figcaption>
+<h2 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h2>
+<p>The asynchronous SRAM holds data internally as an array. For example, a 2048K x 16 asynchronous SRAM has 2048K rows, each row holds 16 bits of data, for a total of <span class="arithmatex"><span class="MathJax_Preview">2048\mathrm{K} * 16\mathrm{b} = 32 \mathrm{Mb}</span><script type="math/tex">2048\mathrm{K} * 16\mathrm{b} = 32 \mathrm{Mb}</script></span> of data.</p>
+<p>The structure of the asynchronous SRAM is shown in Figure 1. When the controller accesses the asynchronous SRAM, it gives a row address and the asynchronous SRAM reads a row of data. Since there are 2048K rows, the number of bits needed for the address is <span class="arithmatex"><span class="MathJax_Preview">\log_2(2048\mathrm{K})=21</span><script type="math/tex">\log_2(2048\mathrm{K})=21</script></span>, which corresponds to <code>A0-A20</code> in the figure below. The address is passed to <code>DECODER</code>, which takes the data to be accessed from the array and puts it in <code>COLUMN IO</code>.</p>
+<figure markdown>
+  ![Async SRAM Diagram](async_sram_diagram.png){ width="400" }
+  <figcaption>Asynchronous SRAM Diagram (Source <a href="https://www.issi.com/WW/pdf/61-64WV204816ALL_BLL.pdf">ISSI Datasheet</a>)</figcaption>
 </figure>
+
 <p>For read operations, the memory controller provides the address on <code>A0-A20</code>, reads the data through <code>DECODER</code> from <code>2048K x 16 MEMORY ARRAY</code> to <code>COLUMN IO</code>, and the control logic <code>CONTROL CIRCUIT</code> outputs the data to <code>I/O DATA CIRCUIT</code> according to the read operation (<code>WE#=1, OE#=0</code>).</p>
 <p>For write operations, the memory controller provides the address on <code>A0-A20</code>, the data to be written on <code>I/O</code>, and the byte enable on <code>UB#/LB#</code>. The asynchronous SRAM reads the existing data in the array from <code>MEMORY ARRAY</code>, combines <code>UB#/LB#</code> with <code>I/O</code>, calculates the new value, and writes it to memory. The <code>UB#</code> and <code>LB#</code> are byte enables (active-low) for high 8 bits and low 8 bits respectively. If the old data is <code>1234</code> and the value to be written by the memory controller is <code>5678</code>, then the value in memory is updated to</p>
 <table>
@@ -1746,7 +1746,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="interface">Interface</h2>
+<h2 id="interface">Interface<a class="headerlink" href="#interface" title="Permanent link">&para;</a></h2>
 <p>Asynchronous SRAM exposes a single-port RAM interface that can only read or write at a time. A typical asynchronous SRAM includes the following signals:</p>
 <ol>
 <li>Address signal A: the bit width is determined by the depth, for example, 2048K depth corresponds to 21-bit address</li>
@@ -1757,69 +1757,69 @@
 <li>Byte enable UB#/LB#: active-low, corresponding to two bytes, update when equal to 0, unchanged when equal to 1</li>
 </ol>
 <p>Some asynchronous SRAMs are 8 bits wide, where there is no byte enable signal.</p>
-<h2 id="concatenation">Concatenation</h2>
+<h2 id="concatenation">Concatenation<a class="headerlink" href="#concatenation" title="Permanent link">&para;</a></h2>
 <p>If you want a larger asynchronous SRAM, you can concatenate multiple asynchronous SRAMs. Concatenation can be done in two ways:</p>
 <p>One is to concatenate in width, e.g. concatenate two asynchronous SRAMs of the same depth and width of 16 to get an asynchronous SRAM of width 32:</p>
-<figure>
-<p><img alt="" src="../async_sram_width_concat.png" width="400" />
-  </p>
-<figcaption>Concatenate asynchronous SRAM in width</figcaption>
+<figure markdown>
+  ![](async_sram_width_concat.png){ width="400" }
+  <figcaption>Concatenate asynchronous SRAM in width</figcaption>
 </figure>
+
 <p>The address signal (A) and control signals (OE#, WE#, CE#) are connected to all asynchronous SRAMs, while the data signal (DQ) and byte enable signals (WE0-3#) are connected to different asynchronous SRAMs to form twice the data width.</p>
 <p>The other is to concatenate in the depth, keeping the width the same, to increase the storage capacity. For example, concatenate two asynchronous SRAMs to get an asynchronous SRAM with doubled depth. For each access, only one of the asynchronous SRAMs will be accessed, distinguished by the address.</p>
 <p>For example, to concatenate two asynchronous SRAMs with 21-bit addresses to get a asynchronous SRAM with 22-bit addresses, if the highest bit of the address is used to select which asynchronous SRAM to access, then you can set: <code>CS0#=CS# | A[21], CS1#=CS# | ~A[21]</code>, and the rest of the signals are connected to all the asynchronous SRAMs. When <code>CS#=1</code>, the output pins are in the high resistance state, so multiple chips can share a single data bus and only need to ensure that only one chip on the bus is outputting at the same time:</p>
-<figure>
-<p><img alt="" src="../async_sram_depth_concat.png" width="600" />
-  </p>
-<figcaption>Concatenate asynchronous SRAM in depth</figcaption>
+<figure markdown>
+  ![](async_sram_depth_concat.png){ width="600" }
+  <figcaption>Concatenate asynchronous SRAM in depth</figcaption>
 </figure>
+
 <p>In practice, it is possible to mix the two methods.</p>
-<h2 id="timing">Timing</h2>
-<h3 id="read-timing">Read Timing</h3>
+<h2 id="timing">Timing<a class="headerlink" href="#timing" title="Permanent link">&para;</a></h2>
+<h3 id="read-timing">Read Timing<a class="headerlink" href="#read-timing" title="Permanent link">&para;</a></h3>
 <p>The asynchronous SRAM is called asynchronous because it has no clock signal. In this case, the read timing is reflected as the delay between the controller giving the address and the asynchronous SRAM giving the data. Take <a href="https://www.issi.com/WW/pdf/61-64WV204816ALL_BLL.pdf">IS61/64WV204816ALL Asynchronous SRAM chip</a> as an example, the read timing is shown in the following figure:</p>
-<figure>
-<p><img alt="" src="../async_sram_read_timing.png" width="600" />
-  </p>
-<figcaption>Read Timing of Asynchronous SRAM (Source <a href="https://www.issi.com/WW/pdf/61-64WV204816ALL_BLL.pdf">ISSI Datasheet</a>)</figcaption>
+<figure markdown>
+  ![](async_sram_read_timing.png){ width="600" }
+  <figcaption>Read Timing of Asynchronous SRAM (Source <a href="https://www.issi.com/WW/pdf/61-64WV204816ALL_BLL.pdf">ISSI Datasheet</a>)</figcaption>
 </figure>
+
 <ul>
-<li>$t_{RC}$: read cycle time, the address remains unchanged during this time, Min 10ns</li>
-<li>$t_{AA}$: address access time, the data is given after the address change in $t_{AA}$ time, Max 10ns</li>
-<li>$t_{OHA}$: output hold time, the data remains unchanged during this time, Min 2.5ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{RC}</span><script type="math/tex">t_{RC}</script></span>: read cycle time, the address remains unchanged during this time, Min 10ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{AA}</span><script type="math/tex">t_{AA}</script></span>: address access time, the data is given after the address change in <span class="arithmatex"><span class="MathJax_Preview">t_{AA}</span><script type="math/tex">t_{AA}</script></span> time, Max 10ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{OHA}</span><script type="math/tex">t_{OHA}</script></span>: output hold time, the data remains unchanged during this time, Min 2.5ns</li>
 </ul>
-<p>The output data is uncertain during the period between the end of $t_{OHA}$ and the end of $t_{AA}$.</p>
-<h3 id="write-timing">Write timing</h3>
+<p>The output data is uncertain during the period between the end of <span class="arithmatex"><span class="MathJax_Preview">t_{OHA}</span><script type="math/tex">t_{OHA}</script></span> and the end of <span class="arithmatex"><span class="MathJax_Preview">t_{AA}</span><script type="math/tex">t_{AA}</script></span>.</p>
+<h3 id="write-timing">Write timing<a class="headerlink" href="#write-timing" title="Permanent link">&para;</a></h3>
 <p>The write timing is more complicated, and there can be multiple write conditions, one of which is listed below:</p>
-<figure>
-<p><img alt="" src="../async_sram_write_timing.png" width="600" />
-  </p>
-<figcaption>Write timing of asynchronous SRAM (Source <a href="https://www.issi.com/WW/pdf/61-64WV204816ALL_BLL.pdf">ISSI Datasheet</a>)</figcaption>
+<figure markdown>
+  ![](async_sram_write_timing.png){ width="600" }
+  <figcaption>Write timing of asynchronous SRAM (Source <a href="https://www.issi.com/WW/pdf/61-64WV204816ALL_BLL.pdf">ISSI Datasheet</a>)</figcaption>
 </figure>
+
 <p>The core of the write timing is the rising edge of <code>WE#</code>. Compared with this time point, there are the following important timing requirements:</p>
 <ul>
-<li>$t_{WC}$: The address needs to remain unchanged for $t_{WC}$, Min 10ns</li>
-<li>$t_{AW}$: The setup time of the address relative to the rising edge of <code>WE#</code>, Min 8ns</li>
-<li>$t_{HA}$: Hold time of the address relative to the rising edge of <code>WE#</code>, Min 0ns</li>
-<li>$t_{PWE}$: The time when <code>WE#</code> maintains 0, Min 8ns</li>
-<li>$t_{SD}$: Setup time of data relative to the rising edge of <code>WE#</code>, Min 6ns</li>
-<li>$t_{HD}$: Hold time of data relative to the rising edge of <code>WE#</code>, Min 0ns</li>
-<li>$t_{SA}$: Setup time of the address relative to the falling edge of <code>WE#</code>, Min 0ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{WC}</span><script type="math/tex">t_{WC}</script></span>: The address needs to remain unchanged for <span class="arithmatex"><span class="MathJax_Preview">t_{WC}</span><script type="math/tex">t_{WC}</script></span>, Min 10ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{AW}</span><script type="math/tex">t_{AW}</script></span>: The setup time of the address relative to the rising edge of <code>WE#</code>, Min 8ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{HA}</span><script type="math/tex">t_{HA}</script></span>: Hold time of the address relative to the rising edge of <code>WE#</code>, Min 0ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{PWE}</span><script type="math/tex">t_{PWE}</script></span>: The time when <code>WE#</code> maintains 0, Min 8ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{SD}</span><script type="math/tex">t_{SD}</script></span>: Setup time of data relative to the rising edge of <code>WE#</code>, Min 6ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{HD}</span><script type="math/tex">t_{HD}</script></span>: Hold time of data relative to the rising edge of <code>WE#</code>, Min 0ns</li>
+<li><span class="arithmatex"><span class="MathJax_Preview">t_{SA}</span><script type="math/tex">t_{SA}</script></span>: Setup time of the address relative to the falling edge of <code>WE#</code>, Min 0ns</li>
 </ul>
-<h2 id="sram-cell">SRAM Cell</h2>
+<h2 id="sram-cell">SRAM Cell<a class="headerlink" href="#sram-cell" title="Permanent link">&para;</a></h2>
 <p>A typical SRAM Cell consists of 6 transistors, and the internal structure is as follows:</p>
-<figure>
-<p><img alt="6T SRAM Cell" src="../async_sram_cell_6t.png" width="400" />
-  </p>
-<figcaption>Internal Structure of 6T SRAM Cell (Source <a href="https://inst.eecs.berkeley.edu/~eecs151/sp19/files/lec16-ram.pdf">Berkeley EECS 151/251A Spring 2019</a>)</figcaption>
+<figure markdown>
+  ![6T SRAM Cell](async_sram_cell_6t.png){ width="400" }
+  <figcaption>Internal Structure of 6T SRAM Cell (Source <a href="https://inst.eecs.berkeley.edu/~eecs151/sp19/files/lec16-ram.pdf">Berkeley EECS 151/251A Spring 2019</a>)</figcaption>
 </figure>
+
 <p>Among them, M1 and M2 form an inverter, M3 and M4 form another inverter, and two inverters form the following equivalent circuit:</p>
-<figure>
-<p><img alt="SRAM Cell" src="../async_sram_cell.png" width="400" />
-  </p>
-<figcaption>Circuit in SRAM Cell (Source <a href="https://inst.eecs.berkeley.edu/~eecs151/sp19/files/lec16-ram.pdf">Berkeley EECS 151/251A Spring 2019</a>)</figcaption>
+<figure markdown>
+  ![SRAM Cell](async_sram_cell.png){ width="400" }
+  <figcaption>Circuit in SRAM Cell (Source <a href="https://inst.eecs.berkeley.edu/~eecs151/sp19/files/lec16-ram.pdf">Berkeley EECS 151/251A Spring 2019</a>)</figcaption>
 </figure>
+
 <p>This is a latch that can stably store 1 bit of data. The two transistors M5 and M6 are used for reading and writing. When WL is enabled, M5 and M6 are turned on, BL and Q are connected, and BLbar and Qbar are connected. At this point, you can read and write through BL and BLbar.</p>
-<h2 id="acknowledgement">Acknowledgement</h2>
+<h2 id="acknowledgement">Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permanent link">&para;</a></h2>
 <p>The English version is kindly translated with the help of DeepL Translator and Google Translate.</p>
 
 

@@ -1726,8 +1726,8 @@
   
 
 
-<h1 id="spi">SPI</h1>
-<h2 id="_1">接口</h2>
+<h1 id="spi">SPI<a class="headerlink" href="#spi" title="Permanent link">&para;</a></h1>
+<h2 id="_1">接口<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <p>SPI 协议涉及到四个信号：</p>
 <ul>
 <li>SCLK: 时钟信号，Master -&gt; Slave</li>
@@ -1736,9 +1736,9 @@
 <li>CS：芯片使能，一般是低有效</li>
 </ul>
 <p>要通过 SPI 协议发送命令的时候，通常需要先拉低 CS，然后启动 SCLK 时钟，同时收发数据。注意 SPI 是全双工的，也就是发送的同时也在接收，只不过通常来说，外设等到主机发送了命令本身，才知道要回复什么，所以很多时候命令设计成了事实上的半双工：前半部分主机在发命令，外设发送无用的数据；后半部分外设在发送响应，主机发送无用的数据。</p>
-<h2 id="_2">波形</h2>
+<h2 id="_2">波形<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>SPI 有不同的类型，下面讲一种比较常见的配置（即 CPOL=0，CPHA=0），在这种模式下，Master 和 Slave 都是在时钟的下降沿修改输出的数据，然后在时钟（<code>sclk</code>）的上升沿对接收到的数据进行采样：</p>
-<pre><code class="language-wavedrom">{
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;clk&quot;, wave: &quot;p........&quot;},
@@ -1748,11 +1748,11 @@
       { name: &quot;cs_n&quot;, wave: &quot;10......1&quot;},
     ]
 }
-</code></pre>
+</code></pre></div>
 <p>波形图中，时钟（<code>sclk</code>）上升沿时，数据处于稳定的状态，所以此时 Master 对 MISO 采样，Slave 对 MOSI 采样，可以得到稳定的数据；时钟下降沿时，Master 和 Slave 修改输出的数据。</p>
 <p>实际在 RTL 中实现的时候，Master 可以不写 negedge 逻辑，而是写一个分频器，在分频出来的负半周期里，实现数据的修改，如上图中的 <code>clk</code> 分频到 <code>sclk</code>。一般使用一个状态机来实现 SPI Master，记录当前传输到哪一个 bit，以及记录当前是 <code>sclk</code> 的正半周期还是负半周期。</p>
 <p>SPI 本身很简单，所以核心不在 SPI，而是在 SPI 之上定义的各种协议。</p>
-<h2 id="spi-flash">SPI Flash</h2>
+<h2 id="spi-flash">SPI Flash<a class="headerlink" href="#spi-flash" title="Permanent link">&para;</a></h2>
 <p>SPI Flash 是一种很常见的 SPI 外设，可以用来访问 NAND/NOR Flash。</p>
 <p>为了提升性能，很多 SPI Flash 还会提供 Dual SPI 和 Quad SPI 模式。标准的 SPI 中，Master 到 Slave 和 Slave 到 Master 分别是一根信号线，如果要继续提高性能，那就要引入更多的信号线来进行数据传输，所以 Dual SPI 就是让原来的 MISO 和 MOSI 都可以同时发送数据；Quad SPI 则是又额外添加了两个信号线来进行数据传输。</p>
 <p>常见的 SPI Flash 厂家：</p>
@@ -1763,7 +1763,7 @@
 <li>GigaDevice</li>
 <li>Macronix</li>
 </ul>
-<h3 id="spi-nand-flash">SPI NAND Flash</h3>
+<h3 id="spi-nand-flash">SPI NAND Flash<a class="headerlink" href="#spi-nand-flash" title="Permanent link">&para;</a></h3>
 <p>下面以 <a href="https://www.alliancememory.com/wp-content/uploads/pdf/flash/AllianceMemory_SPI_NAND_Flash_July2020_Rev1.0.pdf">Alliance Memory SPI NAND Flash Datasheet</a> 为例子，看看通常 SPI Flash 都支持哪些命令，都是如何传输数据的。</p>
 <p>这款 SPI NAND Flash 的内部存储分为三层：</p>
 <ol>
@@ -1791,7 +1791,7 @@
 <li>发送 10H(Program Execute) 进行实际的写入操作，从 Cache 到 Flash 存储</li>
 <li>不断发送 0FH(Get Feature) 命令，直到 Program Execute 操作完成</li>
 </ol>
-<h3 id="spi-nor-flash">SPI NOR Flash</h3>
+<h3 id="spi-nor-flash">SPI NOR Flash<a class="headerlink" href="#spi-nor-flash" title="Permanent link">&para;</a></h3>
 <p>NOR Flash 和 NAND Flash 的区别在于，NOR Flash 可以随机访问，可以提供 XIP 支持。下面以 <a href="https://www.micron.com/-/media/client/global/documents/products/data-sheet/nor-flash/serial-nor/n25q/n25q_128mb_3v_65nm.pdf">128Mb, 3V, Multiple I/O Serial Flash Memory</a> 为例子看看它是如何读写的。</p>
 <p>SPI NOR Flash 读取的时候，只需要一条命令就可以了：READ/FAST READ。其中 READ 命令比较简单：发送 Command，发送地址，然后 Slave 紧接着就会发送数据；FAST READ 可以达到更高的频率，但是为了让 NOR Flash 有时间读取数据，在 Master 发送 Command 和地址后，还需要发送 Dummy cycles，然后 Slave 才会发送数据。和前面一样，FAST READ 也支持不同的 IO 类型，例如 Dual Output，Dual Input/Output，Quad Output，Quad Input/Output。一些比较高端的 SPI NOR Flash 还支持 DTR（Double Transfer Rate），实际上就是 DDR，在时钟上升沿和下降沿都采样数据。</p>
 <p>写入的时候，和 NAND Flash 一样，也需要先擦除，再写入。SPI Flash 的存储层级是：</p>
@@ -1803,9 +1803,9 @@
 </ol>
 <p>擦除的粒度是 Sector 或者 Subsector，写入的粒度是 Page。写入的时候，也需要首先发送 WRITE ENABLE 命令，再发送 PAGE PROGRAM 命令。NOR Flash 在 Program 上也比较简化，直接 Program 即可，不需要先写入到 Cache，再进行 Program。</p>
 <p>NOR Flash 还提供了 XIP Mode 来加快随机访问：启用 XIP 模式后，给出一个地址，等待 Dummy cycles 后，就可以读出数据，不需要像前面那样发送 COMMAND，减少了延迟。当然了，即使不打开 NOR Flash 的 XIP Mode，也可以在 SPI 控制器里实现 XIP，只不过每次读取都要发一次 READ 命令。</p>
-<h2 id="spi-eeprom">SPI EEPROM</h2>
+<h2 id="spi-eeprom">SPI EEPROM<a class="headerlink" href="#spi-eeprom" title="Permanent link">&para;</a></h2>
 <p>SPI EEPROM 和 SPI NOR Flash 比较类似，但是 EEPROM 更小，也更加简单，例如写入的时候，不需要擦除。感兴趣的可以在 <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/22040c_cn.pdf">SPI 串行 EEPROM 系列数据手册</a> 中查看命令列表，这里就不赘述了。</p>
-<h2 id="sd">SD 卡</h2>
+<h2 id="sd">SD 卡<a class="headerlink" href="#sd" title="Permanent link">&para;</a></h2>
 <p>SD 卡除了 SD Bus 以外，还支持 SPI 模式（最新的 SDUC 不支持 SPI 模式），所以也可以用 SPI 来读写 SD 卡。</p>
 <p>SD 卡比较特别的一点是，它需要比较复杂的初始化流程：</p>
 <ol>
@@ -1827,88 +1827,88 @@
 <p>SD 卡规定，SPI 模式下，所有的数据传输都是对齐到 8 位，也就是从 CS 拉低开始算，每 8 个时钟上升沿是一个字节，无论命令还是响应，都在 8 位的边界上传输。</p>
 <p>想要读取数据的话，就要发送 READ_SINGLE_BLOCK 命令，参数就是要读取的 Block 地址，Block 地址的单位在 SDSC 上是字节，在 SDHC 和 SDXC 上是 512 字节。SD 卡回先回复一个字节的响应，然后开始发数据，数据从 Start Block Token 开始，然后是一个 Block 的数据（通常是 512 字节），最后再两个字节的 CRC16。</p>
 <p>写数据则是发送 WRITE_BLOCK 命令，SD 卡回复一个字节的响应，然后控制器开始传输数据，数据从 Start Block Token 开始，接着是要写入的数据，最后是两个字节的 CRC16，然后 SD 卡回复一个字节的响应，标志着写入成功。</p>
-<h2 id="spi_1">SPI 以太网控制器</h2>
+<h2 id="spi_1">SPI 以太网控制器<a class="headerlink" href="#spi_1" title="Permanent link">&para;</a></h2>
 <p>有一些以太网产品提供了 SPI 接口，例如 <a href="https://ww1.microchip.com/downloads/aemDocuments/documents/UNG/ProductDocuments/DataSheets/KSZ8851SNL-Single-Port-Ethernet-Controller-with-SPI-DS00002381C.pdf">KSZ8851SNL/SNLI</a>，集成了 MAC 和 PHY，直接连接 MDI/MDI-X 接口，虽然最高只支持百兆网，但是接口上确实非常简单。</p>
 <p>SPI 上发送的命令就两类：一类是读写寄存器，一类是读写 RX/TX FIFO。</p>
-<h2 id="_3">键盘和触摸板</h2>
+<h2 id="_3">键盘和触摸板<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <p>一些型号的苹果电脑的键盘和触摸板是通过 SPI 接口访问的，在 Linux 中有相应的 applespi 驱动。</p>
-<h2 id="spi-vs-i2c">SPI vs I2C</h2>
+<h2 id="spi-vs-i2c">SPI vs I2C<a class="headerlink" href="#spi-vs-i2c" title="Permanent link">&para;</a></h2>
 <p>SPI 和 I2C 的区别在于，前者信号更多，全双工传输；后者信号更少，半双工传输。SPI 通过 CS 信号选择 Slave 芯片，I2C 通过地址进行区分。此外 I2C 还需要 Pull up resistor，这样如果没有设备响应，就会 NACK。</p>
 <p>一些芯片提供了 SPI 或 I2C 的选项：共用两个信号，允许用户选择用 I2C 还是 SPI。例如 <a href="http://cdn.sparkfun.com/datasheets/Dev/Arduino/Shields/WolfsonWM8731.pdf">WM8731</a>，既支持 I2C（记为 2-wire mode），又支持 SPI（记为 3-wire mode）。一般这种时候，SPI 和 I2C 就是用来配置一些寄存器的，另外可能还有一些接口，例如 WM8731 负责声音数据传输的实际上是 I2S。</p>
-<h2 id="axi-quad-spi">AXI Quad SPI</h2>
+<h2 id="axi-quad-spi">AXI Quad SPI<a class="headerlink" href="#axi-quad-spi" title="Permanent link">&para;</a></h2>
 <p>AXI Quad SPI 是一个 SPI 协议的控制器，它支持 XIP（eXecute In Place）模式，即可以暴露一个只读 AXI Slave 接口，当接收到读请求的时候，就发送 SPI NOR Flash 命令去对应的地址进行读取，然后返回结果。由于不同厂家的 SPI NOR Flash 支持有所不同，所以 IP 上的设置可以看到厂家的选择。</p>
 <p>特别地，一个常见的需求是希望访问 Cfg（Configuration）Flash，亦即用来保存 Bitstream 的 Flash。当 FPGA 上电的时候，如果启动模式设置为 SPI Flash，FPGA 就会向 Cfg Flash 读取 Bitstream，Cfg Flash 需要连接到 FPGA 的指定引脚上，当 FPGA 初始化的时候由内部逻辑驱动，初始化完成后又要转交给用户逻辑。转交的方式就是通过 STARTUP 系列的 primitive。</p>
 <p>通常，如果要连接外部的 SPI Flash，需要连接几条信号线到顶层，然后通过 xdc 把信号绑定到引脚上，然后引脚连接了一个外部的 SPI Flash。但由于 Cfg Flash 比较特殊，所以信号从 AXI Quad SPI 直接连到 STARTUP 系列的 primitive 上。如果是采用 STARTUPE2 原语的 7 系列的 FPGA，那么只有时钟会通过 STARTUPE2 pritimive 连接到 SPI Flash 上，其他数据信号还是正常通过顶层绑定；如果是采用 STARTUPE3 原语的 UltraScale 系列的 FPGA，那么时钟和数据都通过 STARTUPE3 primitive 连接到 SPI Flash。</p>
-<h3 id="virtex-ultrascale">Virtex UltraScale+ 时序</h3>
+<h3 id="virtex-ultrascale">Virtex UltraScale+ 时序<a class="headerlink" href="#virtex-ultrascale" title="Permanent link">&para;</a></h3>
 <p>把信号连好了只是第一步，因为外设对时序要求比较复杂，如果用一个比较高直接跑，很大可能就读取到错误的数据了。AXI Quad SPI 已经在生成的文件里提供了一个样例的 xdc，在文档里也有体现。对于 Virtex Ultrascale+ 系列的 FPGA，它内容如下：</p>
-<pre><code class="language-tcl">#### All the delay numbers have to be provided by the user
+<div class="highlight"><pre><span></span><code><span class="c">#### All the delay numbers have to be provided by the user</span>
 
-#### Following are the SPI device parameters
-#### Max Tco
-set tco_max 7
-#### Min Tco
-set tco_min 1
-#### Setup time requirement
-set tsu 2
-#### Hold time requirement
-set th 3
-#####################################################################################################
-# STARTUPE3 primitive included inside IP for US+                                                             #
-#####################################################################################################
-set tdata_trace_delay_max 0.25
-set tdata_trace_delay_min 0.25
-set tclk_trace_delay_max 0.2
-set tclk_trace_delay_min 0.2
+<span class="c">#### Following are the SPI device parameters</span>
+<span class="c">#### Max Tco</span>
+<span class="k">set</span><span class="w"> </span>tco_max<span class="w"> </span><span class="mi">7</span>
+<span class="c">#### Min Tco</span>
+<span class="k">set</span><span class="w"> </span>tco_min<span class="w"> </span><span class="mi">1</span>
+<span class="c">#### Setup time requirement</span>
+<span class="k">set</span><span class="w"> </span>tsu<span class="w"> </span><span class="mi">2</span>
+<span class="c">#### Hold time requirement</span>
+<span class="k">set</span><span class="w"> </span>th<span class="w"> </span><span class="mi">3</span>
+<span class="c">#####################################################################################################</span>
+<span class="c"># STARTUPE3 primitive included inside IP for US+                                                             #</span>
+<span class="c">#####################################################################################################</span>
+<span class="k">set</span><span class="w"> </span>tdata_trace_delay_max<span class="w"> </span><span class="mf">0.25</span>
+<span class="k">set</span><span class="w"> </span>tdata_trace_delay_min<span class="w"> </span><span class="mf">0.25</span>
+<span class="k">set</span><span class="w"> </span>tclk_trace_delay_max<span class="w"> </span><span class="mf">0.2</span>
+<span class="k">set</span><span class="w"> </span>tclk_trace_delay_min<span class="w"> </span><span class="mf">0.2</span>
 
-create_generated_clock -name clk_sck -source [get_pins -hierarchical *axi_quad_spi_0/ext_spi_clk] [get_pins -hierarchical */CCLK] -edges {3 5 7}
-set_input_delay -clock clk_sck -max [expr $tco_max + $tdata_trace_delay_max + $tclk_trace_delay_max] [get_pins -hierarchical *STARTUP*/DATA_IN[*]] -clock_fall;
-set_input_delay -clock clk_sck -min [expr $tco_min + $tdata_trace_delay_min + $tclk_trace_delay_min] [get_pins -hierarchical *STARTUP*/DATA_IN[*]] -clock_fall;
-set_multicycle_path 2 -setup -from clk_sck -to [get_clocks -of_objects [get_pins -hierarchical */ext_spi_clk]]
-set_multicycle_path 1 -hold -end -from clk_sck -to [get_clocks -of_objects [get_pins -hierarchical */ext_spi_clk]]
-set_output_delay -clock clk_sck -max [expr $tsu + $tdata_trace_delay_max - $tclk_trace_delay_min] [get_pins -hierarchical *STARTUP*/DATA_OUT[*]];
-set_output_delay -clock clk_sck -min [expr $tdata_trace_delay_min - $th - $tclk_trace_delay_max] [get_pins -hierarchical *STARTUP*/DATA_OUT[*]];
-set_multicycle_path 2 -setup -start -from [get_clocks -of_objects [get_pins -hierarchical */ext_spi_clk]] -to clk_sck
-set_multicycle_path 1 -hold -from [get_clocks -of_objects [get_pins -hierarchical */ext_spi_clk]] -to clk_sck
-</code></pre>
+<span class="nv">create_generated_clock</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>source<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>axi_quad_spi_0<span class="o">/</span>ext_spi_clk<span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*/</span>CCLK<span class="k">]</span><span class="w"> </span><span class="o">-</span>edges<span class="w"> </span><span class="k">{</span><span class="nv">3</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">7</span><span class="k">}</span>
+<span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tco_max</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_max</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tclk_trace_delay_max</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>STARTUP<span class="o">*/</span>DATA_IN<span class="k">[</span><span class="o">*</span><span class="k">]]</span><span class="w"> </span><span class="o">-</span>clock_fall<span class="k">;</span>
+<span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tco_min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tclk_trace_delay_min</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>STARTUP<span class="o">*/</span>DATA_IN<span class="k">[</span><span class="o">*</span><span class="k">]]</span><span class="w"> </span><span class="o">-</span>clock_fall<span class="k">;</span>
+<span class="nv">set_multicycle_path</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">-</span>setup<span class="w"> </span><span class="o">-</span>from<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*/</span>ext_spi_clk<span class="k">]]</span>
+<span class="nv">set_multicycle_path</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span>hold<span class="w"> </span><span class="o">-</span>end<span class="w"> </span><span class="o">-</span>from<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*/</span>ext_spi_clk<span class="k">]]</span>
+<span class="nv">set_output_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tsu</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_max</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">$tclk_trace_delay_min</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>STARTUP<span class="o">*/</span>DATA_OUT<span class="k">[</span><span class="o">*</span><span class="k">]];</span>
+<span class="nv">set_output_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tdata_trace_delay_min</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">$th</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">$tclk_trace_delay_max</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>STARTUP<span class="o">*/</span>DATA_OUT<span class="k">[</span><span class="o">*</span><span class="k">]];</span>
+<span class="nv">set_multicycle_path</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">-</span>setup<span class="w"> </span><span class="o">-</span>start<span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*/</span>ext_spi_clk<span class="k">]]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span>clk_sck
+<span class="nv">set_multicycle_path</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span>hold<span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*/</span>ext_spi_clk<span class="k">]]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span>clk_sck
+</code></pre></div>
 <p>分段来看这个 xdc 都做了什么：</p>
-<pre><code class="language-tcl">create_generated_clock -name clk_sck -source [get_pins -hierarchical *axi_quad_spi_0/ext_spi_clk] [get_pins -hierarchical */CCLK] -edges {3 5 7}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">create_generated_clock</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>source<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>axi_quad_spi_0<span class="o">/</span>ext_spi_clk<span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*/</span>CCLK<span class="k">]</span><span class="w"> </span><span class="o">-</span>edges<span class="w"> </span><span class="k">{</span><span class="nv">3</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">7</span><span class="k">}</span>
+</code></pre></div>
 <p>首先，它创建了一个时钟 <code>clk_sck</code>。CCLK 是 STARTUP 输出的实际时钟，会连接到 Cfg Flash 的时钟信号上。而 AXI Quad SPI 的 ext_spi_clk 会输出到 CCLK 上，因此这里是一个生成的时钟，并且指定上下边沿的位置。<code>edges</code> 参数有三个，分别表示上升、下降和上升沿分别的位置。1 表示源时钟的第一个上升沿，2 表示源时钟的第一个下降沿，以此类推，所以 {3, 5, 7} 的意思就是频率减半，相位差半个周期。</p>
 <p>接着最主要的就是，怎么设置延迟。可以看到，代码中首先定义了一些参数：</p>
-<pre><code class="language-tcl">#### Max Tco
-set tco_max 7
-#### Min Tco
-set tco_min 1
-#### Setup time requirement
-set tsu 2
-#### Hold time requirement
-set th 3
+<div class="highlight"><pre><span></span><code><span class="c">#### Max Tco</span>
+<span class="k">set</span><span class="w"> </span>tco_max<span class="w"> </span><span class="mi">7</span>
+<span class="c">#### Min Tco</span>
+<span class="k">set</span><span class="w"> </span>tco_min<span class="w"> </span><span class="mi">1</span>
+<span class="c">#### Setup time requirement</span>
+<span class="k">set</span><span class="w"> </span>tsu<span class="w"> </span><span class="mi">2</span>
+<span class="c">#### Hold time requirement</span>
+<span class="k">set</span><span class="w"> </span>th<span class="w"> </span><span class="mi">3</span>
 
-#### Trace delay
-set tdata_trace_delay_max 0.25
-set tdata_trace_delay_min 0.25
-set tclk_trace_delay_max 0.2
-set tclk_trace_delay_min 0.2
-</code></pre>
-<p>首先是 $t_{co}$，表示的是 SPI Flash 的时钟到输出的延迟。以 SPI Flash 型号 Micron MT25QU02GCBB8E12-0SIT 为例子，可以从它的 <a href="https://media-www.micron.com/-/media/client/global/documents/products/data-sheet/nor-flash/serial-nor/mt25q/die-rev-b/mt25q_qlkt_u_02g_cbb_0.pdf">Datasheet</a> 看到，时钟到输出的延迟应该是 Max 7ns：</p>
-<pre><code>Clock LOW to output valid under 30pF Max 7ns
+<span class="c">#### Trace delay</span>
+<span class="k">set</span><span class="w"> </span>tdata_trace_delay_max<span class="w"> </span><span class="mf">0.25</span>
+<span class="k">set</span><span class="w"> </span>tdata_trace_delay_min<span class="w"> </span><span class="mf">0.25</span>
+<span class="k">set</span><span class="w"> </span>tclk_trace_delay_max<span class="w"> </span><span class="mf">0.2</span>
+<span class="k">set</span><span class="w"> </span>tclk_trace_delay_min<span class="w"> </span><span class="mf">0.2</span>
+</code></pre></div>
+<p>首先是 <span class="arithmatex"><span class="MathJax_Preview">t_{co}</span><script type="math/tex">t_{co}</script></span>，表示的是 SPI Flash 的时钟到输出的延迟。以 SPI Flash 型号 Micron MT25QU02GCBB8E12-0SIT 为例子，可以从它的 <a href="https://media-www.micron.com/-/media/client/global/documents/products/data-sheet/nor-flash/serial-nor/mt25q/die-rev-b/mt25q_qlkt_u_02g_cbb_0.pdf">Datasheet</a> 看到，时钟到输出的延迟应该是 Max 7ns：</p>
+<div class="highlight"><pre><span></span><code>Clock LOW to output valid under 30pF Max 7ns
 Clock LOW to output valid under 10pF Max 6ns
-</code></pre>
+</code></pre></div>
 <p>因此 <code>tco_max</code> 设为 7，<code>tco_min</code> 默认即可，因为 Datasheet 中没有做要求。</p>
-<p>然后 $t_{su}$ 和 $t_h$ 则是输入的 setup 和 hold time。类似的，可以查到 SPI Flash 的参数：</p>
-<pre><code>Data in setup time Min 2.5ns
+<p>然后 <span class="arithmatex"><span class="MathJax_Preview">t_{su}</span><script type="math/tex">t_{su}</script></span> 和 <span class="arithmatex"><span class="MathJax_Preview">t_h</span><script type="math/tex">t_h</script></span> 则是输入的 setup 和 hold time。类似的，可以查到 SPI Flash 的参数：</p>
+<div class="highlight"><pre><span></span><code>Data in setup time Min 2.5ns
 Data in hold time Min 2ns
-</code></pre>
+</code></pre></div>
 <p>所以 <code>tsu</code> 设为 2.5，<code>th</code> 设为 2。</p>
-<p>接下来则是 tdata 和 tclk 的 trace delay。这指的是从 FPGA 引脚到 SPI Flash 引脚的信号传输延迟。这个延迟可以从板子的布线上测量长度来估计出来，一个简单的估算方法：光速 $3*10^8 \mathrm{m/s}$，假设电信号传播速度是光速的一半，可以得到延迟和长度的比值： $0.06 \mathrm{ns/cm} = 0.15 \mathrm{ns/inch}$。</p>
+<p>接下来则是 tdata 和 tclk 的 trace delay。这指的是从 FPGA 引脚到 SPI Flash 引脚的信号传输延迟。这个延迟可以从板子的布线上测量长度来估计出来，一个简单的估算方法：光速 <span class="arithmatex"><span class="MathJax_Preview">3*10^8 \mathrm{m/s}</span><script type="math/tex">3*10^8 \mathrm{m/s}</script></span>，假设电信号传播速度是光速的一半，可以得到延迟和长度的比值： <span class="arithmatex"><span class="MathJax_Preview">0.06 \mathrm{ns/cm} = 0.15 \mathrm{ns/inch}</span><script type="math/tex">0.06 \mathrm{ns/cm} = 0.15 \mathrm{ns/inch}</script></span>。</p>
 <p>下面讨论这些变量如何参与到 input/output delay 的计算中。</p>
 <p>首先考虑 input delay。它指的是，从 SPI Flash 到 FPGA 的数据，相对于时钟的延迟。这个延迟由三部分组成：</p>
 <ol>
-<li>从 FPGA 输出的时钟 CCLK 到 SPI Flash 的时钟有延迟 $t_{clk}$，下图 <code>a -&gt; b</code></li>
-<li>从 SPI Flash 的时钟到数据输出有延迟 $t_{co}$，下图 <code>b -&gt; c</code></li>
-<li>从 SPI Flash 的数据到 FPGA 的数据输入有延迟 $t_{data}$，下图 <code>c -&gt; d</code></li>
+<li>从 FPGA 输出的时钟 CCLK 到 SPI Flash 的时钟有延迟 <span class="arithmatex"><span class="MathJax_Preview">t_{clk}</span><script type="math/tex">t_{clk}</script></span>，下图 <code>a -&gt; b</code></li>
+<li>从 SPI Flash 的时钟到数据输出有延迟 <span class="arithmatex"><span class="MathJax_Preview">t_{co}</span><script type="math/tex">t_{co}</script></span>，下图 <code>b -&gt; c</code></li>
+<li>从 SPI Flash 的数据到 FPGA 的数据输入有延迟 <span class="arithmatex"><span class="MathJax_Preview">t_{data}</span><script type="math/tex">t_{data}</script></span>，下图 <code>c -&gt; d</code></li>
 </ol>
-<pre><code class="language-wavedrom">{
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;clk_fpga&quot;, wave: &quot;p..&quot;, node: &quot;.a&quot; },
@@ -1918,15 +1918,15 @@ Data in hold time Min 2ns
     ],
   config: { hscale: 3 },
 }
-</code></pre>
-<p>因此总延迟就是 $t_{clk}+t_{co}+t_{data}$，就可以得到对应的设置：</p>
-<pre><code class="language-tcl">set_input_delay -clock clk_sck -max [expr $tco_max + $tdata_trace_delay_max + $tclk_trace_delay_max] [get_pins -hierarchical *STARTUP*/DATA_IN[*]] -clock_fall;
-set_input_delay -clock clk_sck -min [expr $tco_min + $tdata_trace_delay_min + $tclk_trace_delay_min] [get_pins -hierarchical *STARTUP*/DATA_IN[*]] -clock_fall;
-</code></pre>
+</code></pre></div>
+<p>因此总延迟就是 <span class="arithmatex"><span class="MathJax_Preview">t_{clk}+t_{co}+t_{data}</span><script type="math/tex">t_{clk}+t_{co}+t_{data}</script></span>，就可以得到对应的设置：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tco_max</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_max</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tclk_trace_delay_max</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>STARTUP<span class="o">*/</span>DATA_IN<span class="k">[</span><span class="o">*</span><span class="k">]]</span><span class="w"> </span><span class="o">-</span>clock_fall<span class="k">;</span>
+<span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tco_min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tclk_trace_delay_min</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>STARTUP<span class="o">*/</span>DATA_IN<span class="k">[</span><span class="o">*</span><span class="k">]]</span><span class="w"> </span><span class="o">-</span>clock_fall<span class="k">;</span>
+</code></pre></div>
 <p>接下来要考虑 output delay。虽然 output delay 也有 min 和 max，但其含义有所区别，需要分别考虑。</p>
 <p>首先是 max，它对应的是 setup time。如果定义时间 0 为时钟的上升沿，沿更早的时间为正的时间轴，沿更晚的时间为负的时间轴。期望目标是，数据到达寄存器输入的时间大于 setup time，此时可以满足 setup 条件。为了计算 max output delay，需要考虑的是从 FPGA 数据输出到 SPI Flash 上时钟的延迟。</p>
-<p>假设 FPGA CCLK 时钟上升沿在 $0$ 时刻（下图的 <code>a</code>），那么 SPI Flash 时钟上升沿在 $-t_{clk}$ 时刻（下图的 <code>b</code>）。假设 FPGA 数据输出时刻为 $t_0$（通常为正，下图的 <code>c</code>），那么 FPGA 数据输出到达 SPI Flash 在 $t_0-t_{data}$ 时刻（下图的 <code>d</code>），为了保证 $t_0-t_{data}$ 在 $-t_{clk}$ 时刻之前（下图的 <code>d -&gt; b</code>）至少 $t_{su}$ 时间到达，可以得到表达式：</p>
-<pre><code class="language-wavedrom">{
+<p>假设 FPGA CCLK 时钟上升沿在 <span class="arithmatex"><span class="MathJax_Preview">0</span><script type="math/tex">0</script></span> 时刻（下图的 <code>a</code>），那么 SPI Flash 时钟上升沿在 <span class="arithmatex"><span class="MathJax_Preview">-t_{clk}</span><script type="math/tex">-t_{clk}</script></span> 时刻（下图的 <code>b</code>）。假设 FPGA 数据输出时刻为 <span class="arithmatex"><span class="MathJax_Preview">t_0</span><script type="math/tex">t_0</script></span>（通常为正，下图的 <code>c</code>），那么 FPGA 数据输出到达 SPI Flash 在 <span class="arithmatex"><span class="MathJax_Preview">t_0-t_{data}</span><script type="math/tex">t_0-t_{data}</script></span> 时刻（下图的 <code>d</code>），为了保证 <span class="arithmatex"><span class="MathJax_Preview">t_0-t_{data}</span><script type="math/tex">t_0-t_{data}</script></span> 在 <span class="arithmatex"><span class="MathJax_Preview">-t_{clk}</span><script type="math/tex">-t_{clk}</script></span> 时刻之前（下图的 <code>d -&gt; b</code>）至少 <span class="arithmatex"><span class="MathJax_Preview">t_{su}</span><script type="math/tex">t_{su}</script></span> 时间到达，可以得到表达式：</p>
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;clk_fpga&quot;, wave: &quot;p..&quot;, node: &quot;.a&quot; },
@@ -1936,15 +1936,20 @@ set_input_delay -clock clk_sck -min [expr $tco_min + $tdata_trace_delay_min + $t
     ],
   config: { hscale: 3 },
 }
-</code></pre>
-<p>$$
+</code></pre></div>
+<div class="arithmatex">
+<div class="MathJax_Preview">
 t_0 - t_{data} &gt; -t_{clk} + t_{su}
-$$</p>
-<p>化简一下，就可以得到 $t_0 &gt; t_{data} + t_{su} - t_{clk}$，如果考虑极端情况，右侧 $t_{data}$ 取最大值，$t_{clk}$ 取最小值，就可以得到约束：</p>
-<pre><code class="language-tcl">set_output_delay -clock clk_sck -max [expr $tsu + $tdata_trace_delay_max - $tclk_trace_delay_min] [get_pins -hierarchical *STARTUP*/DATA_OUT[*]];
-</code></pre>
-<p>接下来考虑 output delay 的 min，这对应的是 hold time。此时的目标是数据到达 SPI Flash 寄存器的时候，距离上升沿时间超过了 $t_h$。按照同样的假设，如果 FPGA CCLK 时钟上升沿在 0 时刻（下图的 <code>a</code>），那么 SPI Flash 时钟上升沿在 $-t_{clk}$ 时刻（下图的 <code>b</code>）。假设 FPGA 数据输出时刻为 $t_0$（下图的 <code>c</code>），那么 FPGA 数据输出到达 SPI Flash 在 $t_0-t_{data}$ 时刻（下图的 <code>d</code>），为了满足 hold 条件，可以得到：</p>
-<pre><code class="language-wavedrom">{
+</div>
+<script type="math/tex; mode=display">
+t_0 - t_{data} > -t_{clk} + t_{su}
+</script>
+</div>
+<p>化简一下，就可以得到 <span class="arithmatex"><span class="MathJax_Preview">t_0 &gt; t_{data} + t_{su} - t_{clk}</span><script type="math/tex">t_0 > t_{data} + t_{su} - t_{clk}</script></span>，如果考虑极端情况，右侧 <span class="arithmatex"><span class="MathJax_Preview">t_{data}</span><script type="math/tex">t_{data}</script></span> 取最大值，<span class="arithmatex"><span class="MathJax_Preview">t_{clk}</span><script type="math/tex">t_{clk}</script></span> 取最小值，就可以得到约束：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">set_output_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tsu</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_max</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">$tclk_trace_delay_min</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>STARTUP<span class="o">*/</span>DATA_OUT<span class="k">[</span><span class="o">*</span><span class="k">]];</span>
+</code></pre></div>
+<p>接下来考虑 output delay 的 min，这对应的是 hold time。此时的目标是数据到达 SPI Flash 寄存器的时候，距离上升沿时间超过了 <span class="arithmatex"><span class="MathJax_Preview">t_h</span><script type="math/tex">t_h</script></span>。按照同样的假设，如果 FPGA CCLK 时钟上升沿在 0 时刻（下图的 <code>a</code>），那么 SPI Flash 时钟上升沿在 <span class="arithmatex"><span class="MathJax_Preview">-t_{clk}</span><script type="math/tex">-t_{clk}</script></span> 时刻（下图的 <code>b</code>）。假设 FPGA 数据输出时刻为 <span class="arithmatex"><span class="MathJax_Preview">t_0</span><script type="math/tex">t_0</script></span>（下图的 <code>c</code>），那么 FPGA 数据输出到达 SPI Flash 在 <span class="arithmatex"><span class="MathJax_Preview">t_0-t_{data}</span><script type="math/tex">t_0-t_{data}</script></span> 时刻（下图的 <code>d</code>），为了满足 hold 条件，可以得到：</p>
+<div class="highlight"><pre><span></span><code>{
   signal:
     [
       { name: &quot;clk_fpga&quot;, wave: &quot;p..&quot;, node: &quot;.a&quot; },
@@ -1954,75 +1959,80 @@ $$</p>
     ],
   config: { hscale: 3 },
 }
-</code></pre>
-<p>$$
+</code></pre></div>
+<div class="arithmatex">
+<div class="MathJax_Preview">
 t_0 - t_{data} &lt; -t_{clk} - t_h
-$$</p>
-<p>化简以后，可以得到 $t_0 &lt; t_{data} - t_{clk} - t_h$，按照极限来取，$t_{data}$ 取最小值，$t_{clk}$ 取最大值，就得到了最终的时序约束：</p>
-<pre><code class="language-tcl">set_output_delay -clock clk_sck -min [expr $tdata_trace_delay_min - $th - $tclk_trace_delay_max] [get_pins -hierarchical *STARTUP*/DATA_OUT[*]];
-</code></pre>
-<p>这样就可以实现 FPGA 和 SPI Flash 之间的正常通讯了。这里比较绕的就是时间轴的定义，和平常思考的方向是反过来的。而且，这里的 min 和 max 并不是指 $[\min, \max]$，而是 $(-\inf, \min] \cup [\max, \inf)$。代入上面的数据，可以得到 $\max=2.05, \min=-2.95, t_0 \in (\inf, -2.95] \cup [2.05, \inf)$。如果变化的时刻距离时钟上升沿太接近，就会导致在 SPI Flash 侧出现不满足 setup 或者 hold 约束的情况。</p>
-<p>也可以换个角度来理解 min 和 max：对于同一个周期的时钟和数据来说，数据相对时钟有一个延迟，这个延迟不能太小，至少要满足 hold，所以这是一个最小的延迟；同时这个延迟不能太大，最多需要满足下一个时钟上升沿的 setup，所以这是一个最大的延迟。如果从这个角度来看，那就是延迟在一个 $[\min, \max]$ 的范围内。但是，这样在计算的时候就需要把时钟周期纳入到 $\max$ 的计算中，比如 $\max=t_c-t_{su}$。如果把坐标轴修改一下，原点变成原来的下一个时钟周期的上升沿，x 的正方向变成反向，此时公式里不会出现时钟周期，就可以得到上面的形式了。</p>
-<h3 id="artix-7">Artix 7 时序</h3>
+</div>
+<script type="math/tex; mode=display">
+t_0 - t_{data} < -t_{clk} - t_h
+</script>
+</div>
+<p>化简以后，可以得到 <span class="arithmatex"><span class="MathJax_Preview">t_0 &lt; t_{data} - t_{clk} - t_h</span><script type="math/tex">t_0 < t_{data} - t_{clk} - t_h</script></span>，按照极限来取，<span class="arithmatex"><span class="MathJax_Preview">t_{data}</span><script type="math/tex">t_{data}</script></span> 取最小值，<span class="arithmatex"><span class="MathJax_Preview">t_{clk}</span><script type="math/tex">t_{clk}</script></span> 取最大值，就得到了最终的时序约束：</p>
+<div class="highlight"><pre><span></span><code><span class="nv">set_output_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tdata_trace_delay_min</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">$th</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">$tclk_trace_delay_max</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>STARTUP<span class="o">*/</span>DATA_OUT<span class="k">[</span><span class="o">*</span><span class="k">]];</span>
+</code></pre></div>
+<p>这样就可以实现 FPGA 和 SPI Flash 之间的正常通讯了。这里比较绕的就是时间轴的定义，和平常思考的方向是反过来的。而且，这里的 min 和 max 并不是指 <span class="arithmatex"><span class="MathJax_Preview">[\min, \max]</span><script type="math/tex">[\min, \max]</script></span>，而是 <span class="arithmatex"><span class="MathJax_Preview">(-\inf, \min] \cup [\max, \inf)</span><script type="math/tex">(-\inf, \min] \cup [\max, \inf)</script></span>。代入上面的数据，可以得到 <span class="arithmatex"><span class="MathJax_Preview">\max=2.05, \min=-2.95, t_0 \in (\inf, -2.95] \cup [2.05, \inf)</span><script type="math/tex">\max=2.05, \min=-2.95, t_0 \in (\inf, -2.95] \cup [2.05, \inf)</script></span>。如果变化的时刻距离时钟上升沿太接近，就会导致在 SPI Flash 侧出现不满足 setup 或者 hold 约束的情况。</p>
+<p>也可以换个角度来理解 min 和 max：对于同一个周期的时钟和数据来说，数据相对时钟有一个延迟，这个延迟不能太小，至少要满足 hold，所以这是一个最小的延迟；同时这个延迟不能太大，最多需要满足下一个时钟上升沿的 setup，所以这是一个最大的延迟。如果从这个角度来看，那就是延迟在一个 <span class="arithmatex"><span class="MathJax_Preview">[\min, \max]</span><script type="math/tex">[\min, \max]</script></span> 的范围内。但是，这样在计算的时候就需要把时钟周期纳入到 <span class="arithmatex"><span class="MathJax_Preview">\max</span><script type="math/tex">\max</script></span> 的计算中，比如 <span class="arithmatex"><span class="MathJax_Preview">\max=t_c-t_{su}</span><script type="math/tex">\max=t_c-t_{su}</script></span>。如果把坐标轴修改一下，原点变成原来的下一个时钟周期的上升沿，x 的正方向变成反向，此时公式里不会出现时钟周期，就可以得到上面的形式了。</p>
+<h3 id="artix-7">Artix 7 时序<a class="headerlink" href="#artix-7" title="Permanent link">&para;</a></h3>
 <p>对于更常见的 7 Series FPGA，比如 Artix 7，它采用的是 STARTUPE2 原语，只有时钟是通过 STARTUPE2 原语的 USRCCLKO 信号传递到 CCLK 引脚上的，其他数据信号都是需要在顶层信号绑定对应的引脚。在 AXI Quad SPI 文档中，描述了 STARTUPE2 所需要的时序约束：</p>
-<pre><code class="language-tcl"># You must provide all the delay numbers
-# CCLK delay is 0.5, 6.7 ns min/max for K7-2; refer Data sheet
-# Consider the max delay for worst case analysis
-set cclk_delay 6.7
-# Following are the SPI device parameters
-# Max Tco
-set tco_max 7
-# Min Tco
-set tco_min 1
-# Setup time requirement
-set tsu 2
-# Hold time requirement
-set th 3
-# Following are the board/trace delay numbers
-# Assumption is that all Data lines are matched
-set tdata_trace_delay_max 0.25
-set tdata_trace_delay_min 0.25
-set tclk_trace_delay_max 0.2
-set tclk_trace_delay_min 0.2
-### End of user provided delay numbers
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c"># You must provide all the delay numbers</span>
+<span class="c"># CCLK delay is 0.5, 6.7 ns min/max for K7-2; refer Data sheet</span>
+<span class="c"># Consider the max delay for worst case analysis</span>
+<span class="k">set</span><span class="w"> </span>cclk_delay<span class="w"> </span><span class="mf">6.7</span>
+<span class="c"># Following are the SPI device parameters</span>
+<span class="c"># Max Tco</span>
+<span class="k">set</span><span class="w"> </span>tco_max<span class="w"> </span><span class="mi">7</span>
+<span class="c"># Min Tco</span>
+<span class="k">set</span><span class="w"> </span>tco_min<span class="w"> </span><span class="mi">1</span>
+<span class="c"># Setup time requirement</span>
+<span class="k">set</span><span class="w"> </span>tsu<span class="w"> </span><span class="mi">2</span>
+<span class="c"># Hold time requirement</span>
+<span class="k">set</span><span class="w"> </span>th<span class="w"> </span><span class="mi">3</span>
+<span class="c"># Following are the board/trace delay numbers</span>
+<span class="c"># Assumption is that all Data lines are matched</span>
+<span class="k">set</span><span class="w"> </span>tdata_trace_delay_max<span class="w"> </span><span class="mf">0.25</span>
+<span class="k">set</span><span class="w"> </span>tdata_trace_delay_min<span class="w"> </span><span class="mf">0.25</span>
+<span class="k">set</span><span class="w"> </span>tclk_trace_delay_max<span class="w"> </span><span class="mf">0.2</span>
+<span class="k">set</span><span class="w"> </span>tclk_trace_delay_min<span class="w"> </span><span class="mf">0.2</span>
+<span class="c">### End of user provided delay numbers</span>
+</code></pre></div>
 <p>可以看到，这一部分和上面 UltraScale+ 部分差不多，只是多一个 <code>cclk_delay</code> 变量，这是因为 Artix 7 中，时钟只能创建到 USRCCLKO 引脚上。但是实际 SPI Flash 接收到的时钟，首先从 USRCCLKO 到 CCLK 引脚，然后再通过 PCB 上的线传播到 SPI Flash，所以需要手动添加一个偏移，这个偏移就是 USRCCLKO 到 CCLK 的延迟，可以在 <a href="https://www.xilinx.com/support/documentation/data_sheets/ds181_Artix_7_Data_Sheet.pdf">Artix 7 Data Sheet</a> 里面看到：对于 1.0V，-2 速度的 FPGA，这个延迟最小值为 0.50ns，最大值为 6.70ns，这里采用了最大值。</p>
 <p>剩下的约束，除了时钟部分以外，和上面分析的 UltraScale+ 时序约束计算方法是相同的。不同点在于，这里约束了从 AXI Quad SPI 到 STARTUPE2 的路由时延，从 0.1ns 到 1.5ns，然后又从 USRCCLKO 创建了一个分频 + 延迟 <code>cclk_delay</code> 纳秒的时钟，作为 SPI Flash 上 SCK 引脚的时钟。</p>
-<pre><code class="language-tcl"># this is to ensure min routing delay from SCK generation to STARTUP input
-# User should change this value based on the results
-# having more delay on this net reduces the Fmax
-set_max_delay 1.5 -from [get_pins -hier *SCK_O_reg_reg/C] -to [get_pins -hier
-*USRCCLKO] -datapath_only
-set_min_delay 0.1 -from [get_pins -hier *SCK_O_reg_reg/C] -to [get_pins -hier
-*USRCCLKO]
-# Following command creates a divide by 2 clock
-# It also takes into account the delay added by STARTUP block to route the CCLK
-create_generated_clock -name clk_sck -source [get_pins -hierarchical
-*axi_quad_spi_1/ext_spi_clk] [get_pins -hierarchical *USRCCLKO] -edges {3 5 7}
--edge_shift [list $cclk_delay $cclk_delay $cclk_delay]
-# Data is captured into FPGA on the second rising edge of ext_spi_clk after the SCK
-falling edge
+<div class="highlight"><pre><span></span><code><span class="c"># this is to ensure min routing delay from SCK generation to STARTUP input</span>
+<span class="c"># User should change this value based on the results</span>
+<span class="c"># having more delay on this net reduces the Fmax</span>
+<span class="nv">set_max_delay</span><span class="w"> </span><span class="mf">1.5</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">*</span>SCK_O_reg_reg<span class="o">/</span>C<span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hier
+<span class="o">*</span><span class="nv">USRCCLKO</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>datapath_only
+<span class="nv">set_min_delay</span><span class="w"> </span><span class="mf">0.1</span><span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hier<span class="w"> </span><span class="o">*</span>SCK_O_reg_reg<span class="o">/</span>C<span class="k">]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hier
+<span class="o">*</span><span class="nv">USRCCLKO</span><span class="k">]</span>
+<span class="c"># Following command creates a divide by 2 clock</span>
+<span class="c"># It also takes into account the delay added by STARTUP block to route the CCLK</span>
+<span class="nv">create_generated_clock</span><span class="w"> </span><span class="o">-</span>name<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>source<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical
+<span class="o">*</span><span class="nv">axi_quad_spi_1</span><span class="o">/</span>ext_spi_clk<span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*</span>USRCCLKO<span class="k">]</span><span class="w"> </span><span class="o">-</span>edges<span class="w"> </span><span class="k">{</span><span class="nv">3</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">7</span><span class="k">}</span>
+<span class="nv">-edge_shift</span><span class="w"> </span><span class="k">[</span><span class="nb">list</span><span class="w"> </span><span class="nv">$cclk_delay</span><span class="w"> </span><span class="nv">$cclk_delay</span><span class="w"> </span><span class="nv">$cclk_delay</span><span class="k">]</span>
+<span class="c"># Data is captured into FPGA on the second rising edge of ext_spi_clk after the SCK</span>
+<span class="nv">falling</span><span class="w"> </span>edge
 
-# Data is driven by the FPGA on every alternate rising_edge of ext_spi_clk
-set_input_delay -clock clk_sck -max [expr $tco_max + $tdata_trace_delay_max +
-$tclk_trace_delay_max] [get_ports IO*_IO] -clock_fall;
-set_input_delay -clock clk_sck -min [expr $tco_min + $tdata_trace_delay_min +
-$tclk_trace_delay_min] [get_ports IO*_IO] -clock_fall;
-set_multicycle_path 2 -setup -from clk_sck -to [get_clocks -of_objects [get_pins
--hierarchical */ext_spi_clk]]
-set_multicycle_path 1 -hold -end -from clk_sck -to [get_clocks -of_objects [get_pins
--hierarchical */ext_spi_clk]]
-# Data is captured into SPI on the following rising edge of SCK
-# Data is driven by the IP on alternate rising_edge of the ext_spi_clk
-set_output_delay -clock clk_sck -max [expr $tsu + $tdata_trace_delay_max -
-$tclk_trace_delay_min] [get_ports IO*_IO];
-set_output_delay -clock clk_sck -min [expr $tdata_trace_delay_min - $th -
-$tclk_trace_delay_max] [get_ports IO*_IO];
-set_multicycle_path 2 -setup -start -from [get_clocks -of_objects [get_pins
--hierarchical */ext_spi_clk]] -to clk_sck
-set_multicycle_path 1 -hold -from [get_clocks -of_objects [get_pins -hierarchical */
-ext_spi_clk]] -to clk_sck
-</code></pre>
+<span class="c"># Data is driven by the FPGA on every alternate rising_edge of ext_spi_clk</span>
+<span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tco_max</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_max</span><span class="w"> </span><span class="o">+</span>
+<span class="nv">$tclk_trace_delay_max</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>IO<span class="o">*</span>_IO<span class="k">]</span><span class="w"> </span><span class="o">-</span>clock_fall<span class="k">;</span>
+<span class="nv">set_input_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tco_min</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_min</span><span class="w"> </span><span class="o">+</span>
+<span class="nv">$tclk_trace_delay_min</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>IO<span class="o">*</span>_IO<span class="k">]</span><span class="w"> </span><span class="o">-</span>clock_fall<span class="k">;</span>
+<span class="nv">set_multicycle_path</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">-</span>setup<span class="w"> </span><span class="o">-</span>from<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span>
+<span class="nv">-hierarchical</span><span class="w"> </span><span class="o">*/</span>ext_spi_clk<span class="k">]]</span>
+<span class="nv">set_multicycle_path</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span>hold<span class="w"> </span><span class="o">-</span>end<span class="w"> </span><span class="o">-</span>from<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>to<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span>
+<span class="nv">-hierarchical</span><span class="w"> </span><span class="o">*/</span>ext_spi_clk<span class="k">]]</span>
+<span class="c"># Data is captured into SPI on the following rising edge of SCK</span>
+<span class="c"># Data is driven by the IP on alternate rising_edge of the ext_spi_clk</span>
+<span class="nv">set_output_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>max<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tsu</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$tdata_trace_delay_max</span><span class="w"> </span><span class="o">-</span>
+<span class="nv">$tclk_trace_delay_min</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>IO<span class="o">*</span>_IO<span class="k">];</span>
+<span class="nv">set_output_delay</span><span class="w"> </span><span class="o">-</span>clock<span class="w"> </span>clk_sck<span class="w"> </span><span class="o">-</span>min<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="nv">$tdata_trace_delay_min</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">$th</span><span class="w"> </span><span class="o">-</span>
+<span class="nv">$tclk_trace_delay_max</span><span class="k">]</span><span class="w"> </span><span class="k">[</span><span class="nv">get_ports</span><span class="w"> </span>IO<span class="o">*</span>_IO<span class="k">];</span>
+<span class="nv">set_multicycle_path</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">-</span>setup<span class="w"> </span><span class="o">-</span>start<span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span>
+<span class="nv">-hierarchical</span><span class="w"> </span><span class="o">*/</span>ext_spi_clk<span class="k">]]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span>clk_sck
+<span class="nv">set_multicycle_path</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span>hold<span class="w"> </span><span class="o">-</span>from<span class="w"> </span><span class="k">[</span><span class="nv">get_clocks</span><span class="w"> </span><span class="o">-</span>of_objects<span class="w"> </span><span class="k">[</span><span class="nv">get_pins</span><span class="w"> </span><span class="o">-</span>hierarchical<span class="w"> </span><span class="o">*/</span>
+<span class="nv">ext_spi_clk</span><span class="k">]]</span><span class="w"> </span><span class="o">-</span>to<span class="w"> </span>clk_sck
+</code></pre></div>
 <p>一个 Artix 7 上配置 STARTUP SPI Flash 的例子 <a href="https://github.com/trivialmips/nontrivial-mips/blob/master/vivado/NonTrivialMIPS.srcs/constrs_1/new/io_timings.xdc">io_timings.xdc</a> 可供参考。</p>
 
 
