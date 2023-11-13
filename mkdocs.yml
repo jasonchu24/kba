@@ -1,10 +1,5 @@
 site_name: 杰森的KBA
-site_url: https://jasonchu24.github.io/kba
-repo_url: https://github.com/jasonchu24/kba
-repo_name: jasonchu24/kba
-site_url: ""
-
-nav:
+site_url: https://jasonchu24.github.io
 
 theme:
   name: material
@@ -64,5 +59,33 @@ markdown_extensions:
 
 extra:
   generator: false
+  disqus: '杰森'
 
 copyright: Copyright &copy; 2022-2023 杰森
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+      linenums: false
+  - toc:
+      permalink: true
+  - footnotes
+  - meta
+  - def_list
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_png
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist
+  - pymdownx.tilde
